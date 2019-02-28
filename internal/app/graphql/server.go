@@ -10,7 +10,8 @@ import (
 
 const defaultPort = "8080"
 
-func main() {
+// StartServer starts the HTTP server for the GraphQL endpoint service.
+func StartServer() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
