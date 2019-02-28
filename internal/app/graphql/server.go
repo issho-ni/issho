@@ -6,9 +6,12 @@ import (
 	"os"
 
 	"github.com/99designs/gqlgen/handler"
+	"github.com/gorilla/mux"
 )
 
 const defaultPort = "8080"
+const defaultTLSCert = "localhost.pem"
+const defaultTLSKey = "localhost-key.pem"
 
 // StartServer starts the HTTP server for the GraphQL endpoint service.
 func StartServer() {
@@ -17,9 +20,21 @@ func StartServer() {
 		port = defaultPort
 	}
 
-	http.Handle("/", handler.Playground("GraphQL playground", "/query"))
-	http.Handle("/query", handler.GraphQL(NewExecutableSchema(Config{Resolvers: &Resolver{}})))
+	tlsCert := os.Getenv("TLS_CERT")
+	if tlsCert == "" {
+		tlsCert = defaultTLSCert
+	}
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	tlsKey := os.Getenv("TLS_KEY")
+	if tlsKey == "" {
+		tlsKey = defaultTLSKey
+	}
+
+	r := mux.NewRouter()
+
+	r.Handle("/", handler.Playground("GraphQL playground", "/query"))
+	r.Handle("/query", handler.GraphQL(NewExecutableSchema(Config{Resolvers: &Resolver{}})))
+
+	log.Printf("connect to https://localhost:%s/ for GraphQL playground", port)
+	log.Fatal(http.ListenAndServeTLS(":"+port, tlsCert, tlsKey, r))
 }

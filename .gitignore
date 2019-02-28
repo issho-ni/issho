@@ -13,3 +13,6 @@
 
 # Debug dumps
 debug
+
+# Certificates
+*.pem
