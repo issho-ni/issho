@@ -1,12 +1,12 @@
 package graphql
 
 import (
-	"log"
 	"net/http"
 	"os"
 
 	"github.com/99designs/gqlgen/handler"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 )
 
 const defaultPort = "8080"
@@ -35,6 +35,7 @@ func StartServer() {
 	r.Handle("/", handler.Playground("GraphQL playground", "/query"))
 	r.Handle("/query", handler.GraphQL(NewExecutableSchema(Config{Resolvers: &Resolver{}})))
 
+	r.Use(loggingMiddleware)
 	log.Printf("connect to https://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServeTLS(":"+port, tlsCert, tlsKey, r))
 }
