@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/issho-ni/issho/internal/pkg/issho"
+
 	"github.com/99designs/gqlgen/handler"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
@@ -32,10 +34,13 @@ func StartServer() {
 
 	r := mux.NewRouter()
 
-	r.Handle("/", handler.Playground("GraphQL playground", "/query"))
+	if issho.Environment.Development() {
+		r.Handle("/", handler.Playground("GraphQL playground", "/query"))
+		log.Printf("connect to https://localhost:%s/ for GraphQL playground", port)
+	}
+
 	r.Handle("/query", handler.GraphQL(NewExecutableSchema(Config{Resolvers: &Resolver{}})))
 
 	r.Use(loggingMiddleware)
-	log.Printf("connect to https://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServeTLS(":"+port, tlsCert, tlsKey, r))
 }
