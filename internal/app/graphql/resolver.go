@@ -26,6 +26,11 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input NewTodo) (*Todo
 	panic("not implemented")
 }
 
+// CreateUser creates a new User.
+func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User, error) {
+	panic("not implemented")
+}
+
 type queryResolver struct{ *Resolver }
 
 // Todos returns all Todo items.

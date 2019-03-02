@@ -16,7 +16,7 @@ go run ./cmd/graphql
 ### Updating GraphQL Schema
 
 ```bash
-go gen ./...
+go generate ./...
 ```
 
 ## Copyright
