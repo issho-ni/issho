@@ -12,8 +12,8 @@ import (
 )
 
 const defaultPort = "8080"
-const defaultTLSCert = "localhost.pem"
-const defaultTLSKey = "localhost-key.pem"
+const defaultTLSCert = "localhost+2.pem"
+const defaultTLSKey = "localhost+2-key.pem"
 
 // StartServer starts the HTTP server for the GraphQL endpoint service.
 func StartServer() {
