@@ -2,7 +2,6 @@ package graphql
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/issho-ni/issho/internal/pkg/issho"
 
@@ -11,27 +10,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const defaultPort = "8080"
-const defaultTLSCert = "localhost+2.pem"
-const defaultTLSKey = "localhost+2-key.pem"
-
 // StartServer starts the HTTP server for the GraphQL endpoint service.
-func StartServer() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
-
-	tlsCert := os.Getenv("TLS_CERT")
-	if tlsCert == "" {
-		tlsCert = defaultTLSCert
-	}
-
-	tlsKey := os.Getenv("TLS_KEY")
-	if tlsKey == "" {
-		tlsKey = defaultTLSKey
-	}
-
+func StartServer(port string, tlsCert string, tlsKey string) {
 	r := mux.NewRouter()
 
 	if issho.Environment.Development() {
