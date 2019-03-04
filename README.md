@@ -13,10 +13,18 @@ mkcert localhost 127.0.0.1 ::1
 go run ./cmd/graphql
 ```
 
-### Updating GraphQL Schema
+### Updating GraphQL or Protocol Buffer Schemas
+
+To regenerate everything:
 
 ```bash
 go generate ./...
+```
+
+Or just the GraphQL or a single protobuf schema:
+
+```bash
+go generate ./api/graphql
 ```
 
 ## Copyright
