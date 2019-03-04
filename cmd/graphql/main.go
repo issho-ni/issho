@@ -14,7 +14,7 @@ const defaultTLSCert = "localhost+2.pem"
 const defaultTLSKey = "localhost+2-key.pem"
 
 func main() {
-	port := os.Getenv("GRAPQL_PORT")
+	port := os.Getenv("GRAPHQL_PORT")
 	if port == "" {
 		port = defaultPort
 	}

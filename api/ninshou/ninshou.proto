@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package ninshou;
+
+service Ninshou {
+    rpc CreateUser(NewUser) returns (User) {}
+}
+
+message NewUser {
+    string name = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message User {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+}

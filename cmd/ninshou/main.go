@@ -7,5 +7,5 @@ import (
 )
 
 func main() {
-	log.Printf("Starting youji service")
+	log.Printf("Starting ninshou service")
 }
