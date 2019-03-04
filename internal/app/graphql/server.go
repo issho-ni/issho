@@ -3,6 +3,7 @@ package graphql
 import (
 	"net/http"
 
+	"github.com/issho-ni/issho/api/graphql"
 	"github.com/issho-ni/issho/internal/pkg/issho"
 
 	"github.com/99designs/gqlgen/handler"
@@ -19,7 +20,7 @@ func StartServer(port string, tlsCert string, tlsKey string) {
 		log.Printf("connect to https://localhost:%s/ for GraphQL playground", port)
 	}
 
-	r.Handle("/query", handler.GraphQL(NewExecutableSchema(Config{Resolvers: &Resolver{}})))
+	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(graphql.Config{Resolvers: &Resolver{}})))
 
 	r.Use(loggingMiddleware)
 	log.Fatal(http.ListenAndServeTLS(":"+port, tlsCert, tlsKey, r))
