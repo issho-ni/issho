@@ -1,6 +1,7 @@
 package graphql
 
 import (
+	"math"
 	"net/http"
 	"time"
 
@@ -23,8 +24,7 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	w := &loggingResponseWriter{rw, 0, 0}
 	h.Handler.ServeHTTP(w, r)
 
-	since := time.Since(now).Seconds() * 1e3
-
+	since := math.Round(time.Since(now).Seconds()*1e6) / 1e3
 	rid, _ := requestid.FromContext(r.Context())
 
 	log.WithFields(log.Fields{
