@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/issho-ni/issho/internal/pkg/request_id"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -23,6 +25,8 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 	since := time.Since(now).Seconds() * 1e3
 
+	rid, _ := requestid.FromContext(r.Context())
+
 	log.WithFields(log.Fields{
 		"http.method":      r.Method,
 		"http.protocol":    r.Proto,
@@ -31,6 +35,7 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		"http.size":        w.Size,
 		"http.status":      w.StatusCode,
 		"http.time_ms":     since,
+		"request_id":       rid,
 		"span.kind":        "server",
 		"system":           "http",
 	}).WithTime(now).Info(r.RequestURI)

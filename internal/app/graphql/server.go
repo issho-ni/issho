@@ -28,6 +28,7 @@ func StartServer(port string, tlsCert string, tlsKey string) {
 
 	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(graphql.Config{Resolvers: resolver})))
 
+	r.Use(requestIDMiddleware)
 	r.Use(loggingMiddleware)
 	log.Fatal(http.ListenAndServeTLS(":"+port, tlsCert, tlsKey, r))
 }
