@@ -21,15 +21,15 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	w := &loggingResponseWriter{rw, 0, 0}
 	h.Handler.ServeHTTP(w, r)
 
-	since := time.Since(now)
+	since := time.Since(now).Seconds() * 1e3
 
 	log.WithFields(log.Fields{
-		"http.duration_ns": since.Nanoseconds(),
 		"http.method":      r.Method,
 		"http.protocol":    r.Proto,
 		"http.remote_addr": r.RemoteAddr,
 		"http.size":        w.Size,
 		"http.status":      w.StatusCode,
+		"http.time_ms":     since,
 		"service":          "graphql",
 	}).WithTime(now).Info(r.RequestURI)
 }
