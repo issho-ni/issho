@@ -42,8 +42,12 @@ func StartServer(port string, tlsCert string, tlsKey string) {
 	logrusEntry := log.NewEntry(logger)
 
 	grpc_logrus.ReplaceGrpcLogger(logrusEntry)
-	opts = append(opts, grpc_middleware.WithUnaryServerChain(grpc_logrus.UnaryServerInterceptor(logrusEntry)))
-	opts = append(opts, grpc_middleware.WithStreamServerChain(grpc_logrus.StreamServerInterceptor(logrusEntry)))
+	opts = append(opts, grpc_middleware.WithStreamServerChain(
+		grpc_logrus.StreamServerInterceptor(logrusEntry),
+		requestIDStreamServerInterceptor))
+	opts = append(opts, grpc_middleware.WithUnaryServerChain(
+		grpc_logrus.UnaryServerInterceptor(logrusEntry),
+		requestIDUnaryServerInterceptor))
 
 	grpcServer := grpc.NewServer(opts...)
 	ninshou.RegisterNinshouServer(grpcServer, newServer())
