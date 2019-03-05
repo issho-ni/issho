@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	"github.com/issho-ni/issho/api/graphql"
+	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/internal/pkg/issho"
+	"github.com/issho-ni/issho/internal/pkg/service"
 
 	"github.com/99designs/gqlgen/handler"
 	"github.com/gorilla/mux"
@@ -17,10 +19,14 @@ func StartServer(port string, tlsCert string, tlsKey string) {
 
 	if issho.Environment.Development() {
 		r.Handle("/", handler.Playground("GraphQL playground", "/query"))
-		log.Printf("connect to https://localhost:%s/ for GraphQL playground", port)
+		log.Printf("Connect to https://localhost:%s/ for GraphQL playground", port)
 	}
 
-	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(graphql.Config{Resolvers: &Resolver{}})))
+	env := service.NewEnv(tlsCert)
+	ninshou := ninshou.NewClient(env)
+	resolver := &Resolver{ninshou}
+
+	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(graphql.Config{Resolvers: resolver})))
 
 	r.Use(loggingMiddleware)
 	log.Fatal(http.ListenAndServeTLS(":"+port, tlsCert, tlsKey, r))

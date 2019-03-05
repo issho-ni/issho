@@ -6,10 +6,13 @@ import (
 	"context"
 
 	"github.com/issho-ni/issho/api/graphql"
+	"github.com/issho-ni/issho/api/ninshou"
 ) // THIS CODE IS A STARTING POINT ONLY. IT WILL NOT BE UPDATED WITH SCHEMA CHANGES.
 
 // Resolver is the base type for GraphQL operation resolvers.
-type Resolver struct{}
+type Resolver struct {
+	ninshou.NinshouClient
+}
 
 // Mutation returns a new mutation resolver.
 func (r *Resolver) Mutation() graphql.MutationResolver {
@@ -29,8 +32,8 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input graphql.NewTodo
 }
 
 // CreateUser creates a new User.
-func (r *mutationResolver) CreateUser(ctx context.Context, input graphql.NewUser) (*graphql.User, error) {
-	panic("not implemented")
+func (r *mutationResolver) CreateUser(ctx context.Context, input ninshou.NewUser) (*ninshou.User, error) {
+	return r.NinshouClient.CreateUser(ctx, &input)
 }
 
 type queryResolver struct{ *Resolver }
