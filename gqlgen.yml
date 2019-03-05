@@ -6,7 +6,8 @@ exec:
 model:
   filename: api/graphql/models_gen.go
   package: graphql
-resolver:
-  filename: internal/app/graphql/resolver.go
-  package: graphql
-  type: Resolver
+models:
+  NewUser:
+    model: github.com/issho-ni/issho/api/ninshou.NewUser
+  User:
+    model: github.com/issho-ni/issho/api/ninshou.User
