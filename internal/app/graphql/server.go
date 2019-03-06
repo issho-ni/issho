@@ -24,7 +24,7 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 		r.Handle("/", handler.Playground("GraphQL playground", "/query"))
 	}
 
-	env := service.NewEnv(config.TLSCert)
+	env := service.NewClientConfig(config.TLSCert)
 	ninshou := ninshou.NewClient(env)
 	resolver := &Resolver{ninshou}
 

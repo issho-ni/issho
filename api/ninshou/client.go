@@ -13,7 +13,7 @@ type Client struct {
 }
 
 // NewClient returns a client to the Ninshou gRPC service.
-func NewClient(e service.Env) *Client {
-	c := service.NewClient(e, "ninshou", "localhost:8081")
+func NewClient(config *service.ClientConfig) *Client {
+	c := service.NewClient(config, "ninshou", "localhost:8081")
 	return &Client{c, NewNinshouClient(c.ClientConn)}
 }

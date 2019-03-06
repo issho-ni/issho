@@ -13,7 +13,7 @@ type Client struct {
 }
 
 // NewClient returns a client to the Youji gRPC service.
-func NewClient(e service.Env) *Client {
-	c := service.NewClient(e, "youji", "localhost:8082")
+func NewClient(config *service.ClientConfig) *Client {
+	c := service.NewClient(config, "youji", "localhost:8082")
 	return &Client{c, NewYoujiClient(c.ClientConn)}
 }
