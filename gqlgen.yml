@@ -3,11 +3,12 @@ schema:
 exec:
   filename: api/graphql/generated.go
   package: graphql
-model:
-  filename: api/graphql/models_gen.go
-  package: graphql
 models:
+  NewTodo:
+    model: github.com/issho-ni/issho/api/youji.NewTodo
   NewUser:
     model: github.com/issho-ni/issho/api/ninshou.NewUser
+  Todo:
+    model: github.com/issho-ni/issho/api/youji.Todo
   User:
     model: github.com/issho-ni/issho/api/ninshou.User

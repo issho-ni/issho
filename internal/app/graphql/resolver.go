@@ -7,6 +7,7 @@ import (
 
 	"github.com/issho-ni/issho/api/graphql"
 	"github.com/issho-ni/issho/api/ninshou"
+	"github.com/issho-ni/issho/api/youji"
 ) // THIS CODE IS A STARTING POINT ONLY. IT WILL NOT BE UPDATED WITH SCHEMA CHANGES.
 
 // Resolver is the base type for GraphQL operation resolvers.
@@ -27,7 +28,7 @@ func (r *Resolver) Query() graphql.QueryResolver {
 type mutationResolver struct{ *Resolver }
 
 // CreateTodo creates a new Todo.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input graphql.NewTodo) (*graphql.Todo, error) {
+func (r *mutationResolver) CreateTodo(ctx context.Context, input youji.NewTodo) (*youji.Todo, error) {
 	panic("not implemented")
 }
 
@@ -39,6 +40,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input ninshou.NewUser
 type queryResolver struct{ *Resolver }
 
 // Todos returns all Todo items.
-func (r *queryResolver) Todos(ctx context.Context) ([]graphql.Todo, error) {
+func (r *queryResolver) Todos(ctx context.Context) ([]youji.Todo, error) {
 	panic("not implemented")
 }
