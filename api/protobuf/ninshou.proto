@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package ninshou;
+option go_package = "github.com/issho-ni/issho/api/ninshou";
 
 service Ninshou {
     rpc CreateUser(NewUser) returns (User) {}
