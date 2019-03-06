@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package youji;
+option go_package = "github.com/issho-ni/issho/api/youji";
+
+import "ninshou.proto";
+
+service Youji {
+    rpc CreateTodo(NewTodo) returns (Todo) {}
+}
+
+message NewTodo {
+    string text = 1;
+    string userID = 2;
+}
+
+message Todo {
+    string id = 1;
+    string text = 2;
+    bool done = 3;
+    ninshou.User user = 4;
+}
