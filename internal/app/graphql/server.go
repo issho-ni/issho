@@ -5,6 +5,7 @@ import (
 
 	"github.com/issho-ni/issho/api/graphql"
 	"github.com/issho-ni/issho/api/ninshou"
+	"github.com/issho-ni/issho/api/youji"
 	"github.com/issho-ni/issho/internal/pkg/service"
 
 	"github.com/99designs/gqlgen/handler"
@@ -25,8 +26,10 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 	}
 
 	env := service.NewClientConfig(config.TLSCert)
-	ninshou := ninshou.NewClient(env)
-	resolver := &Resolver{ninshou}
+	resolver := &Resolver{
+		ninshou.NewClient(env),
+		youji.NewClient(env),
+	}
 
 	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(graphql.Config{Resolvers: resolver})))
 

@@ -24,6 +24,42 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
+type GetTodosParams struct {
+}
+
+func (m *GetTodosParams) Reset()         { *m = GetTodosParams{} }
+func (m *GetTodosParams) String() string { return proto.CompactTextString(m) }
+func (*GetTodosParams) ProtoMessage()    {}
+func (*GetTodosParams) Descriptor() ([]byte, []int) {
+	return fileDescriptor_544de1e744607021, []int{0}
+}
+func (m *GetTodosParams) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetTodosParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetTodosParams.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetTodosParams) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetTodosParams.Merge(m, src)
+}
+func (m *GetTodosParams) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetTodosParams) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetTodosParams.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetTodosParams proto.InternalMessageInfo
+
 type NewTodo struct {
 	Text   string `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
 	UserID string `protobuf:"bytes,2,opt,name=userID,proto3" json:"userID,omitempty"`
@@ -33,7 +69,7 @@ func (m *NewTodo) Reset()         { *m = NewTodo{} }
 func (m *NewTodo) String() string { return proto.CompactTextString(m) }
 func (*NewTodo) ProtoMessage()    {}
 func (*NewTodo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_544de1e744607021, []int{0}
+	return fileDescriptor_544de1e744607021, []int{1}
 }
 func (m *NewTodo) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -87,7 +123,7 @@ func (m *Todo) Reset()         { *m = Todo{} }
 func (m *Todo) String() string { return proto.CompactTextString(m) }
 func (*Todo) ProtoMessage()    {}
 func (*Todo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_544de1e744607021, []int{1}
+	return fileDescriptor_544de1e744607021, []int{2}
 }
 func (m *Todo) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -144,31 +180,81 @@ func (m *Todo) GetUser() *ninshou.User {
 	return nil
 }
 
+type Todos struct {
+	Todos []*Todo `protobuf:"bytes,1,rep,name=todos,proto3" json:"todos,omitempty"`
+}
+
+func (m *Todos) Reset()         { *m = Todos{} }
+func (m *Todos) String() string { return proto.CompactTextString(m) }
+func (*Todos) ProtoMessage()    {}
+func (*Todos) Descriptor() ([]byte, []int) {
+	return fileDescriptor_544de1e744607021, []int{3}
+}
+func (m *Todos) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Todos) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Todos.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Todos) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Todos.Merge(m, src)
+}
+func (m *Todos) XXX_Size() int {
+	return m.Size()
+}
+func (m *Todos) XXX_DiscardUnknown() {
+	xxx_messageInfo_Todos.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Todos proto.InternalMessageInfo
+
+func (m *Todos) GetTodos() []*Todo {
+	if m != nil {
+		return m.Todos
+	}
+	return nil
+}
+
 func init() {
+	proto.RegisterType((*GetTodosParams)(nil), "youji.GetTodosParams")
 	proto.RegisterType((*NewTodo)(nil), "youji.NewTodo")
 	proto.RegisterType((*Todo)(nil), "youji.Todo")
+	proto.RegisterType((*Todos)(nil), "youji.Todos")
 }
 
 func init() { proto.RegisterFile("youji.proto", fileDescriptor_544de1e744607021) }
 
 var fileDescriptor_544de1e744607021 = []byte{
-	// 252 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xae, 0xcc, 0x2f, 0xcd,
-	0xca, 0xd4, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x05, 0x73, 0xa4, 0x78, 0xf3, 0x32, 0xf3,
-	0x8a, 0x33, 0xf2, 0x4b, 0x21, 0xa2, 0x4a, 0xa6, 0x5c, 0xec, 0x7e, 0xa9, 0xe5, 0x21, 0xf9, 0x29,
-	0xf9, 0x42, 0x42, 0x5c, 0x2c, 0x25, 0xa9, 0x15, 0x25, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41,
-	0x60, 0xb6, 0x90, 0x18, 0x17, 0x5b, 0x69, 0x71, 0x6a, 0x91, 0xa7, 0x8b, 0x04, 0x13, 0x58, 0x14,
-	0xca, 0x53, 0x4a, 0xe4, 0x62, 0x01, 0xeb, 0xe1, 0xe3, 0x62, 0xca, 0x4c, 0x81, 0xea, 0x60, 0xca,
-	0x4c, 0x81, 0x9b, 0xc1, 0x84, 0x64, 0x86, 0x10, 0x17, 0x4b, 0x4a, 0x7e, 0x5e, 0xaa, 0x04, 0xb3,
-	0x02, 0xa3, 0x06, 0x47, 0x10, 0x98, 0x2d, 0xa4, 0xc8, 0xc5, 0x02, 0x32, 0x49, 0x82, 0x45, 0x81,
-	0x51, 0x83, 0xdb, 0x88, 0x57, 0x0f, 0xe6, 0xa8, 0xd0, 0xe2, 0xd4, 0xa2, 0x20, 0xb0, 0x94, 0x91,
-	0x09, 0x17, 0x6b, 0x24, 0xc8, 0xc5, 0x42, 0xda, 0x5c, 0x5c, 0xce, 0x45, 0xa9, 0x89, 0x25, 0xa9,
-	0x10, 0x1b, 0xf5, 0x20, 0x9e, 0x82, 0xba, 0x5a, 0x8a, 0x1b, 0xca, 0x07, 0x71, 0x94, 0x18, 0x9c,
-	0x6c, 0x4f, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x09, 0x8f,
-	0xe5, 0x18, 0x2e, 0x3c, 0x96, 0x63, 0xb8, 0xf1, 0x58, 0x8e, 0x21, 0x4a, 0x39, 0x3d, 0xb3, 0x24,
-	0xa3, 0x34, 0x49, 0x2f, 0x39, 0x3f, 0x57, 0x3f, 0xb3, 0xb8, 0x38, 0x23, 0x5f, 0x37, 0x2f, 0x13,
-	0xc2, 0xd0, 0x4f, 0x2c, 0xc8, 0xd4, 0x07, 0x9b, 0x92, 0xc4, 0x06, 0x0e, 0x15, 0x63, 0x40, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0x3b, 0xb2, 0x0d, 0xfb, 0x3a, 0x01, 0x00, 0x00,
+	// 307 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x51, 0x41, 0x4b, 0xf3, 0x40,
+	0x14, 0xcc, 0xa6, 0x49, 0xbf, 0x7e, 0x2f, 0xb6, 0xc8, 0x82, 0x12, 0x72, 0x58, 0xd2, 0xf5, 0x12,
+	0x14, 0x13, 0x8c, 0x78, 0xf4, 0xa2, 0x82, 0x78, 0x11, 0x09, 0x7a, 0xd0, 0x5b, 0x6a, 0x96, 0x66,
+	0x85, 0x66, 0x4b, 0x76, 0x83, 0xfa, 0x2f, 0xfc, 0x59, 0x1e, 0x7b, 0xf4, 0x28, 0xc9, 0x1f, 0x91,
+	0x6c, 0x52, 0x89, 0xb7, 0x79, 0x33, 0x3b, 0xc3, 0xbc, 0xb7, 0xe0, 0xbc, 0x8b, 0xea, 0x85, 0x87,
+	0xeb, 0x52, 0x28, 0x81, 0x6d, 0x3d, 0x78, 0xd3, 0x82, 0x17, 0x32, 0x17, 0x55, 0xc7, 0xd2, 0x5d,
+	0x98, 0x5d, 0x33, 0x75, 0x2f, 0x32, 0x21, 0xef, 0xd2, 0x32, 0x5d, 0x49, 0x7a, 0x06, 0xff, 0x6e,
+	0xd9, 0x6b, 0xcb, 0x60, 0x0c, 0x96, 0x62, 0x6f, 0xca, 0x45, 0x3e, 0x0a, 0xfe, 0x27, 0x1a, 0xe3,
+	0x7d, 0x18, 0x57, 0x92, 0x95, 0x37, 0x57, 0xae, 0xa9, 0xd9, 0x7e, 0xa2, 0x29, 0x58, 0xda, 0x33,
+	0x03, 0x93, 0x67, 0xbd, 0xc3, 0xe4, 0xd9, 0x6f, 0x86, 0x39, 0xc8, 0xc0, 0x60, 0x65, 0xa2, 0x60,
+	0xee, 0xc8, 0x47, 0xc1, 0x24, 0xd1, 0x18, 0xcf, 0xc1, 0x6a, 0x93, 0x5c, 0xcb, 0x47, 0x81, 0x13,
+	0x4f, 0xc3, 0x6d, 0xcd, 0x07, 0xc9, 0xca, 0x44, 0x4b, 0xf4, 0x10, 0x6c, 0x5d, 0x14, 0xcf, 0xc1,
+	0x56, 0x2d, 0x70, 0x91, 0x3f, 0x0a, 0x9c, 0xd8, 0x09, 0xbb, 0x3d, 0x5b, 0x31, 0xe9, 0x94, 0x78,
+	0x09, 0xf6, 0x63, 0x4b, 0xe2, 0x23, 0x80, 0xcb, 0x92, 0xa5, 0x8a, 0x75, 0xed, 0xfa, 0xa7, 0xfd,
+	0x86, 0xde, 0xd0, 0x4a, 0x0d, 0x7c, 0x02, 0x93, 0xed, 0x35, 0xf0, 0x5e, 0x2f, 0xfd, 0x3d, 0x8f,
+	0xb7, 0x33, 0x70, 0x48, 0x6a, 0x5c, 0x9c, 0x7f, 0xd6, 0x04, 0x6d, 0x6a, 0x82, 0xbe, 0x6b, 0x82,
+	0x3e, 0x1a, 0x62, 0x6c, 0x1a, 0x62, 0x7c, 0x35, 0xc4, 0x78, 0x3a, 0x58, 0x72, 0x95, 0x57, 0x8b,
+	0xf0, 0x59, 0xac, 0x22, 0x2e, 0x65, 0x2e, 0x8e, 0x0b, 0xde, 0x81, 0x28, 0x5d, 0xf3, 0x48, 0xc7,
+	0x2c, 0xc6, 0xfa, 0x1b, 0x4e, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x60, 0xaa, 0x1c, 0x64, 0xab,
+	0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -184,6 +270,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type YoujiClient interface {
 	CreateTodo(ctx context.Context, in *NewTodo, opts ...grpc.CallOption) (*Todo, error)
+	GetTodos(ctx context.Context, in *GetTodosParams, opts ...grpc.CallOption) (*Todos, error)
 }
 
 type youjiClient struct {
@@ -203,9 +290,19 @@ func (c *youjiClient) CreateTodo(ctx context.Context, in *NewTodo, opts ...grpc.
 	return out, nil
 }
 
+func (c *youjiClient) GetTodos(ctx context.Context, in *GetTodosParams, opts ...grpc.CallOption) (*Todos, error) {
+	out := new(Todos)
+	err := c.cc.Invoke(ctx, "/youji.Youji/GetTodos", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // YoujiServer is the server API for Youji service.
 type YoujiServer interface {
 	CreateTodo(context.Context, *NewTodo) (*Todo, error)
+	GetTodos(context.Context, *GetTodosParams) (*Todos, error)
 }
 
 func RegisterYoujiServer(s *grpc.Server, srv YoujiServer) {
@@ -230,6 +327,24 @@ func _Youji_CreateTodo_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Youji_GetTodos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTodosParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(YoujiServer).GetTodos(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/youji.Youji/GetTodos",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(YoujiServer).GetTodos(ctx, req.(*GetTodosParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Youji_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "youji.Youji",
 	HandlerType: (*YoujiServer)(nil),
@@ -238,9 +353,31 @@ var _Youji_serviceDesc = grpc.ServiceDesc{
 			MethodName: "CreateTodo",
 			Handler:    _Youji_CreateTodo_Handler,
 		},
+		{
+			MethodName: "GetTodos",
+			Handler:    _Youji_GetTodos_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "youji.proto",
+}
+
+func (m *GetTodosParams) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetTodosParams) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	return i, nil
 }
 
 func (m *NewTodo) Marshal() (dAtA []byte, err error) {
@@ -323,6 +460,36 @@ func (m *Todo) MarshalTo(dAtA []byte) (int, error) {
 	return i, nil
 }
 
+func (m *Todos) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Todos) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Todos) > 0 {
+		for _, msg := range m.Todos {
+			dAtA[i] = 0xa
+			i++
+			i = encodeVarintYouji(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	return i, nil
+}
+
 func encodeVarintYouji(dAtA []byte, offset int, v uint64) int {
 	for v >= 1<<7 {
 		dAtA[offset] = uint8(v&0x7f | 0x80)
@@ -332,6 +499,15 @@ func encodeVarintYouji(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return offset + 1
 }
+func (m *GetTodosParams) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
 func (m *NewTodo) Size() (n int) {
 	if m == nil {
 		return 0
@@ -373,6 +549,21 @@ func (m *Todo) Size() (n int) {
 	return n
 }
 
+func (m *Todos) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Todos) > 0 {
+		for _, e := range m.Todos {
+			l = e.Size()
+			n += 1 + l + sovYouji(uint64(l))
+		}
+	}
+	return n
+}
+
 func sovYouji(x uint64) (n int) {
 	for {
 		n++
@@ -385,6 +576,56 @@ func sovYouji(x uint64) (n int) {
 }
 func sozYouji(x uint64) (n int) {
 	return sovYouji(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *GetTodosParams) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowYouji
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetTodosParams: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetTodosParams: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipYouji(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthYouji
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *NewTodo) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -631,6 +872,87 @@ func (m *Todo) Unmarshal(dAtA []byte) error {
 				m.User = &ninshou.User{}
 			}
 			if err := m.User.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipYouji(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthYouji
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Todos) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowYouji
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Todos: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Todos: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Todos", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowYouji
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthYouji
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Todos = append(m.Todos, &Todo{})
+			if err := m.Todos[len(m.Todos)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

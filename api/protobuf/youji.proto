@@ -7,7 +7,10 @@ import "ninshou.proto";
 
 service Youji {
     rpc CreateTodo(NewTodo) returns (Todo) {}
+    rpc GetTodos(GetTodosParams) returns (Todos) {}
 }
+
+message GetTodosParams {}
 
 message NewTodo {
     string text = 1;
@@ -19,4 +22,8 @@ message Todo {
     string text = 2;
     bool done = 3;
     ninshou.User user = 4;
+}
+
+message Todos {
+    repeated Todo todos = 1;
 }
