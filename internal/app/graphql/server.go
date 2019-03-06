@@ -5,7 +5,6 @@ import (
 
 	"github.com/issho-ni/issho/api/graphql"
 	"github.com/issho-ni/issho/api/ninshou"
-	"github.com/issho-ni/issho/internal/pkg/issho"
 	"github.com/issho-ni/issho/internal/pkg/service"
 
 	"github.com/99designs/gqlgen/handler"
@@ -21,7 +20,7 @@ type graphQLServer struct {
 func NewGraphQLServer(config *service.ServerConfig) service.Server {
 	r := mux.NewRouter()
 
-	if issho.Environment.Development() {
+	if service.Environment.Development() {
 		r.Handle("/", handler.Playground("GraphQL playground", "/query"))
 	}
 

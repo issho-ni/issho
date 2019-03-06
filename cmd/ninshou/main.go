@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/issho-ni/issho/internal/app/ninshou"
-	_ "github.com/issho-ni/issho/internal/pkg/issho"
 	"github.com/issho-ni/issho/internal/pkg/service"
 )
 

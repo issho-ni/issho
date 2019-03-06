@@ -1,4 +1,4 @@
-package issho
+package service
 
 import (
 	"os"
