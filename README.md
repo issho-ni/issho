@@ -1,5 +1,7 @@
 # issho-ni
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/issho-ni/issho)](https://goreportcard.com/report/github.com/issho-ni/issho)
+
 ## Requirements
 
 - [Go][] 1.12
@@ -10,6 +12,13 @@
 ```bash
 export GO111MODULE=on
 mkcert localhost 127.0.0.1 ::1
+```
+
+In separate terminal sessions:
+
+```bash
+go run ./cmd/ninshou
+go run ./cmd/youji
 go run ./cmd/graphql
 ```
 
