@@ -1,4 +1,4 @@
-//go:generate protoc --gogofaster_out=plugins=grpc,paths=source_relative:. -I../protobuf ninshou.proto
+//go:generate protoc --gogofaster_out=plugins=grpc,paths=source_relative:.. -I.. ninshou/ninshou.proto
 
 package ninshou
 

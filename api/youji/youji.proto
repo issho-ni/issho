@@ -3,7 +3,7 @@ syntax = "proto3";
 package youji;
 option go_package = "github.com/issho-ni/issho/api/youji";
 
-import "ninshou.proto";
+import "ninshou/ninshou.proto";
 
 service Youji {
     rpc CreateTodo(NewTodo) returns (Todo) {}
