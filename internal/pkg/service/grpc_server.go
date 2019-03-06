@@ -17,7 +17,7 @@ type grpcService interface {
 type grpcServer struct {
 	*ServerConfig
 	net.Listener
-	grpcServer   *grpc.Server
+	grpcServer *grpc.Server
 }
 
 // NewGRPCServer creates a new listener and gRPC server for a gRPC service.

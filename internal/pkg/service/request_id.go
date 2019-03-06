@@ -16,7 +16,7 @@ func requestIDStreamClientInterceptor(ctx context.Context, desc *grpc.StreamDesc
 }
 
 func requestIDUnaryClientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-	return invoker(appendRequestIDToOutgoingContext(ctx),method, req, reply, cc, opts...)
+	return invoker(appendRequestIDToOutgoingContext(ctx), method, req, reply, cc, opts...)
 }
 
 func appendRequestIDToOutgoingContext(ctx context.Context) context.Context {

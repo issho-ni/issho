@@ -24,7 +24,6 @@ func NewClientConfig(tlsCert string) *ClientConfig {
 	return &ClientConfig{creds}
 }
 
-
 // Client is the generic client to a gRPC service.
 type Client struct {
 	*grpc.ClientConn
