@@ -10,19 +10,22 @@ import (
 
 	"github.com/99designs/gqlgen/handler"
 	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
 )
 
-// StartServer starts the HTTP server for the GraphQL endpoint service.
-func StartServer(port string, tlsCert string, tlsKey string) {
+type graphQLServer struct {
+	*mux.Router
+	*service.ServerConfig
+}
+
+// NewGraphQLServer creates a new HTTP handler for the GraphQL service.
+func NewGraphQLServer(config *service.ServerConfig) service.Server {
 	r := mux.NewRouter()
 
 	if issho.Environment.Development() {
 		r.Handle("/", handler.Playground("GraphQL playground", "/query"))
-		log.Printf("Connect to https://localhost:%s/ for GraphQL playground", port)
 	}
 
-	env := service.NewEnv(tlsCert)
+	env := service.NewEnv(config.TLSCert)
 	ninshou := ninshou.NewClient(env)
 	resolver := &Resolver{ninshou}
 
@@ -30,5 +33,14 @@ func StartServer(port string, tlsCert string, tlsKey string) {
 
 	r.Use(requestIDMiddleware)
 	r.Use(loggingMiddleware)
-	log.Fatal(http.ListenAndServeTLS(":"+port, tlsCert, tlsKey, r))
+
+	return &graphQLServer{r, config}
+}
+
+func (s *graphQLServer) serve() error {
+	return http.ListenAndServeTLS(":"+s.ServerConfig.Port, s.ServerConfig.TLSCert, s.ServerConfig.TLSKey, s.Router)
+}
+
+func (s *graphQLServer) StartServer() {
+	s.Serve(s.serve)
 }

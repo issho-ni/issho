@@ -1,43 +1,53 @@
 package service
 
 import (
-	"net"
+	"fmt"
+	"os"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
-// NewServer creates a new listener and gRPC server for a gRPC service.
-func NewServer(port string, tlsCert string, tlsKey string) (net.Listener, *grpc.Server) {
-	lis, err := net.Listen("tcp", ":"+port)
+const (
+	defaultTLSCert = "localhost+2.pem"
+	defaultTLSKey  = "localhost+2-key.pem"
+)
 
-	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
+// Server defines the interface of the server for a service.
+type Server interface {
+	StartServer()
+	Serve(serve func() error)
+}
+
+// ServerConfig contains the configuration of the server for a service.
+type ServerConfig struct {
+	Name    string
+	Port    string
+	TLSCert string
+	TLSKey  string
+}
+
+// NewServerConfig creates a new set of server configuration values.
+func NewServerConfig(name string, defaultPort string) *ServerConfig {
+	port := os.Getenv(fmt.Sprintf("%s_PORT", name))
+	if port == "" {
+		port = defaultPort
 	}
 
-	var opts []grpc.ServerOption
-
-	creds, err := credentials.NewServerTLSFromFile(tlsCert, tlsKey)
-
-	if err != nil {
-		log.Fatalf("Failed to generate server credentials: %v", err)
+	tlsCert := os.Getenv("TLS_CERT")
+	if tlsCert == "" {
+		tlsCert = defaultTLSCert
 	}
 
-	opts = append(opts, grpc.Creds(creds))
+	tlsKey := os.Getenv("TLS_KEY")
+	if tlsKey == "" {
+		tlsKey = defaultTLSKey
+	}
 
-	logger := log.StandardLogger()
-	logrusEntry := log.NewEntry(logger)
+	return &ServerConfig{name, port, tlsCert, tlsKey}
+}
 
-	grpc_logrus.ReplaceGrpcLogger(logrusEntry)
-	opts = append(opts, grpc_middleware.WithStreamServerChain(
-		grpc_logrus.StreamServerInterceptor(logrusEntry),
-		requestIDStreamServerInterceptor))
-	opts = append(opts, grpc_middleware.WithUnaryServerChain(
-		grpc_logrus.UnaryServerInterceptor(logrusEntry),
-		requestIDUnaryServerInterceptor))
-
-	return lis, grpc.NewServer(opts...)
+// Serve starts the server.
+func (s *ServerConfig) Serve(serve func() error) {
+	log.Infof("Starting service %s on port :%s", s.Name, s.Port)
+	log.Fatal(serve())
 }
