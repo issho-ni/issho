@@ -8,6 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 type grpcService interface {
@@ -17,7 +19,8 @@ type grpcService interface {
 type grpcServer struct {
 	*ServerConfig
 	net.Listener
-	grpcServer *grpc.Server
+	grpcServer   *grpc.Server
+	healthServer *health.Server
 }
 
 // NewGRPCServer creates a new listener and gRPC server for a gRPC service.
@@ -49,7 +52,8 @@ func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) Server {
 		grpc_logrus.UnaryServerInterceptor(logrusEntry),
 		requestIDUnaryServerInterceptor))
 
-	srv := &grpcServer{config, lis, grpc.NewServer(opts...)}
+	srv := &grpcServer{config, lis, grpc.NewServer(opts...), health.NewServer()}
+	healthpb.RegisterHealthServer(srv.grpcServer, srv.healthServer)
 	grpcSvc.RegisterServer(srv.grpcServer)
 
 	return srv
