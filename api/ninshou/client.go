@@ -3,6 +3,8 @@
 package ninshou
 
 import (
+	"os"
+
 	"github.com/issho-ni/issho/internal/pkg/service"
 )
 
@@ -14,6 +16,7 @@ type Client struct {
 
 // NewClient returns a client to the Ninshou gRPC service.
 func NewClient(config *service.ClientConfig) *Client {
-	c := service.NewClient(config, "ninshou", "localhost:8081")
+	url := os.Getenv("NINSHOU_URL")
+	c := service.NewClient(config, "ninshou", url)
 	return &Client{c, NewNinshouClient(c.ClientConn)}
 }

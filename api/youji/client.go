@@ -3,6 +3,8 @@
 package youji
 
 import (
+	"os"
+
 	"github.com/issho-ni/issho/internal/pkg/service"
 )
 
@@ -14,6 +16,7 @@ type Client struct {
 
 // NewClient returns a client to the Youji gRPC service.
 func NewClient(config *service.ClientConfig) *Client {
-	c := service.NewClient(config, "youji", "localhost:8083")
+	url := os.Getenv("YOUJI_URL")
+	c := service.NewClient(config, "youji", url)
 	return &Client{c, NewYoujiClient(c.ClientConn)}
 }
