@@ -8,6 +8,10 @@ func liveCheck(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 }
 
-func readyCheck(rw http.ResponseWriter, r *http.Request) {
+type readyChecker struct {
+	*clientSet
+}
+
+func (s *readyChecker) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 }

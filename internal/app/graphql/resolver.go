@@ -12,8 +12,7 @@ import (
 
 // Resolver is the base type for GraphQL operation resolvers.
 type Resolver struct {
-	ninshou.NinshouClient
-	youji.YoujiClient
+	*clientSet
 }
 
 // Mutation returns a new mutation resolver.

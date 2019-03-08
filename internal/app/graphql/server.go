@@ -17,6 +17,11 @@ type graphQLServer struct {
 	*service.ServerConfig
 }
 
+type clientSet struct {
+	ninshou.NinshouClient
+	youji.YoujiClient
+}
+
 // NewGraphQLServer creates a new HTTP handler for the GraphQL service.
 func NewGraphQLServer(config *service.ServerConfig) service.Server {
 	r := mux.NewRouter()
@@ -26,14 +31,14 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 	}
 
 	env := service.NewClientConfig(config.TLSCert)
-	resolver := &Resolver{
+	clients := &clientSet{
 		ninshou.NewClient(env),
 		youji.NewClient(env),
 	}
 
-	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(graphql.Config{Resolvers: resolver})))
+	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(graphql.Config{Resolvers: &Resolver{clients}})))
 	r.HandleFunc("/live", liveCheck)
-	r.HandleFunc("/ready", readyCheck)
+	r.Handle("/ready", &readyChecker{clients})
 
 	r.Use(requestIDMiddleware)
 	r.Use(loggingMiddleware)
