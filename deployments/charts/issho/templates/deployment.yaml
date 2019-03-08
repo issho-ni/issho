@@ -27,14 +27,16 @@ spec:
             - name: https
               containerPort: {{ .Values.deployment.port }}
               protocol: TCP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: https
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: https
+          livenessProbe:
+            httpGet:
+              path: /live
+              scheme: HTTPS
+              port: https
+          readinessProbe:
+            httpGet:
+              path: /ready
+              scheme: HTTPS
+              port: https
           env:
             - name: GRAPHQL_PORT
               value: "{{ .Values.deployment.port }}"
