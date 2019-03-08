@@ -1,0 +1,10 @@
+deployments/
+skaffold.yml
+gqlgen.yml
+*.pem
+LICENSE
+README
+.git/
+.gitignore
+.dockerignore
+Dockerfile
