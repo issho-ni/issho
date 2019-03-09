@@ -16,3 +16,5 @@ debug
 
 # Certificates
 *.pem
+
+**/charts/*.tgz
