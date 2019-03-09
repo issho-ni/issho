@@ -38,7 +38,7 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 
 	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(graphql.Config{Resolvers: &Resolver{clients}})))
 	r.HandleFunc("/live", liveCheck)
-	r.Handle("/ready", &readyChecker{clients})
+	r.Handle("/ready", newReadyChecker(clients))
 
 	r.Use(requestIDMiddleware)
 	r.Use(loggingMiddleware)

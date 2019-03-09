@@ -1,9 +1,13 @@
 package service
 
 import (
+	"context"
+	"time"
+
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -27,11 +31,13 @@ func NewClientConfig(tlsCert string) *ClientConfig {
 // Client is the generic client to a gRPC service.
 type Client interface {
 	ClientConn() *grpc.ClientConn
+	HealthCheck() bool
 }
 
 type client struct {
 	cc *grpc.ClientConn
 	*ClientConfig
+	healthpb.HealthClient
 }
 
 // NewClient establishes a client connection to a gRPC service.
@@ -49,10 +55,26 @@ func NewClient(config *ClientConfig, name string, url string) Client {
 		log.Fatalf("Failed to establish connection to %s: %v", name, err)
 	}
 
+	healthClient := healthpb.NewHealthClient(cc)
+
 	log.Printf("Established connection to %s", name)
-	return &client{cc, config}
+	return &client{cc, config, healthClient}
 }
 
 func (c *client) ClientConn() *grpc.ClientConn {
 	return c.cc
+}
+
+func (c *client) HealthCheck() bool {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	rpcCtx, rpcCancel := context.WithTimeout(ctx, 1 * time.Second)
+	defer rpcCancel()
+
+	resp, err := c.HealthClient.Check(rpcCtx, &healthpb.HealthCheckRequest{})
+	if err == nil {
+		return resp.GetStatus() == healthpb.HealthCheckResponse_SERVING
+	}
+	return false
 }
