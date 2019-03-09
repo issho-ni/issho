@@ -25,13 +25,17 @@ func NewClientConfig(tlsCert string) *ClientConfig {
 }
 
 // Client is the generic client to a gRPC service.
-type Client struct {
-	*grpc.ClientConn
+type Client interface {
+	ClientConn() *grpc.ClientConn
+}
+
+type client struct {
+	cc *grpc.ClientConn
 	*ClientConfig
 }
 
 // NewClient establishes a client connection to a gRPC service.
-func NewClient(config *ClientConfig, name string, url string) *Client {
+func NewClient(config *ClientConfig, name string, url string) Client {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(config.TransportCredentials))
 	opts = append(opts, grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
@@ -46,5 +50,9 @@ func NewClient(config *ClientConfig, name string, url string) *Client {
 	}
 
 	log.Printf("Established connection to %s", name)
-	return &Client{cc, config}
+	return &client{cc, config}
+}
+
+func (c *client) ClientConn() *grpc.ClientConn {
+	return c.cc
 }

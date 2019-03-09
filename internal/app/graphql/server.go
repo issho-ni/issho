@@ -18,8 +18,8 @@ type graphQLServer struct {
 }
 
 type clientSet struct {
-	ninshou.NinshouClient
-	youji.YoujiClient
+	NinshouClient *ninshou.Client
+	YoujiClient   *youji.Client
 }
 
 // NewGraphQLServer creates a new HTTP handler for the GraphQL service.

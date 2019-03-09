@@ -10,7 +10,7 @@ import (
 
 // Client is the client to the Ninshou gRPC service.
 type Client struct {
-	*service.Client
+	service.Client
 	NinshouClient
 }
 
@@ -18,5 +18,5 @@ type Client struct {
 func NewClient(config *service.ClientConfig) *Client {
 	url := os.Getenv("NINSHOU_URL")
 	c := service.NewClient(config, "ninshou", url)
-	return &Client{c, NewNinshouClient(c.ClientConn)}
+	return &Client{c, NewNinshouClient(c.ClientConn())}
 }

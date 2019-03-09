@@ -10,7 +10,7 @@ import (
 
 // Client is the client to the Youji gRPC service.
 type Client struct {
-	*service.Client
+	service.Client
 	YoujiClient
 }
 
@@ -18,5 +18,5 @@ type Client struct {
 func NewClient(config *service.ClientConfig) *Client {
 	url := os.Getenv("YOUJI_URL")
 	c := service.NewClient(config, "youji", url)
-	return &Client{c, NewYoujiClient(c.ClientConn)}
+	return &Client{c, NewYoujiClient(c.ClientConn())}
 }
