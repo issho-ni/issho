@@ -3,14 +3,14 @@
 # https://gqlgen.com/getting-started/
 
 type Todo {
-  id: ID!
+  _id: ID!
   text: String!
   done: Boolean!
   user: User!
 }
 
 type User {
-  id: ID!
+  _id: ID!
   name: String!
   email: String!
 }
@@ -21,7 +21,7 @@ type Query {
 
 input NewTodo {
   text: String!
-  userId: String!
+  userId: ID!
 }
 
 input NewUser {

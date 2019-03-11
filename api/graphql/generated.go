@@ -37,6 +37,8 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Todo() TodoResolver
+	User() UserResolver
 }
 
 type DirectiveRoot struct {
@@ -53,14 +55,14 @@ type ComplexityRoot struct {
 	}
 
 	Todo struct {
-		Id   func(childComplexity int) int
+		_id  func(childComplexity int) int
 		Text func(childComplexity int) int
 		Done func(childComplexity int) int
 		User func(childComplexity int) int
 	}
 
 	User struct {
-		Id    func(childComplexity int) int
+		_id   func(childComplexity int) int
 		Name  func(childComplexity int) int
 		Email func(childComplexity int) int
 	}
@@ -72,6 +74,12 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	GetTodos(ctx context.Context) ([]*youji.Todo, error)
+}
+type TodoResolver interface {
+	_id(ctx context.Context, obj *youji.Todo) (string, error)
+}
+type UserResolver interface {
+	_id(ctx context.Context, obj *ninshou.User) (string, error)
 }
 
 type executableSchema struct {
@@ -120,12 +128,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetTodos(childComplexity), true
 
-	case "Todo.Id":
-		if e.complexity.Todo.Id == nil {
+	case "Todo._id":
+		if e.complexity.Todo._id == nil {
 			break
 		}
 
-		return e.complexity.Todo.Id(childComplexity), true
+		return e.complexity.Todo._id(childComplexity), true
 
 	case "Todo.Text":
 		if e.complexity.Todo.Text == nil {
@@ -148,12 +156,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Todo.User(childComplexity), true
 
-	case "User.Id":
-		if e.complexity.User.Id == nil {
+	case "User._id":
+		if e.complexity.User._id == nil {
 			break
 		}
 
-		return e.complexity.User.Id(childComplexity), true
+		return e.complexity.User._id(childComplexity), true
 
 	case "User.Name":
 		if e.complexity.User.Name == nil {
@@ -251,14 +259,14 @@ var parsedSchema = gqlparser.MustLoadSchema(
 # https://gqlgen.com/getting-started/
 
 type Todo {
-  id: ID!
+  _id: ID!
   text: String!
   done: Boolean!
   user: User!
 }
 
 type User {
-  id: ID!
+  _id: ID!
   name: String!
   email: String!
 }
@@ -269,7 +277,7 @@ type Query {
 
 input NewTodo {
   text: String!
-  userId: String!
+  userId: ID!
 }
 
 input NewUser {
@@ -508,7 +516,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.CollectedField, obj *youji.Todo) graphql.Marshaler {
+func (ec *executionContext) _Todo__id(ctx context.Context, field graphql.CollectedField, obj *youji.Todo) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -520,7 +528,7 @@ func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.Collecte
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Id, nil
+		return ec.resolvers.Todo()._id(rctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -612,7 +620,7 @@ func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.Collec
 	return ec.marshalNUser2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *ninshou.User) graphql.Marshaler {
+func (ec *executionContext) _User__id(ctx context.Context, field graphql.CollectedField, obj *ninshou.User) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -624,7 +632,7 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Id, nil
+		return ec.resolvers.User()._id(rctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -1503,7 +1511,7 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, v interfa
 			}
 		case "userId":
 			var err error
-			it.UserID, err = ec.unmarshalNString2string(ctx, v)
+			it.UserID, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -1642,11 +1650,20 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Todo")
-		case "id":
-			out.Values[i] = ec._Todo_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
+		case "_id":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Todo__id(ctx, field, obj)
+				if res == graphql.Null {
+					invalid = true
+				}
+				return res
+			})
 		case "text":
 			out.Values[i] = ec._Todo_text(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -1684,11 +1701,20 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("User")
-		case "id":
-			out.Values[i] = ec._User_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
+		case "_id":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._User__id(ctx, field, obj)
+				if res == graphql.Null {
+					invalid = true
+				}
+				return res
+			})
 		case "name":
 			out.Values[i] = ec._User_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
