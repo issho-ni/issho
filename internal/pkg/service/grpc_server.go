@@ -1,11 +1,15 @@
 package service
 
 import (
+	"context"
 	"net"
+	"time"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/health"
@@ -19,6 +23,7 @@ type grpcService interface {
 type grpcServer struct {
 	*ServerConfig
 	net.Listener
+	mongoClient  *mongo.Client
 	grpcServer   *grpc.Server
 	healthServer *health.Server
 }
@@ -52,7 +57,12 @@ func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) Server {
 		grpc_logrus.UnaryServerInterceptor(logrusEntry),
 		requestIDUnaryServerInterceptor))
 
-	srv := &grpcServer{config, lis, grpc.NewServer(opts...), health.NewServer()}
+	mongoClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb://issho-mongodb:27017"))
+	if err != nil {
+		log.Fatalf("Failed to create MongoDB client: %v", err)
+	}
+
+	srv := &grpcServer{config, lis, mongoClient, grpc.NewServer(opts...), health.NewServer()}
 	healthpb.RegisterHealthServer(srv.grpcServer, srv.healthServer)
 	grpcSvc.RegisterServer(srv.grpcServer)
 
@@ -60,6 +70,15 @@ func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) Server {
 }
 
 func (s *grpcServer) serve() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err := s.mongoClient.Connect(ctx)
+
+	if err != nil {
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
+	}
+
 	return s.grpcServer.Serve(s.Listener)
 }
 
