@@ -8,6 +8,7 @@ import (
 )
 
 type ninshouServer struct {
+	service.GRPCServer
 	ninshou.NinshouServer
 }
 
@@ -17,5 +18,7 @@ func (s *ninshouServer) RegisterServer(srv *grpc.Server) {
 
 // NewNinshouServer returns a new gRPC server for the Ninshou service.
 func NewNinshouServer(config *service.ServerConfig) service.Server {
-	return service.NewGRPCServer(config, &ninshouServer{})
+	server := &ninshouServer{}
+	server.GRPCServer = service.NewGRPCServer(config, server)
+	return server
 }

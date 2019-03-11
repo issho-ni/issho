@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"net"
+	"os"
 	"time"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
@@ -17,7 +19,14 @@ import (
 )
 
 type grpcService interface {
+	Server
 	RegisterServer(srv *grpc.Server)
+}
+
+// GRPCServer defines the interface for a gRPC server.
+type GRPCServer interface {
+	Server
+	Database() *mongo.Database
 }
 
 type grpcServer struct {
@@ -29,7 +38,7 @@ type grpcServer struct {
 }
 
 // NewGRPCServer creates a new listener and gRPC server for a gRPC service.
-func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) Server {
+func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) GRPCServer {
 	lis, err := net.Listen("tcp", ":"+config.Port)
 
 	if err != nil {
@@ -57,7 +66,11 @@ func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) Server {
 		grpc_logrus.UnaryServerInterceptor(logrusEntry),
 		requestIDUnaryServerInterceptor))
 
-	mongoClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb://issho-mongodb:27017"))
+	mongoUser := os.Getenv("MONGODB_USER")
+	mongoPass := os.Getenv("MONGODB_PASS")
+	mongoURL := fmt.Sprintf("mongodb://%s:%s@issho-mongodb:27017", mongoUser, mongoPass)
+
+	mongoClient, err := mongo.NewClient(options.Client().ApplyURI(mongoURL))
 	if err != nil {
 		log.Fatalf("Failed to create MongoDB client: %v", err)
 	}
@@ -67,6 +80,10 @@ func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) Server {
 	grpcSvc.RegisterServer(srv.grpcServer)
 
 	return srv
+}
+
+func (s *grpcServer) Database() *mongo.Database {
+	return s.mongoClient.Database(s.ServerConfig.Name)
 }
 
 func (s *grpcServer) serve() error {

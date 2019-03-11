@@ -38,6 +38,13 @@ spec:
           env:
             - name: YOUJI_PORT
               value: "{{ .Values.deployment.port }}"
+            - name: MONGODB_USER
+              value: root
+            - name: MONGODB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: issho-mongodb
+                  key: mongodb-root-password
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

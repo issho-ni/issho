@@ -8,6 +8,7 @@ import (
 )
 
 type youjiServer struct {
+	service.GRPCServer
 	youji.YoujiServer
 }
 
@@ -17,5 +18,7 @@ func (s *youjiServer) RegisterServer(srv *grpc.Server) {
 
 // NewYoujiServer returns a new gRPC server for the Youji service.
 func NewYoujiServer(config *service.ServerConfig) service.Server {
-	return service.NewGRPCServer(config, &youjiServer{})
+	server := &youjiServer{}
+	server.GRPCServer = service.NewGRPCServer(config, server)
+	return server
 }
