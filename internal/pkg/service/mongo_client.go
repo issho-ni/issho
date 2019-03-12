@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"time"
 
@@ -24,7 +23,7 @@ type mongoClient struct {
 
 // NewMongoClient creates a new MongoDB client for connecting to the specified database.
 func NewMongoClient(dbName string) MongoClient {
-	uri := fmt.Sprintf("mongodb://%s:%s@issho-mongodb:27017", os.Getenv("MONGODB_USER"), os.Getenv("MONGODB_PASS"))
+	uri := os.Getenv("MONGODB_URL")
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
