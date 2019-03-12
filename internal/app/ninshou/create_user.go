@@ -8,7 +8,6 @@ import (
 	"github.com/issho-ni/issho/api/ninshou"
 
 	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -37,7 +36,6 @@ func (s *ninshouServer) CreateUser(ctx context.Context, in *ninshou.NewUser) (*n
 	defer cancel()
 
 	collection := s.mongoClient.Database().Collection("users")
-	log.Debug(user)
 	_, err = collection.InsertOne(ctx, ins)
 	if err != nil {
 		return nil, err
