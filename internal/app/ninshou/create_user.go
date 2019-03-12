@@ -36,7 +36,7 @@ func (s *ninshouServer) CreateUser(ctx context.Context, in *ninshou.NewUser) (*n
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	collection := s.Database().Collection("users")
+	collection := s.mongoClient.Database().Collection("users")
 	log.Debug(user)
 	_, err = collection.InsertOne(ctx, ins)
 	if err != nil {
