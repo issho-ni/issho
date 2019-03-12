@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: graphql
+  namespace: issho
+spec:
+  rules:
+    - host: issho.k8s.localhost
+      http:
+        paths:
+          - backend:
+              serviceName: graphql
+              servicePort: https

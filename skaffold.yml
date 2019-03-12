@@ -1,32 +1,22 @@
 apiVersion: skaffold/v1beta6
 kind: Config
 build:
-  tagPolicy:
-    envTemplate:
-      template: "{{.IMAGE_NAME}}:latest"
   artifacts:
     - image: gcr.io/issho-ni/issho-graphql
       docker:
         buildArgs:
-          CERT_HOST: "*.default.svc.cluster.local"
+          CERT_HOST: "*.issho.svc.cluster.local"
           COMMAND: graphql
     - image: gcr.io/issho-ni/issho-ninshou
       docker:
         buildArgs:
-          CERT_HOST: "*.default.svc.cluster.local"
+          CERT_HOST: "*.issho.svc.cluster.local"
           COMMAND: ninshou
     - image: gcr.io/issho-ni/issho-youji
       docker:
         buildArgs:
-          CERT_HOST: "*.default.svc.cluster.local"
+          CERT_HOST: "*.issho.svc.cluster.local"
           COMMAND: youji
 deploy:
-  helm:
-    releases:
-      - name: issho
-        chartPath: deployments/charts/issho
-        setValues:
-          deployment.port: 8080
-          ingress.enabled: true
-          ninshou.deployment.port: 8081
-          youji.deployment.port: 8083
+  kustomize:
+    path: deployments/k8s

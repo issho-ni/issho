@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: youji
+  namespace: issho
+spec:
+  selector:
+    app: youji
+  type: ClusterIP
+  ports:
+    - name: https
+      port: 443
+      targetPort: https

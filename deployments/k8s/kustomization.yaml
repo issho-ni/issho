@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: issho
+resources:
+  - namespace.yml
+  - graphql/deployment.yml
+  - graphql/service.yml
+  - graphql/ingress.yml
+  - mongodb/statefulset.yml
+  - mongodb/service.yml
+  - ninshou/deployment.yml
+  - ninshou/service.yml
+  - youji/deployment.yml
+  - youji/service.yml

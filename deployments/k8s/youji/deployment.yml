@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: youji
+  namespace: issho
+spec:
+  selector:
+    matchLabels:
+      app: youji
+  template:
+    metadata:
+      labels:
+        app: youji
+    spec:
+      containers:
+        - name: youji
+          image: gcr.io/issho-ni/issho-youji
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: YOUJI_PORT
+              value: "8083"
+            - name: MONGODB_URL
+              value: mongodb://mongodb:27017
+          ports:
+            - name: https
+              containerPort: 8083

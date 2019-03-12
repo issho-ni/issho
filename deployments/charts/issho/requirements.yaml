@@ -1,5 +1,0 @@
----
-dependencies:
-  - name: mongodb
-    version: 5.8.0
-    repository: "@stable"

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ninshou
+  namespace: issho
+spec:
+  selector:
+    matchLabels:
+      app: ninshou
+  template:
+    metadata:
+      labels:
+        app: ninshou
+    spec:
+      containers:
+        - name: ninshou
+          image: gcr.io/issho-ni/issho-ninshou
+          resources:
+            limits:
+              memory: 128Mi
+              cpu: 500m
+          env:
+            - name: NINSHOU_PORT
+              value: "8081"
+            - name: MONGODB_URL
+              value: mongodb://mongodb:27017
+          ports:
+            - name: https
+              containerPort: 8081
