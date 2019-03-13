@@ -39,18 +39,19 @@ func (c *mongoClient) Connect() context.CancelFunc {
 
 	err := c.Client.Connect(ctx)
 	if err != nil {
+		log.Fatalf("Failed to find MongoDB: %v", err)
+	}
+
+	log.Debug("Connecting to MongoDB")
+	pingCtx, cancelPing := context.WithTimeout(context.Background(), 30*time.Second)
+
+	err = c.Client.Ping(pingCtx, nil)
+	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
+
 	log.Debug("Connected to MongoDB")
-
-	ctx, cancelPing := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancelPing()
-
-	err = c.Client.Ping(ctx, nil)
-	if err != nil {
-		log.Fatalf("Failed to ping MongoDB: %v", err)
-	}
-	log.Debug("Pinged MongoDB")
+	cancelPing()
 
 	return cancel
 }
