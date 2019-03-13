@@ -30,7 +30,7 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 		r.Handle("/", handler.Playground("GraphQL playground", "/query"))
 	}
 
-	env := service.NewClientConfig(config.TLSCert)
+	env := service.NewGRPCClientConfig(config.TLSCert)
 	clients := &clientSet{
 		ninshou.NewClient(env),
 		youji.NewClient(env),

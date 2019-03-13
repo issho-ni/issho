@@ -22,7 +22,7 @@ func newReadyChecker(cs *clientSet) *readyChecker {
 
 	for i := 0; i < v.NumField(); i++ {
 		client := reflect.Indirect(reflect.ValueOf(v.Field(i).Interface()))
-		serviceClient := client.FieldByName("Client").Interface().(service.Client)
+		serviceClient := client.FieldByName("GRPCClient").Interface().(service.GRPCClient)
 		healthCheckers = append(healthCheckers, serviceClient.HealthCheck)
 	}
 
