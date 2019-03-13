@@ -20,7 +20,7 @@ type Query {
 }
 
 input NewTodo {
-  userID: String!
+  userID: ID!
   text: String!
 }
 

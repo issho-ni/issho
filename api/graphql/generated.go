@@ -13,6 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/api/youji"
+	"github.com/issho-ni/issho/internal/pkg/uuid"
 	"github.com/vektah/gqlparser"
 	"github.com/vektah/gqlparser/ast"
 )
@@ -37,8 +38,6 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
-	Todo() TodoResolver
-	User() UserResolver
 }
 
 type DirectiveRoot struct {
@@ -55,14 +54,14 @@ type ComplexityRoot struct {
 	}
 
 	Todo struct {
-		ID   func(childComplexity int) int
+		Id   func(childComplexity int) int
 		Text func(childComplexity int) int
 		Done func(childComplexity int) int
 		User func(childComplexity int) int
 	}
 
 	User struct {
-		ID    func(childComplexity int) int
+		Id    func(childComplexity int) int
 		Name  func(childComplexity int) int
 		Email func(childComplexity int) int
 	}
@@ -74,12 +73,6 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	GetTodos(ctx context.Context) ([]*youji.Todo, error)
-}
-type TodoResolver interface {
-	ID(ctx context.Context, obj *youji.Todo) (string, error)
-}
-type UserResolver interface {
-	ID(ctx context.Context, obj *ninshou.User) (string, error)
 }
 
 type executableSchema struct {
@@ -128,12 +121,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetTodos(childComplexity), true
 
-	case "Todo.ID":
-		if e.complexity.Todo.ID == nil {
+	case "Todo.Id":
+		if e.complexity.Todo.Id == nil {
 			break
 		}
 
-		return e.complexity.Todo.ID(childComplexity), true
+		return e.complexity.Todo.Id(childComplexity), true
 
 	case "Todo.Text":
 		if e.complexity.Todo.Text == nil {
@@ -156,12 +149,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Todo.User(childComplexity), true
 
-	case "User.ID":
-		if e.complexity.User.ID == nil {
+	case "User.Id":
+		if e.complexity.User.Id == nil {
 			break
 		}
 
-		return e.complexity.User.ID(childComplexity), true
+		return e.complexity.User.Id(childComplexity), true
 
 	case "User.Name":
 		if e.complexity.User.Name == nil {
@@ -276,7 +269,7 @@ type Query {
 }
 
 input NewTodo {
-  userID: String!
+  userID: ID!
   text: String!
 }
 
@@ -528,7 +521,7 @@ func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.Collecte
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Todo().ID(rctx, obj)
+		return obj.Id, nil
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -536,10 +529,10 @@ func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*uuid.UUID)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Todo_text(ctx context.Context, field graphql.CollectedField, obj *youji.Todo) graphql.Marshaler {
@@ -632,7 +625,7 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.User().ID(rctx, obj)
+		return obj.Id, nil
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -640,10 +633,10 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*uuid.UUID)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *ninshou.User) graphql.Marshaler {
@@ -1505,7 +1498,7 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, v interfa
 		switch k {
 		case "userID":
 			var err error
-			it.UserID, err = ec.unmarshalNString2string(ctx, v)
+			it.UserID, err = ec.unmarshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -1651,19 +1644,10 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Todo")
 		case "id":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Todo_id(ctx, field, obj)
-				if res == graphql.Null {
-					invalid = true
-				}
-				return res
-			})
+			out.Values[i] = ec._Todo_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		case "text":
 			out.Values[i] = ec._Todo_text(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -1702,19 +1686,10 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("User")
 		case "id":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._User_id(ctx, field, obj)
-				if res == graphql.Null {
-					invalid = true
-				}
-				return res
-			})
+			out.Values[i] = ec._User_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		case "name":
 			out.Values[i] = ec._User_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -1989,12 +1964,31 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return graphql.MarshalBoolean(v)
 }
 
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
-	return graphql.UnmarshalID(v)
+func (ec *executionContext) unmarshalNID2githubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx context.Context, v interface{}) (uuid.UUID, error) {
+	var res uuid.UUID
+	return res, res.UnmarshalGQL(v)
 }
 
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	return graphql.MarshalID(v)
+func (ec *executionContext) marshalNID2githubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx context.Context, sel ast.SelectionSet, v uuid.UUID) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx context.Context, v interface{}) (*uuid.UUID, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalNID2githubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx context.Context, sel ast.SelectionSet, v *uuid.UUID) graphql.Marshaler {
+	if v == nil {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalNNewTodo2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋyoujiᚐNewTodo(ctx context.Context, v interface{}) (youji.NewTodo, error) {

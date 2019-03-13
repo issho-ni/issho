@@ -25,16 +25,6 @@ func (r *Resolver) Query() graphql.QueryResolver {
 	return &queryResolver{r}
 }
 
-// Todo returns a new todo resolver.
-func (r *Resolver) Todo() graphql.TodoResolver {
-	return graphql.NewTodoResolver(r)
-}
-
-// User returns a new user resolver.
-func (r *Resolver) User() graphql.UserResolver {
-	return graphql.NewUserResolver(r)
-}
-
 type mutationResolver struct{ *Resolver }
 
 // CreateTodo creates a new Todo.
