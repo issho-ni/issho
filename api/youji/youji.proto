@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "github.com/gogo/protobuf@v1.2.1/gogoproto/gogo.proto";
 
 package youji;
 option go_package = "github.com/issho-ni/issho/api/youji";
@@ -13,12 +14,12 @@ service Youji {
 message GetTodosParams {}
 
 message NewTodo {
-    string userID = 1;
+    bytes userID = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
     string text = 2;
 }
 
 message Todo {
-    bytes id = 1;
+    bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
     ninshou.User user = 2;
     string text = 3;
     bool done = 4;

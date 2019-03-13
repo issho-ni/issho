@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/issho-ni/issho/api/ninshou"
+	"github.com/issho-ni/issho/internal/pkg/uuid"
 
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -24,8 +24,8 @@ func (s *ninshouServer) CreateUser(ctx context.Context, in *ninshou.NewUser) (*n
 		return nil, errors.New("password can't be empty")
 	}
 
-	id := [16]byte(uuid.New())
-	user := &ninshou.User{Id: id[:], Name: in.Name, Email: in.Email}
+	id := uuid.New()
+	user := &ninshou.User{Id: &id, Name: in.Name, Email: in.Email}
 
 	ins, err := bson.Marshal(user)
 	if err != nil {

@@ -1,4 +1,4 @@
-//go:generate protoc --gogofaster_out=plugins=grpc,paths=source_relative:.. -I.. youji/youji.proto
+//go:generate protoc --gogofaster_out=plugins=grpc,paths=source_relative:.. -I=$GOPATH/pkg/mod -I.. youji/youji.proto
 
 package youji
 
