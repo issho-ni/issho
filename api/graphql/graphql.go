@@ -18,8 +18,8 @@ func NewTodoResolver(r interface{}) TodoResolver {
 	return &todoResolver{r}
 }
 
-func (r *todoResolver) _id(ctx context.Context, obj *youji.Todo) (string, error) {
-	return bytesToUUIDString(obj.XId)
+func (r *todoResolver) ID(ctx context.Context, obj *youji.Todo) (string, error) {
+	return bytesToUUIDString(obj.Id)
 }
 
 type userResolver struct{ Resolver interface{} }
@@ -29,8 +29,8 @@ func NewUserResolver(r interface{}) UserResolver {
 	return &userResolver{r}
 }
 
-func (r *userResolver) _id(ctx context.Context, obj *ninshou.User) (string, error) {
-	return bytesToUUIDString(obj.XId)
+func (r *userResolver) ID(ctx context.Context, obj *ninshou.User) (string, error) {
+	return bytesToUUIDString(obj.Id)
 }
 
 func bytesToUUIDString(bytes []byte) (string, error) {

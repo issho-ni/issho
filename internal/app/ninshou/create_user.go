@@ -25,7 +25,7 @@ func (s *ninshouServer) CreateUser(ctx context.Context, in *ninshou.NewUser) (*n
 	}
 
 	id := [16]byte(uuid.New())
-	user := &ninshou.User{XId: id[:], Name: in.Name, Email: in.Email}
+	user := &ninshou.User{Id: id[:], Name: in.Name, Email: in.Email}
 
 	ins, err := bson.Marshal(user)
 	if err != nil {

@@ -55,14 +55,14 @@ type ComplexityRoot struct {
 	}
 
 	Todo struct {
-		_id  func(childComplexity int) int
+		ID   func(childComplexity int) int
 		Text func(childComplexity int) int
 		Done func(childComplexity int) int
 		User func(childComplexity int) int
 	}
 
 	User struct {
-		_id   func(childComplexity int) int
+		ID    func(childComplexity int) int
 		Name  func(childComplexity int) int
 		Email func(childComplexity int) int
 	}
@@ -76,10 +76,10 @@ type QueryResolver interface {
 	GetTodos(ctx context.Context) ([]*youji.Todo, error)
 }
 type TodoResolver interface {
-	_id(ctx context.Context, obj *youji.Todo) (string, error)
+	ID(ctx context.Context, obj *youji.Todo) (string, error)
 }
 type UserResolver interface {
-	_id(ctx context.Context, obj *ninshou.User) (string, error)
+	ID(ctx context.Context, obj *ninshou.User) (string, error)
 }
 
 type executableSchema struct {
@@ -128,12 +128,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetTodos(childComplexity), true
 
-	case "Todo._id":
-		if e.complexity.Todo._id == nil {
+	case "Todo.ID":
+		if e.complexity.Todo.ID == nil {
 			break
 		}
 
-		return e.complexity.Todo._id(childComplexity), true
+		return e.complexity.Todo.ID(childComplexity), true
 
 	case "Todo.Text":
 		if e.complexity.Todo.Text == nil {
@@ -156,12 +156,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Todo.User(childComplexity), true
 
-	case "User._id":
-		if e.complexity.User._id == nil {
+	case "User.ID":
+		if e.complexity.User.ID == nil {
 			break
 		}
 
-		return e.complexity.User._id(childComplexity), true
+		return e.complexity.User.ID(childComplexity), true
 
 	case "User.Name":
 		if e.complexity.User.Name == nil {
@@ -259,14 +259,14 @@ var parsedSchema = gqlparser.MustLoadSchema(
 # https://gqlgen.com/getting-started/
 
 type Todo {
-  _id: ID!
+  id: ID!
   text: String!
   done: Boolean!
   user: User!
 }
 
 type User {
-  _id: ID!
+  id: ID!
   name: String!
   email: String!
 }
@@ -276,8 +276,8 @@ type Query {
 }
 
 input NewTodo {
+  userID: String!
   text: String!
-  userId: ID!
 }
 
 input NewUser {
@@ -516,7 +516,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Todo__id(ctx context.Context, field graphql.CollectedField, obj *youji.Todo) graphql.Marshaler {
+func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.CollectedField, obj *youji.Todo) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -528,7 +528,7 @@ func (ec *executionContext) _Todo__id(ctx context.Context, field graphql.Collect
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Todo()._id(rctx, obj)
+		return ec.resolvers.Todo().ID(rctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -620,7 +620,7 @@ func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.Collec
 	return ec.marshalNUser2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User__id(ctx context.Context, field graphql.CollectedField, obj *ninshou.User) graphql.Marshaler {
+func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *ninshou.User) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -632,7 +632,7 @@ func (ec *executionContext) _User__id(ctx context.Context, field graphql.Collect
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.User()._id(rctx, obj)
+		return ec.resolvers.User().ID(rctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -1503,15 +1503,15 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, v interfa
 
 	for k, v := range asMap {
 		switch k {
-		case "text":
+		case "userID":
 			var err error
-			it.Text, err = ec.unmarshalNString2string(ctx, v)
+			it.UserID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "userId":
+		case "text":
 			var err error
-			it.UserID, err = ec.unmarshalNID2string(ctx, v)
+			it.Text, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -1650,7 +1650,7 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Todo")
-		case "_id":
+		case "id":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -1658,7 +1658,7 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Todo__id(ctx, field, obj)
+				res = ec._Todo_id(ctx, field, obj)
 				if res == graphql.Null {
 					invalid = true
 				}
@@ -1701,7 +1701,7 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("User")
-		case "_id":
+		case "id":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -1709,7 +1709,7 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._User__id(ctx, field, obj)
+				res = ec._User_id(ctx, field, obj)
 				if res == graphql.Null {
 					invalid = true
 				}

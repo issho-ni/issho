@@ -3,6 +3,7 @@ schema:
 exec:
   filename: api/graphql/generated.go
   package: graphql
+struct_tag: json
 models:
   NewTodo:
     model: github.com/issho-ni/issho/api/youji.NewTodo

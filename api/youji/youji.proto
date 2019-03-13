@@ -13,15 +13,15 @@ service Youji {
 message GetTodosParams {}
 
 message NewTodo {
-    string text = 1;
-    string userID = 2;
+    string userID = 1;
+    string text = 2;
 }
 
 message Todo {
-    bytes _id = 1;
-    string text = 2;
-    bool done = 3;
-    ninshou.User user = 4;
+    bytes id = 1;
+    ninshou.User user = 2;
+    string text = 3;
+    bool done = 4;
 }
 
 message Todos {

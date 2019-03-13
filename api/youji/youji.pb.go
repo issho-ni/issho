@@ -61,8 +61,8 @@ func (m *GetTodosParams) XXX_DiscardUnknown() {
 var xxx_messageInfo_GetTodosParams proto.InternalMessageInfo
 
 type NewTodo struct {
-	Text   string `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
-	UserID string `protobuf:"bytes,2,opt,name=userID,proto3" json:"userID,omitempty"`
+	UserID string `protobuf:"bytes,1,opt,name=userID,proto3" json:"userID,omitempty"`
+	Text   string `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
 }
 
 func (m *NewTodo) Reset()         { *m = NewTodo{} }
@@ -98,13 +98,6 @@ func (m *NewTodo) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_NewTodo proto.InternalMessageInfo
 
-func (m *NewTodo) GetText() string {
-	if m != nil {
-		return m.Text
-	}
-	return ""
-}
-
 func (m *NewTodo) GetUserID() string {
 	if m != nil {
 		return m.UserID
@@ -112,11 +105,18 @@ func (m *NewTodo) GetUserID() string {
 	return ""
 }
 
+func (m *NewTodo) GetText() string {
+	if m != nil {
+		return m.Text
+	}
+	return ""
+}
+
 type Todo struct {
-	XId  []byte        `protobuf:"bytes,1,opt,name=_id,json=Id,proto3" json:"_id,omitempty"`
-	Text string        `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
-	Done bool          `protobuf:"varint,3,opt,name=done,proto3" json:"done,omitempty"`
-	User *ninshou.User `protobuf:"bytes,4,opt,name=user,proto3" json:"user,omitempty"`
+	Id   []byte        `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	User *ninshou.User `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
+	Text string        `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
+	Done bool          `protobuf:"varint,4,opt,name=done,proto3" json:"done,omitempty"`
 }
 
 func (m *Todo) Reset()         { *m = Todo{} }
@@ -152,9 +152,16 @@ func (m *Todo) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Todo proto.InternalMessageInfo
 
-func (m *Todo) GetXId() []byte {
+func (m *Todo) GetId() []byte {
 	if m != nil {
-		return m.XId
+		return m.Id
+	}
+	return nil
+}
+
+func (m *Todo) GetUser() *ninshou.User {
+	if m != nil {
+		return m.User
 	}
 	return nil
 }
@@ -171,13 +178,6 @@ func (m *Todo) GetDone() bool {
 		return m.Done
 	}
 	return false
-}
-
-func (m *Todo) GetUser() *ninshou.User {
-	if m != nil {
-		return m.User
-	}
-	return nil
 }
 
 type Todos struct {
@@ -234,27 +234,27 @@ func init() {
 func init() { proto.RegisterFile("youji/youji.proto", fileDescriptor_a2a35db6f47c18ee) }
 
 var fileDescriptor_a2a35db6f47c18ee = []byte{
-	// 316 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x51, 0xc1, 0x4a, 0xc3, 0x40,
-	0x10, 0xcd, 0xb6, 0x49, 0xad, 0xd3, 0x5a, 0x75, 0xa1, 0x12, 0x7a, 0x58, 0xd2, 0xf5, 0x12, 0x14,
-	0x13, 0xac, 0x78, 0xf4, 0xa2, 0x82, 0xf4, 0x22, 0x12, 0xf4, 0xa0, 0x17, 0x49, 0xcd, 0xd2, 0xae,
-	0xd0, 0x6c, 0xc9, 0x6e, 0x50, 0xff, 0xc2, 0xcf, 0xf2, 0xd8, 0xa3, 0x47, 0x49, 0x7e, 0x44, 0xb2,
-	0xd9, 0x4a, 0xbc, 0x24, 0x6f, 0xe6, 0xed, 0x7b, 0xbc, 0x99, 0x81, 0xfd, 0x0f, 0x91, 0xbf, 0xf2,
-	0x50, 0x7f, 0x83, 0x55, 0x26, 0x94, 0xc0, 0x8e, 0x2e, 0x46, 0xc3, 0x94, 0xa7, 0x72, 0x21, 0xf2,
-	0xd0, 0xfc, 0x6b, 0x96, 0xee, 0xc1, 0xe0, 0x86, 0xa9, 0x7b, 0x91, 0x08, 0x79, 0x17, 0x67, 0xf1,
-	0x52, 0xd2, 0x73, 0xd8, 0xba, 0x65, 0x6f, 0x55, 0x07, 0x63, 0xb0, 0x15, 0x7b, 0x57, 0x2e, 0xf2,
-	0x90, 0xbf, 0x1d, 0x69, 0x8c, 0x0f, 0xa0, 0x93, 0x4b, 0x96, 0x4d, 0xaf, 0xdd, 0x96, 0xee, 0x9a,
-	0x8a, 0xce, 0xc0, 0xd6, 0x9a, 0x5d, 0x68, 0x3f, 0xf3, 0x44, 0x4b, 0xfa, 0x51, 0x6b, 0x9a, 0xfc,
-	0x99, 0xb4, 0x1a, 0x26, 0x18, 0xec, 0x44, 0xa4, 0xcc, 0x6d, 0x7b, 0xc8, 0xef, 0x46, 0x1a, 0xe3,
-	0x31, 0xd8, 0x95, 0x95, 0x6b, 0x7b, 0xc8, 0xef, 0x4d, 0x76, 0x82, 0x4d, 0xce, 0x07, 0xc9, 0xb2,
-	0x48, 0x53, 0xf4, 0x08, 0x1c, 0x9d, 0x14, 0x8f, 0xc1, 0x51, 0x15, 0x70, 0x91, 0xd7, 0xf6, 0x7b,
-	0x93, 0x5e, 0x50, 0x0f, 0x5c, 0x91, 0x51, 0xcd, 0x4c, 0xe6, 0xe0, 0x3c, 0x56, 0x4d, 0x7c, 0x0c,
-	0x70, 0x95, 0xb1, 0x58, 0x31, 0x1d, 0x6f, 0x60, 0x9e, 0x9a, 0x11, 0x47, 0x4d, 0x29, 0xb5, 0xf0,
-	0x29, 0x74, 0x37, 0xeb, 0xc0, 0x43, 0x43, 0xfd, 0xdf, 0xcf, 0xa8, 0xdf, 0x50, 0x48, 0x6a, 0x5d,
-	0x5e, 0x7c, 0x15, 0x04, 0xad, 0x0b, 0x82, 0x7e, 0x0a, 0x82, 0x3e, 0x4b, 0x62, 0xad, 0x4b, 0x62,
-	0x7d, 0x97, 0xc4, 0x7a, 0x3a, 0x9c, 0x73, 0xb5, 0xc8, 0x67, 0xc1, 0x8b, 0x58, 0x86, 0x5c, 0xca,
-	0x85, 0x38, 0x49, 0x79, 0x0d, 0xc2, 0x78, 0x65, 0x8e, 0x34, 0xeb, 0xe8, 0x3b, 0x9c, 0xfd, 0x06,
-	0x00, 0x00, 0xff, 0xff, 0x9c, 0xbe, 0xa4, 0x3b, 0xba, 0x01, 0x00, 0x00,
+	// 311 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x51, 0x3d, 0x4f, 0xc3, 0x30,
+	0x10, 0x8d, 0xdb, 0xa4, 0x94, 0x6b, 0xa9, 0xc0, 0x52, 0x51, 0xd4, 0xc1, 0x6a, 0xcd, 0x52, 0x81,
+	0x48, 0x44, 0x10, 0x23, 0x0b, 0x20, 0x21, 0x16, 0x84, 0x22, 0x18, 0x60, 0x4b, 0x89, 0xd5, 0x18,
+	0xa9, 0x71, 0x15, 0x3b, 0x02, 0xfe, 0x05, 0x3f, 0x8b, 0xb1, 0x23, 0x23, 0x4a, 0xfe, 0x08, 0xb2,
+	0xe3, 0x42, 0x59, 0x92, 0x77, 0xef, 0xdd, 0x3b, 0xdf, 0x07, 0xec, 0xbd, 0x8b, 0xf2, 0x85, 0x87,
+	0xe6, 0x1b, 0x2c, 0x0b, 0xa1, 0x04, 0xf6, 0x4c, 0x30, 0x1a, 0xe6, 0x3c, 0x97, 0x99, 0x28, 0x43,
+	0xfb, 0x6f, 0x54, 0xba, 0x0b, 0x83, 0x6b, 0xa6, 0xee, 0x45, 0x2a, 0xe4, 0x5d, 0x52, 0x24, 0x0b,
+	0x49, 0xcf, 0x60, 0xeb, 0x96, 0xbd, 0x6a, 0x06, 0xef, 0x43, 0xa7, 0x94, 0xac, 0xb8, 0xb9, 0xf2,
+	0xd1, 0x18, 0x4d, 0xb7, 0x63, 0x1b, 0x61, 0x0c, 0xae, 0x62, 0x6f, 0xca, 0x6f, 0x19, 0xd6, 0x60,
+	0x9a, 0x80, 0x6b, 0x3c, 0x03, 0x68, 0xf1, 0xd4, 0xe4, 0xf7, 0xe3, 0x16, 0x4f, 0xf1, 0x04, 0x5c,
+	0xed, 0x32, 0xb9, 0xbd, 0x68, 0x27, 0x58, 0x3f, 0xff, 0x20, 0x59, 0x11, 0x1b, 0xe9, 0xb7, 0x5c,
+	0xfb, 0xaf, 0x9c, 0xe6, 0x52, 0x91, 0x33, 0xdf, 0x1d, 0xa3, 0x69, 0x37, 0x36, 0x98, 0x1e, 0x82,
+	0x67, 0x1a, 0xc5, 0x13, 0xf0, 0x94, 0x06, 0x3e, 0x1a, 0xb7, 0xa7, 0xbd, 0xa8, 0x17, 0x34, 0xf3,
+	0x6a, 0x31, 0x6e, 0x94, 0x68, 0x0e, 0xde, 0xa3, 0x26, 0xf1, 0x11, 0xc0, 0x65, 0xc1, 0x12, 0xc5,
+	0x9a, 0xee, 0x6c, 0xaa, 0x9d, 0x70, 0xb4, 0x69, 0xa5, 0x0e, 0x3e, 0x81, 0xee, 0x7a, 0x1b, 0x78,
+	0x68, 0xa5, 0xff, 0xeb, 0x19, 0xf5, 0x37, 0x1c, 0x92, 0x3a, 0x17, 0xe7, 0x9f, 0x15, 0x41, 0xab,
+	0x8a, 0xa0, 0xef, 0x8a, 0xa0, 0x8f, 0x9a, 0x38, 0xab, 0x9a, 0x38, 0x5f, 0x35, 0x71, 0x9e, 0x0e,
+	0xe6, 0x5c, 0x65, 0xe5, 0x2c, 0x78, 0x16, 0x8b, 0x90, 0x4b, 0x99, 0x89, 0xe3, 0x9c, 0x37, 0x20,
+	0x4c, 0x96, 0xf6, 0x46, 0xb3, 0x8e, 0x39, 0xc3, 0xe9, 0x4f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xe4,
+	0x73, 0x6b, 0x31, 0xb9, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -395,17 +395,17 @@ func (m *NewTodo) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Text) > 0 {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintYouji(dAtA, i, uint64(len(m.Text)))
-		i += copy(dAtA[i:], m.Text)
-	}
 	if len(m.UserID) > 0 {
-		dAtA[i] = 0x12
+		dAtA[i] = 0xa
 		i++
 		i = encodeVarintYouji(dAtA, i, uint64(len(m.UserID)))
 		i += copy(dAtA[i:], m.UserID)
+	}
+	if len(m.Text) > 0 {
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintYouji(dAtA, i, uint64(len(m.Text)))
+		i += copy(dAtA[i:], m.Text)
 	}
 	return i, nil
 }
@@ -425,30 +425,14 @@ func (m *Todo) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.XId) > 0 {
+	if len(m.Id) > 0 {
 		dAtA[i] = 0xa
 		i++
-		i = encodeVarintYouji(dAtA, i, uint64(len(m.XId)))
-		i += copy(dAtA[i:], m.XId)
-	}
-	if len(m.Text) > 0 {
-		dAtA[i] = 0x12
-		i++
-		i = encodeVarintYouji(dAtA, i, uint64(len(m.Text)))
-		i += copy(dAtA[i:], m.Text)
-	}
-	if m.Done {
-		dAtA[i] = 0x18
-		i++
-		if m.Done {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i++
+		i = encodeVarintYouji(dAtA, i, uint64(len(m.Id)))
+		i += copy(dAtA[i:], m.Id)
 	}
 	if m.User != nil {
-		dAtA[i] = 0x22
+		dAtA[i] = 0x12
 		i++
 		i = encodeVarintYouji(dAtA, i, uint64(m.User.Size()))
 		n1, err := m.User.MarshalTo(dAtA[i:])
@@ -456,6 +440,22 @@ func (m *Todo) MarshalTo(dAtA []byte) (int, error) {
 			return 0, err
 		}
 		i += n1
+	}
+	if len(m.Text) > 0 {
+		dAtA[i] = 0x1a
+		i++
+		i = encodeVarintYouji(dAtA, i, uint64(len(m.Text)))
+		i += copy(dAtA[i:], m.Text)
+	}
+	if m.Done {
+		dAtA[i] = 0x20
+		i++
+		if m.Done {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i++
 	}
 	return i, nil
 }
@@ -514,11 +514,11 @@ func (m *NewTodo) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Text)
+	l = len(m.UserID)
 	if l > 0 {
 		n += 1 + l + sovYouji(uint64(l))
 	}
-	l = len(m.UserID)
+	l = len(m.Text)
 	if l > 0 {
 		n += 1 + l + sovYouji(uint64(l))
 	}
@@ -531,8 +531,12 @@ func (m *Todo) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.XId)
+	l = len(m.Id)
 	if l > 0 {
+		n += 1 + l + sovYouji(uint64(l))
+	}
+	if m.User != nil {
+		l = m.User.Size()
 		n += 1 + l + sovYouji(uint64(l))
 	}
 	l = len(m.Text)
@@ -541,10 +545,6 @@ func (m *Todo) Size() (n int) {
 	}
 	if m.Done {
 		n += 2
-	}
-	if m.User != nil {
-		l = m.User.Size()
-		n += 1 + l + sovYouji(uint64(l))
 	}
 	return n
 }
@@ -658,35 +658,6 @@ func (m *NewTodo) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Text", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowYouji
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthYouji
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Text = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UserID", wireType)
 			}
 			var stringLen uint64
@@ -713,6 +684,35 @@ func (m *NewTodo) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.UserID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Text", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowYouji
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthYouji
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Text = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -766,7 +766,7 @@ func (m *Todo) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -790,61 +790,12 @@ func (m *Todo) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.XId = append(m.XId[:0], dAtA[iNdEx:postIndex]...)
-			if m.XId == nil {
-				m.XId = []byte{}
+			m.Id = append(m.Id[:0], dAtA[iNdEx:postIndex]...)
+			if m.Id == nil {
+				m.Id = []byte{}
 			}
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Text", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowYouji
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthYouji
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Text = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Done", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowYouji
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.Done = bool(v != 0)
-		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field User", wireType)
 			}
@@ -877,6 +828,55 @@ func (m *Todo) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Text", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowYouji
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthYouji
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Text = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Done", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowYouji
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Done = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipYouji(dAtA[iNdEx:])
