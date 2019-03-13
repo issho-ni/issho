@@ -13,12 +13,12 @@ func liveCheck(rw http.ResponseWriter, r *http.Request) {
 }
 
 type readyChecker struct {
-	healthCheckers []func() bool
+	healthCheckers []func() *service.GRPCStatus
 }
 
 func newReadyChecker(cs *clientSet) *readyChecker {
 	v := reflect.Indirect(reflect.ValueOf(cs))
-	healthCheckers := make([]func() bool, 0)
+	healthCheckers := make([]func() *service.GRPCStatus, 0)
 
 	for i := 0; i < v.NumField(); i++ {
 		client := reflect.Indirect(reflect.ValueOf(v.Field(i).Interface()))
@@ -30,24 +30,24 @@ func newReadyChecker(cs *clientSet) *readyChecker {
 }
 
 func (s *readyChecker) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	done := make(chan bool, len(s.healthCheckers))
+	results := make(chan *service.GRPCStatus, len(s.healthCheckers))
 	wg := sync.WaitGroup{}
 
 	for _, checker := range s.healthCheckers {
 		wg.Add(1)
-		go func(c func() bool, wg *sync.WaitGroup) {
+		go func(c func() *service.GRPCStatus, wg *sync.WaitGroup) {
 			defer wg.Done()
-			done <- c()
+			results <- c()
 		}(checker, &wg)
 	}
 
 	go func() {
 		wg.Wait()
-		close(done)
+		close(results)
 	}()
 
-	for result := range done {
-		if !result {
+	for status := range results {
+		if !status.Result {
 			rw.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}

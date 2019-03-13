@@ -31,7 +31,7 @@ func NewGRPCClientConfig(tlsCert string) *GRPCClientConfig {
 // GRPCClient is the generic client to a gRPC service.
 type GRPCClient interface {
 	ClientConn() *grpc.ClientConn
-	HealthCheck() bool
+	HealthCheck() *GRPCStatus
 }
 
 type grpcClient struct {
@@ -50,14 +50,13 @@ func NewGRPCClient(config *GRPCClientConfig, name string, url string) GRPCClient
 		requestIDUnaryClientInterceptor)))
 
 	cc, err := grpc.Dial(url, opts...)
-
 	if err != nil {
 		log.Fatalf("Failed to dial %s: %v", name, err)
 	}
 
 	healthClient := healthpb.NewHealthClient(cc)
-	log.Debugf("Connecting to %s", name)
 
+	log.Debugf("Connecting to %s", name)
 	return &grpcClient{cc, config, healthClient}
 }
 
@@ -65,16 +64,20 @@ func (c *grpcClient) ClientConn() *grpc.ClientConn {
 	return c.cc
 }
 
-func (c *grpcClient) HealthCheck() bool {
-	ctx, cancel := context.WithCancel(context.Background())
+// GRPCStatus represents the response to a gRPC health check.
+type GRPCStatus struct {
+	Result bool
+	Error  error
+}
+
+func (c *grpcClient) HealthCheck() *GRPCStatus {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	rpcCtx, rpcCancel := context.WithTimeout(ctx, 1*time.Second)
-	defer rpcCancel()
-
-	resp, err := c.HealthClient.Check(rpcCtx, &healthpb.HealthCheckRequest{})
-	if err == nil {
-		return resp.GetStatus() == healthpb.HealthCheckResponse_SERVING
+	resp, err := c.HealthClient.Check(ctx, &healthpb.HealthCheckRequest{})
+	if err != nil {
+		return &GRPCStatus{false, err}
 	}
-	return false
+
+	return &GRPCStatus{resp.GetStatus() == healthpb.HealthCheckResponse_SERVING, nil}
 }
