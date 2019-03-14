@@ -47,7 +47,7 @@ func (s *ninshouServer) createIndexes() {
 	index.Keys = bsonx.Doc{{Key: "email", Value: bsonx.Int32(1)}}
 	index.Options = options.Index().SetUnique(true)
 
-	createOptions := options.CreateIndexes().SetMaxTime(10*time.Second)
+	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
 
 	users := s.mongoClient.Database().Collection("users").Indexes()
 	result, err := users.CreateOne(context.Background(), index, createOptions)
