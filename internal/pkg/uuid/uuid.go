@@ -6,6 +6,8 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 // UUID implements additional interfaces atop the uuid.UUID type.
@@ -36,7 +38,8 @@ func (u *UUID) UnmarshalGQL(v interface{}) error {
 
 // MarshalGQL implements the graphql.Marshal interface.
 func (u UUID) MarshalGQL(w io.Writer) {
-	w.Write([]byte(strconv.Quote(u.String())))
+	marshaled, _ := u.MarshalJSON()
+	w.Write(marshaled)
 }
 
 // Size is required to implement the proto.Marshaler interface.
@@ -70,4 +73,29 @@ func (u *UUID) Unmarshal(data []byte) error {
 
 	u.UUID = uid
 	return nil
+}
+
+// MarshalBSONValue implements the bson.ValueMarshaler interface.
+func (u UUID) MarshalBSONValue() (bsontype.Type, []byte, error) {
+	val := bsonx.Binary(0x04, u.UUID[:])
+	return val.MarshalBSONValue()
+}
+
+// UnmarshalBSONValue implements the bson.ValueUnmarshaler interface.
+func (u *UUID) UnmarshalBSONValue(bsonType bsontype.Type, data []byte) error {
+	if bsonType != bsontype.Binary {
+		return fmt.Errorf("Could not unmarshal %v as a UUID", bsonType)
+	}
+
+	return u.Unmarshal(data)
+}
+
+// MarshalJSON implements the json.Marshaler interface.
+func (u UUID) MarshalJSON() ([]byte, error) {
+	return []byte(strconv.Quote(u.String())), nil
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+func (u *UUID) UnmarshalJSON(data []byte) error {
+	return u.Unmarshal(data)
 }
