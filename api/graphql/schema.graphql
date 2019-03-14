@@ -1,18 +1,20 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
+scalar Timestamp
 
 type Todo {
   id: ID!
   text: String!
   done: Boolean!
   user: User!
+  createdAt: Timestamp!
+  updatedAt: Timestamp
 }
 
 type User {
   id: ID!
   name: String!
   email: String!
+  createdAt: Timestamp!
+  updatedAt: Timestamp
 }
 
 type Query {

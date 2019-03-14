@@ -15,3 +15,5 @@ models:
     model: github.com/issho-ni/issho/api/ninshou.User
   ID:
     model: github.com/issho-ni/issho/internal/pkg/uuid.UUID
+  Timestamp:
+    model: github.com/issho-ni/issho/internal/pkg/graphql.Time
