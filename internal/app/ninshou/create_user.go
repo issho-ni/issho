@@ -25,7 +25,8 @@ func (s *ninshouServer) CreateUser(ctx context.Context, in *ninshou.NewUser) (*n
 	}
 
 	id := uuid.New()
-	user := &ninshou.User{Id: &id, Name: in.Name, Email: in.Email}
+	now := time.Now()
+	user := &ninshou.User{Id: &id, Name: in.Name, Email: in.Email, CreatedAt: &now}
 
 	ins, err := bson.Marshal(user)
 	if err != nil {

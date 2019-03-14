@@ -1,5 +1,6 @@
 syntax = "proto3";
 import "github.com/gogo/protobuf@v1.2.1/gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 package ninshou;
 option go_package = "github.com/issho-ni/issho/api/ninshou";
@@ -18,4 +19,7 @@ message User {
     bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\"_id\""];
     string name = 2;
     string email = 3;
+    google.protobuf.Timestamp createdAt = 4 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp updatedAt = 5 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp deletedAt = 6 [(gogoproto.stdtime) = true];
 }

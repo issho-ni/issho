@@ -1,5 +1,6 @@
 syntax = "proto3";
 import "github.com/gogo/protobuf@v1.2.1/gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 package youji;
 option go_package = "github.com/issho-ni/issho/api/youji";
@@ -23,6 +24,9 @@ message Todo {
     ninshou.User user = 2;
     string text = 3;
     bool done = 4;
+    google.protobuf.Timestamp createdAt = 5 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp updatedAt = 6 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp deletedAt = 7 [(gogoproto.stdtime) = true];
 }
 
 message Todos {
