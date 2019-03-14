@@ -19,7 +19,7 @@ message NewTodo {
 }
 
 message Todo {
-    bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\"_id\""];
     ninshou.User user = 2;
     string text = 3;
     bool done = 4;

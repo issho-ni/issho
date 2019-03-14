@@ -15,7 +15,7 @@ message NewUser {
 }
 
 message User {
-    bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\"_id\""];
     string name = 2;
     string email = 3;
 }
