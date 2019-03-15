@@ -5,7 +5,7 @@ import (
 	"github.com/issho-ni/issho/internal/pkg/service"
 )
 
-const defaultPort = "8083"
+const defaultPort = "8082"
 
 func main() {
 	config := service.NewServerConfig("youji", defaultPort)

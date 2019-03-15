@@ -1,0 +1,24 @@
+syntax = "proto3";
+import "github.com/gogo/protobuf@v1.2.1/gogoproto/gogo.proto";
+
+package shinninjou;
+option go_package = "github.com/issho-ni/issho/api/shinninjou";
+
+service Shinninjou {
+    rpc CreateCredential(Credential) returns (CredentialResponse) {}
+    rpc ValidateCredential(Credential) returns (CredentialResponse) {}
+}
+
+enum CredentialType {
+    PASSWORD = 0;
+}
+
+message Credential {
+    bytes userID = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    CredentialType credentialType = 2;
+    bytes credential = 3;
+}
+
+message CredentialResponse {
+    bool success = 1;
+}
