@@ -1,4 +1,5 @@
 scalar Timestamp
+scalar Password
 
 type Todo {
   id: ID!
@@ -29,7 +30,7 @@ input NewTodo {
 input NewUser {
   name: String!
   email: String!
-  password: String!
+  password: Password!
 }
 
 type Mutation {
