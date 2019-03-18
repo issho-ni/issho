@@ -30,7 +30,12 @@ func (s *ninshouServer) CreateUser(ctx context.Context, in *ninshou.NewUser) (*n
 		return nil, err
 	}
 
-	credential := &shinninjou.CredentialRequest{UserID: &id, CredentialType: shinninjou.CredentialType_PASSWORD, Credential: in.Password}
+	credential := &shinninjou.Credential{
+		UserID: &id,
+		CredentialType: shinninjou.CredentialType_PASSWORD,
+		Credential: []byte(in.Password),
+	}
+
 	_, err = s.ShinninjouClient.CreateCredential(ctx, credential)
 	if err != nil {
 		return nil, err

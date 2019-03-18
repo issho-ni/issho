@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *shinninjouServer) ValidateCredential(ctx context.Context, in *shinninjou.CredentialRequest) (*shinninjou.CredentialResponse, error) {
+func (s *shinninjouServer) ValidateCredential(ctx context.Context, in *shinninjou.Credential) (*shinninjou.CredentialResponse, error) {
 	result := &bson.D{}
 	filter := bson.D{{Key: "userid", Value: in.UserID}, {Key: "credentialtype", Value: in.CredentialType}}
 
@@ -22,14 +22,14 @@ func (s *shinninjouServer) ValidateCredential(ctx context.Context, in *shinninjo
 	}
 
 	m := result.Map()
-	hash, ok := m["encryptedcredential"].(primitive.Binary)
+	hash, ok := m["credential"].(primitive.Binary)
 	if !ok {
 		return nil, fmt.Errorf("Could not retrieve bytes of bcrypt hash")
 	}
 
 	switch in.CredentialType {
 	case shinninjou.CredentialType_PASSWORD:
-		err = bcrypt.CompareHashAndPassword(hash.Data, []byte(in.Credential))
+		err = bcrypt.CompareHashAndPassword(hash.Data, in.Credential)
 		if err != nil {
 			return nil, err
 		}

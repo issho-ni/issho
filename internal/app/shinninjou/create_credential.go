@@ -10,20 +10,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *shinninjouServer) CreateCredential(ctx context.Context, in *shinninjou.CredentialRequest) (*shinninjou.CredentialResponse, error) {
-	credential := &shinninjou.Credential{UserID: in.UserID, CredentialType: in.CredentialType}
-
+func (s *shinninjouServer) CreateCredential(ctx context.Context, in *shinninjou.Credential) (*shinninjou.CredentialResponse, error) {
 	switch in.CredentialType {
 	case shinninjou.CredentialType_PASSWORD:
-		password, err := bcrypt.GenerateFromPassword([]byte(in.Credential), bcrypt.DefaultCost)
+		password, err := bcrypt.GenerateFromPassword(in.Credential, bcrypt.DefaultCost)
 		if err != nil {
 			return nil, err
 		}
 
-		credential.EncryptedCredential = password
+		in.Credential = password
 	}
 
-	ins, err := bson.Marshal(credential)
+	ins, err := bson.Marshal(in)
 	if err != nil {
 		return nil, err
 	}

@@ -5,24 +5,18 @@ package shinninjou;
 option go_package = "github.com/issho-ni/issho/api/shinninjou";
 
 service Shinninjou {
-    rpc CreateCredential(CredentialRequest) returns (CredentialResponse) {}
-    rpc ValidateCredential(CredentialRequest) returns (CredentialResponse) {}
+    rpc CreateCredential(Credential) returns (CredentialResponse) {}
+    rpc ValidateCredential(Credential) returns (CredentialResponse) {}
 }
 
 enum CredentialType {
     PASSWORD = 0;
 }
 
-message CredentialRequest {
-    bytes userID = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
-    CredentialType credentialType = 2;
-    string credential = 3;
-}
-
 message Credential {
     bytes userID = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
     CredentialType credentialType = 2;
-    bytes encryptedCredential = 3;
+    bytes credential = 3;
 }
 
 message CredentialResponse {

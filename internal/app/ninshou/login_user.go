@@ -20,7 +20,12 @@ func (s *ninshouServer) LoginUser(ctx context.Context, in *ninshou.LoginRequest)
 		return nil, err
 	}
 
-	credential := &shinninjou.CredentialRequest{UserID: result.Id, CredentialType: shinninjou.CredentialType_PASSWORD, Credential: in.Password}
+	credential := &shinninjou.Credential{
+		UserID: result.Id,
+		CredentialType: shinninjou.CredentialType_PASSWORD,
+		Credential: []byte(in.Password),
+	}
+
 	_, err = s.ShinninjouClient.ValidateCredential(context.Background(), credential)
 	if err != nil {
 		return nil, err
