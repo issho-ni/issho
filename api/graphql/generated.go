@@ -14,7 +14,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/api/youji"
-	"github.com/issho-ni/issho/internal/pkg/credentials"
 	graphql1 "github.com/issho-ni/issho/internal/pkg/graphql"
 	"github.com/issho-ni/issho/internal/pkg/uuid"
 	"github.com/vektah/gqlparser"
@@ -283,7 +282,6 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var parsedSchema = gqlparser.MustLoadSchema(
 	&ast.Source{Name: "api/graphql/schema.graphql", Input: `scalar Timestamp
-scalar Password
 
 type Todo {
   id: ID!
@@ -314,7 +312,7 @@ input NewTodo {
 input NewUser {
   name: String!
   email: String!
-  password: Password!
+  password: String!
 }
 
 type Mutation {
@@ -1670,7 +1668,7 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, v interfa
 			}
 		case "password":
 			var err error
-			it.Password, err = ec.unmarshalNPassword2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋcredentialsᚐPassword(ctx, v)
+			it.Password, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2147,33 +2145,6 @@ func (ec *executionContext) unmarshalNNewTodo2githubᚗcomᚋisshoᚑniᚋissho�
 
 func (ec *executionContext) unmarshalNNewUser2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐNewUser(ctx context.Context, v interface{}) (ninshou.NewUser, error) {
 	return ec.unmarshalInputNewUser(ctx, v)
-}
-
-func (ec *executionContext) unmarshalNPassword2githubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋcredentialsᚐPassword(ctx context.Context, v interface{}) (credentials.Password, error) {
-	var res credentials.Password
-	return res, res.UnmarshalGQL(v)
-}
-
-func (ec *executionContext) marshalNPassword2githubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋcredentialsᚐPassword(ctx context.Context, sel ast.SelectionSet, v credentials.Password) graphql.Marshaler {
-	return v
-}
-
-func (ec *executionContext) unmarshalNPassword2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋcredentialsᚐPassword(ctx context.Context, v interface{}) (*credentials.Password, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalNPassword2githubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋcredentialsᚐPassword(ctx, v)
-	return &res, err
-}
-
-func (ec *executionContext) marshalNPassword2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋcredentialsᚐPassword(ctx context.Context, sel ast.SelectionSet, v *credentials.Password) graphql.Marshaler {
-	if v == nil {
-		if !ec.HasError(graphql.GetResolverContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return v
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

@@ -12,7 +12,7 @@ service Ninshou {
 message NewUser {
     string name = 1;
     string email = 2;
-    bytes password = 3 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/credentials.Password"];
+    string password = 3;
 }
 
 message User {
