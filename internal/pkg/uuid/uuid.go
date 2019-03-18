@@ -83,11 +83,11 @@ func (u UUID) MarshalBSONValue() (bsontype.Type, []byte, error) {
 
 // UnmarshalBSONValue implements the bson.ValueUnmarshaler interface.
 func (u *UUID) UnmarshalBSONValue(bsonType bsontype.Type, data []byte) error {
-	if bsonType != bsontype.Binary {
+	if bsonType != bsontype.Binary && data[4] != 0x04 {
 		return fmt.Errorf("Could not unmarshal %v as a UUID", bsonType)
 	}
 
-	return u.Unmarshal(data)
+	return u.Unmarshal(data[5:])
 }
 
 // MarshalJSON implements the json.Marshaler interface.
