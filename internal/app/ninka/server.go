@@ -28,6 +28,7 @@ type ninkaServer struct {
 // Claims represents a set of claims with the token ID parsed into a UUID.
 type Claims struct {
 	ID uuid.UUID
+	UserID uuid.UUID
 	*jwt.Claims
 }
 
@@ -91,5 +92,10 @@ func (s *ninkaServer) extractClaims(token *ninka.Token) (*Claims, error) {
 		return nil, err
 	}
 
-	return &Claims{tokenID, claims}, nil
+	userID, err := uuid.Parse(claims.Subject)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Claims{tokenID, userID, claims}, nil
 }
