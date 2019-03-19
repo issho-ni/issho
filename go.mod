@@ -6,7 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.8.1
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.2.1
-	github.com/golang/protobuf v1.2.0
+	github.com/golang/protobuf v1.3.1
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-cmp v0.2.0 // indirect
 	github.com/google/uuid v1.1.1
