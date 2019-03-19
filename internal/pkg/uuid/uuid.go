@@ -10,6 +10,16 @@ import (
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
+// Parse decodes s into a UUID or returns an error.
+func Parse(s string) (UUID, error) {
+	parsed, err := uuid.Parse(s)
+	if err != nil {
+		return New(), err
+	}
+
+	return UUID{parsed}, nil
+}
+
 // UUID implements additional interfaces atop the uuid.UUID type.
 type UUID struct {
 	uuid.UUID
