@@ -3,7 +3,7 @@ module github.com/issho-ni/issho
 go 1.12
 
 require (
-	github.com/99designs/gqlgen v0.8.1
+	github.com/99designs/gqlgen v0.8.2
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.2.1
 	github.com/golang/protobuf v1.3.1
