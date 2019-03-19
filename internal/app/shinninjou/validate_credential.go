@@ -16,7 +16,7 @@ func (s *shinninjouServer) ValidateCredential(ctx context.Context, in *shinninjo
 	filter := bson.D{{Key: "userid", Value: in.UserID}, {Key: "credentialtype", Value: in.CredentialType}}
 
 	collection := s.mongoClient.Database().Collection("credentials")
-	err := collection.FindOne(context.Background(), filter).Decode(result)
+	err := collection.FindOne(ctx, filter).Decode(result)
 	if err != nil {
 		return nil, err
 	}

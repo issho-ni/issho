@@ -14,8 +14,7 @@ func (s *ninshouServer) LoginUser(ctx context.Context, in *ninshou.LoginRequest)
 	filter := bson.D{{Key: "email", Value: in.Email}}
 
 	collection := s.mongoClient.Database().Collection("users")
-	res := collection.FindOne(context.Background(), filter)
-	err := res.Decode(result)
+	err := collection.FindOne(ctx, filter).Decode(result)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +25,7 @@ func (s *ninshouServer) LoginUser(ctx context.Context, in *ninshou.LoginRequest)
 		Credential: []byte(in.Password),
 	}
 
-	_, err = s.ShinninjouClient.ValidateCredential(context.Background(), credential)
+	_, err = s.ShinninjouClient.ValidateCredential(ctx, credential)
 	if err != nil {
 		return nil, err
 	}
