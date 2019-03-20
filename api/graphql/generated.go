@@ -46,6 +46,11 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	LoginResponse struct {
+		Token func(childComplexity int) int
+		User  func(childComplexity int) int
+	}
+
 	Mutation struct {
 		CreateTodo func(childComplexity int, input youji.NewTodo) int
 		CreateUser func(childComplexity int, input ninshou.NewUser) int
@@ -77,7 +82,7 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateTodo(ctx context.Context, input youji.NewTodo) (*youji.Todo, error)
 	CreateUser(ctx context.Context, input ninshou.NewUser) (*ninshou.User, error)
-	LoginUser(ctx context.Context, input ninshou.LoginRequest) (*ninshou.User, error)
+	LoginUser(ctx context.Context, input ninshou.LoginRequest) (*LoginResponse, error)
 }
 type QueryResolver interface {
 	GetTodos(ctx context.Context) ([]*youji.Todo, error)
@@ -97,6 +102,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "LoginResponse.Token":
+		if e.complexity.LoginResponse.Token == nil {
+			break
+		}
+
+		return e.complexity.LoginResponse.Token(childComplexity), true
+
+	case "LoginResponse.User":
+		if e.complexity.LoginResponse.User == nil {
+			break
+		}
+
+		return e.complexity.LoginResponse.User(childComplexity), true
 
 	case "Mutation.CreateTodo":
 		if e.complexity.Mutation.CreateTodo == nil {
@@ -297,6 +316,37 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 var parsedSchema = gqlparser.MustLoadSchema(
 	&ast.Source{Name: "api/graphql/schema.graphql", Input: `scalar Timestamp
 
+type Mutation {
+  createTodo(input: NewTodo!): Todo!
+  createUser(input: NewUser!): User!
+  loginUser(input: LoginRequest!): LoginResponse!
+}
+
+type Query {
+  getTodos: [Todo]!
+}
+
+input LoginRequest {
+  email: String!
+  password: String!
+}
+
+input NewTodo {
+  userID: ID!
+  text: String!
+}
+
+input NewUser {
+  name: String!
+  email: String!
+  password: String!
+}
+
+type LoginResponse {
+  token: String!
+  user: User!
+}
+
 type Todo {
   id: ID!
   text: String!
@@ -312,32 +362,6 @@ type User {
   email: String!
   createdAt: Timestamp!
   updatedAt: Timestamp
-}
-
-type Query {
-  getTodos: [Todo]!
-}
-
-input NewTodo {
-  userID: ID!
-  text: String!
-}
-
-input NewUser {
-  name: String!
-  email: String!
-  password: String!
-}
-
-input LoginRequest {
-  email: String!
-  password: String!
-}
-
-type Mutation {
-  createTodo(input: NewTodo!): Todo!
-  createUser(input: NewUser!): User!
-  loginUser(input: LoginRequest!): User!
 }
 `},
 )
@@ -433,6 +457,60 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ***************************** args.gotpl *****************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _LoginResponse_token(ctx context.Context, field graphql.CollectedField, obj *LoginResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "LoginResponse",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Token, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _LoginResponse_user(ctx context.Context, field graphql.CollectedField, obj *LoginResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "LoginResponse",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.User, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ninshou.User)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNUser2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐUser(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
@@ -530,10 +608,10 @@ func (ec *executionContext) _Mutation_loginUser(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*ninshou.User)
+	res := resTmp.(*LoginResponse)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNUser2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐUser(ctx, field.Selections, res)
+	return ec.marshalNLoginResponse2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋgraphqlᚐLoginResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getTodos(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1826,6 +1904,38 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, v interfa
 
 // region    **************************** object.gotpl ****************************
 
+var loginResponseImplementors = []string{"LoginResponse"}
+
+func (ec *executionContext) _LoginResponse(ctx context.Context, sel ast.SelectionSet, obj *LoginResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, loginResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	invalid := false
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LoginResponse")
+		case "token":
+			out.Values[i] = ec._LoginResponse_token(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "user":
+			out.Values[i] = ec._LoginResponse_user(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -2286,6 +2396,20 @@ func (ec *executionContext) marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋin
 
 func (ec *executionContext) unmarshalNLoginRequest2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐLoginRequest(ctx context.Context, v interface{}) (ninshou.LoginRequest, error) {
 	return ec.unmarshalInputLoginRequest(ctx, v)
+}
+
+func (ec *executionContext) marshalNLoginResponse2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋgraphqlᚐLoginResponse(ctx context.Context, sel ast.SelectionSet, v LoginResponse) graphql.Marshaler {
+	return ec._LoginResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNLoginResponse2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋgraphqlᚐLoginResponse(ctx context.Context, sel ast.SelectionSet, v *LoginResponse) graphql.Marshaler {
+	if v == nil {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._LoginResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNNewTodo2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋyoujiᚐNewTodo(ctx context.Context, v interface{}) (youji.NewTodo, error) {

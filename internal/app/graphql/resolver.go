@@ -6,6 +6,7 @@ import (
 	"context"
 
 	"github.com/issho-ni/issho/api/graphql"
+	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/api/youji"
 )
@@ -39,8 +40,20 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input ninshou.NewUser
 
 // LoginUser attempts to authenticate a user given an email address and
 // password.
-func (r *mutationResolver) LoginUser(ctx context.Context, input ninshou.LoginRequest) (*ninshou.User, error) {
-	return r.NinshouClient.LoginUser(ctx, &input)
+func (r *mutationResolver) LoginUser(ctx context.Context, input ninshou.LoginRequest) (*graphql.LoginResponse, error) {
+	user, err := r.NinshouClient.LoginUser(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+
+	tokenRequest := &ninka.TokenRequest{UserID: user.Id}
+
+	token, err := r.NinkaClient.CreateToken(ctx, tokenRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	return &graphql.LoginResponse{Token: token.Token, User: *user}, nil
 }
 
 type queryResolver struct{ *Resolver }

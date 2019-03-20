@@ -4,6 +4,9 @@ exec:
   filename: api/graphql/generated.go
   package: graphql
 struct_tag: json
+model:
+  filename: api/graphql/models.go
+  package: graphql
 models:
   LoginRequest:
     model: github.com/issho-ni/issho/api/ninshou.LoginRequest

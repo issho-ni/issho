@@ -37,8 +37,13 @@ input LoginRequest {
   password: String!
 }
 
+type LoginResponse {
+  token: String!
+  user: User!
+}
+
 type Mutation {
   createTodo(input: NewTodo!): Todo!
   createUser(input: NewUser!): User!
-  loginUser(input: LoginRequest!): User!
+  loginUser(input: LoginRequest!): LoginResponse!
 }
