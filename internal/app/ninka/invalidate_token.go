@@ -29,7 +29,7 @@ func (s *ninkaServer) InvalidateToken(ctx context.Context, in *ninka.Token) (*ni
 		return &ninka.TokenResponse{Success: false}, err
 	} else if !invalid {
 		invalidToken := &InvalidToken{
-			TokenID: claims.ID,
+			TokenID:   claims.ID,
 			ExpiresAt: claims.Expires.Time(),
 		}
 

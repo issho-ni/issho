@@ -27,7 +27,7 @@ type ninkaServer struct {
 
 // Claims represents a set of claims with the token ID parsed into a UUID.
 type Claims struct {
-	ID uuid.UUID
+	ID     uuid.UUID
 	UserID uuid.UUID
 	*jwt.Claims
 }

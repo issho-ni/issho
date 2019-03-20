@@ -20,9 +20,9 @@ func (s *ninshouServer) LoginUser(ctx context.Context, in *ninshou.LoginRequest)
 	}
 
 	credential := &shinninjou.Credential{
-		UserID: result.Id,
+		UserID:         result.Id,
 		CredentialType: shinninjou.CredentialType_PASSWORD,
-		Credential: []byte(in.Password),
+		Credential:     []byte(in.Password),
 	}
 
 	_, err = s.ShinninjouClient.ValidateCredential(ctx, credential)
