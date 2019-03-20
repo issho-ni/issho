@@ -16,6 +16,7 @@ import (
 type graphQLServer struct {
 	*mux.Router
 	*service.ServerConfig
+	*clientSet
 }
 
 type clientSet struct {
@@ -39,14 +40,17 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 		youji.NewClient(env),
 	}
 
+	server := &graphQLServer{r, config, clients}
+
 	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(graphql.Config{Resolvers: &Resolver{clients}})))
 	r.HandleFunc("/live", liveCheck)
 	r.Handle("/ready", newReadyChecker(clients))
 
 	r.Use(requestIDMiddleware)
+	r.Use(server.authenticationMiddleware)
 	r.Use(loggingMiddleware)
 
-	return &graphQLServer{r, config}
+	return server
 }
 
 func (s *graphQLServer) serve() error {
