@@ -3,7 +3,7 @@ package context
 import (
 	"context"
 
-	"github.com/google/uuid"
+	"github.com/issho-ni/issho/internal/pkg/uuid"
 )
 
 // NewRequestID generates a new request ID.

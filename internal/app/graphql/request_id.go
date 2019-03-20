@@ -4,8 +4,7 @@ import (
 	"net/http"
 
 	"github.com/issho-ni/issho/internal/pkg/context"
-
-	"github.com/google/uuid"
+	"github.com/issho-ni/issho/internal/pkg/uuid"
 )
 
 const requestIDHeader = "X-Request-ID"
