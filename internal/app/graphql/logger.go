@@ -27,7 +27,7 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	since := math.Round(time.Since(now).Seconds()*1e6) / 1e3
 	rid, _ := context.RequestIDFromContext(r.Context())
 
-	log.WithFields(log.Fields{
+	entry := log.WithFields(log.Fields{
 		"http.method":      r.Method,
 		"http.protocol":    r.Proto,
 		"http.remote_addr": r.RemoteAddr,
@@ -38,7 +38,14 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		"request_id":       rid,
 		"span.kind":        "server",
 		"system":           "http",
-	}).WithTime(now).Info(r.RequestURI)
+	}).WithTime(now)
+
+	uid, ok := context.UserIDFromContext(r.Context())
+	if ok {
+		entry = entry.WithField("user_id", uid)
+	}
+
+	entry.Info(r.RequestURI)
 }
 
 type loggingResponseWriter struct {

@@ -45,9 +45,13 @@ func NewGRPCClient(config *GRPCClientConfig, name string, url string) GRPCClient
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(config.TransportCredentials))
 	opts = append(opts, grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
-		requestIDStreamClientInterceptor)))
+		requestIDStreamClientInterceptor,
+		userIDStreamClientInterceptor,
+	)))
 	opts = append(opts, grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(
-		requestIDUnaryClientInterceptor)))
+		requestIDUnaryClientInterceptor,
+		userIDUnaryClientInterceptor,
+	)))
 
 	cc, err := grpc.Dial(url, opts...)
 	if err != nil {
