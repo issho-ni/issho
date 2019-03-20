@@ -1,5 +1,36 @@
 scalar Timestamp
 
+type Mutation {
+  createTodo(input: NewTodo!): Todo!
+  createUser(input: NewUser!): User!
+  loginUser(input: LoginRequest!): LoginResponse!
+}
+
+type Query {
+  getTodos: [Todo]!
+}
+
+input LoginRequest {
+  email: String!
+  password: String!
+}
+
+input NewTodo {
+  userID: ID!
+  text: String!
+}
+
+input NewUser {
+  name: String!
+  email: String!
+  password: String!
+}
+
+type LoginResponse {
+  token: String!
+  user: User!
+}
+
 type Todo {
   id: ID!
   text: String!
@@ -15,35 +46,4 @@ type User {
   email: String!
   createdAt: Timestamp!
   updatedAt: Timestamp
-}
-
-type Query {
-  getTodos: [Todo]!
-}
-
-input NewTodo {
-  userID: ID!
-  text: String!
-}
-
-input NewUser {
-  name: String!
-  email: String!
-  password: String!
-}
-
-input LoginRequest {
-  email: String!
-  password: String!
-}
-
-type LoginResponse {
-  token: String!
-  user: User!
-}
-
-type Mutation {
-  createTodo(input: NewTodo!): Todo!
-  createUser(input: NewUser!): User!
-  loginUser(input: LoginRequest!): LoginResponse!
 }
