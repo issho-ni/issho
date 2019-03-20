@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/issho-ni/issho/internal/pkg/request_id"
+	"github.com/issho-ni/issho/internal/pkg/context"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -25,7 +25,7 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	h.Handler.ServeHTTP(w, r)
 
 	since := math.Round(time.Since(now).Seconds()*1e6) / 1e3
-	rid, _ := requestid.FromContext(r.Context())
+	rid, _ := context.RequestIDFromContext(r.Context())
 
 	log.WithFields(log.Fields{
 		"http.method":      r.Method,

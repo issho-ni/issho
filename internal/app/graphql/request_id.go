@@ -3,7 +3,7 @@ package graphql
 import (
 	"net/http"
 
-	"github.com/issho-ni/issho/internal/pkg/request_id"
+	"github.com/issho-ni/issho/internal/pkg/context"
 
 	"github.com/google/uuid"
 )
@@ -26,6 +26,6 @@ func (h *requestIDHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		r.Header.Set(requestIDHeader, rid.String())
 	}
 
-	ctx := requestid.NewContext(r.Context(), rid)
+	ctx := context.NewRequestIDContext(r.Context(), rid)
 	h.Handler.ServeHTTP(rw, r.WithContext(ctx))
 }

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/issho-ni/issho/internal/pkg/request_id"
+	icontext "github.com/issho-ni/issho/internal/pkg/context"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
 	log "github.com/sirupsen/logrus"
@@ -20,7 +20,7 @@ func requestIDUnaryClientInterceptor(ctx context.Context, method string, req, re
 }
 
 func appendRequestIDToOutgoingContext(ctx context.Context) context.Context {
-	rid, ok := requestid.FromContext(ctx)
+	rid, ok := icontext.RequestIDFromContext(ctx)
 
 	if ok {
 		ctx = metadata.AppendToOutgoingContext(ctx, "request_id", rid.String())
