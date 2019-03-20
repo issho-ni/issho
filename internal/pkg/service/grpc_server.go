@@ -53,13 +53,13 @@ func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) GRPCServer {
 	grpc_logrus.ReplaceGrpcLogger(logrusEntry)
 	opts = append(opts, grpc_middleware.WithStreamServerChain(
 		grpc_logrus.StreamServerInterceptor(logrusEntry),
-		requestIDStreamServerInterceptor,
-		userIDStreamServerInterceptor,
+		streamServerContextInterceptor(logRequestIDFromIncomingContext),
+		streamServerContextInterceptor(logUserIDFromIncomingContext),
 	))
 	opts = append(opts, grpc_middleware.WithUnaryServerChain(
 		grpc_logrus.UnaryServerInterceptor(logrusEntry),
-		requestIDUnaryServerInterceptor,
-		userIDUnaryServerInterceptor,
+		unaryServerContextInterceptor(logRequestIDFromIncomingContext),
+		unaryServerContextInterceptor(logUserIDFromIncomingContext),
 	))
 
 	srv := &grpcServer{config, lis, grpc.NewServer(opts...), health.NewServer()}
