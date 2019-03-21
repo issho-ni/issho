@@ -49,6 +49,7 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 	r.HandleFunc("/live", liveCheck)
 	r.Handle("/ready", newReadyChecker(clients))
 
+	r.Use(timingMiddleware)
 	r.Use(requestIDMiddleware)
 	r.Use(server.authenticationMiddleware)
 	r.Use(loggingMiddleware)

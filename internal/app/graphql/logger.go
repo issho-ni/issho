@@ -19,12 +19,9 @@ func loggingMiddleware(next http.Handler) http.Handler {
 }
 
 func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	now := time.Now()
-
 	w := &loggingResponseWriter{rw, 0, 0}
 	h.Handler.ServeHTTP(w, r)
 
-	since := math.Round(time.Since(now).Seconds()*1e6) / 1e3
 	rid, _ := context.RequestIDFromContext(r.Context())
 
 	entry := log.WithFields(log.Fields{
@@ -34,15 +31,20 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		"http.service":     "graphql.Graphql",
 		"http.size":        w.Size,
 		"http.status":      w.StatusCode,
-		"http.time_ms":     since,
 		"request_id":       rid,
 		"span.kind":        "server",
 		"system":           "http",
-	}).WithTime(now)
+	})
 
 	uid, ok := context.UserIDFromContext(r.Context())
 	if ok {
 		entry = entry.WithField("user_id", uid)
+	}
+
+	start, ok := context.TimingFromContext(r.Context())
+	if ok {
+		since := math.Round(time.Since(start).Seconds()*1e6) / 1e3
+		entry = entry.WithField("http.time_ms", since).WithTime(start)
 	}
 
 	entry.Info(r.RequestURI)
