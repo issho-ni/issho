@@ -43,6 +43,7 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
+	Protected func(ctx context.Context, obj interface{}, next graphql.Resolver, authRequired bool) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -291,6 +292,24 @@ func (ec *executionContext) FieldMiddleware(ctx context.Context, obj interface{}
 			ret = nil
 		}
 	}()
+	rctx := graphql.GetResolverContext(ctx)
+	for _, d := range rctx.Field.Definition.Directives {
+		switch d.Name {
+		case "protected":
+			if ec.directives.Protected != nil {
+				rawArgs := d.ArgumentMap(ec.Variables)
+				args, err := ec.dir_protected_args(ctx, rawArgs)
+				if err != nil {
+					ec.Error(ctx, err)
+					return nil
+				}
+				n := next
+				next = func(ctx context.Context) (interface{}, error) {
+					return ec.directives.Protected(ctx, obj, n, args["authRequired"].(bool))
+				}
+			}
+		}
+	}
 	res, err := ec.ResolverMiddleware(ctx, next)
 	if err != nil {
 		ec.Error(ctx, err)
@@ -314,16 +333,19 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var parsedSchema = gqlparser.MustLoadSchema(
-	&ast.Source{Name: "api/graphql/schema.graphql", Input: `scalar Timestamp
+	&ast.Source{Name: "api/graphql/schema.graphql", Input: `directive @protected(authRequired: Boolean!) on FIELD_DEFINITION
+
+scalar Timestamp
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
-  createUser(input: NewUser!): User!
+  createTodo(input: NewTodo!): Todo! @protected(authRequired: true)
+  createUser(input: NewUser!): User! @protected(authRequired: false)
   loginUser(input: LoginRequest!): LoginResponse!
+    @protected(authRequired: false)
 }
 
 type Query {
-  getTodos: [Todo]!
+  getTodos: [Todo]! @protected(authRequired: true)
 }
 
 input LoginRequest {
@@ -369,6 +391,20 @@ type User {
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) dir_protected_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 bool
+	if tmp, ok := rawArgs["authRequired"]; ok {
+		arg0, err = ec.unmarshalNBoolean2bool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["authRequired"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error

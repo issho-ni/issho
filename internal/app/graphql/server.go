@@ -42,7 +42,10 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 
 	server := &graphQLServer{r, config, clients}
 
-	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(graphql.Config{Resolvers: &Resolver{clients}})))
+	c := graphql.Config{Resolvers: &Resolver{clients}}
+	c.Directives.Protected = protectedFieldDirective
+
+	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(c)))
 	r.HandleFunc("/live", liveCheck)
 	r.Handle("/ready", newReadyChecker(clients))
 

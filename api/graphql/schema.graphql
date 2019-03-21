@@ -1,13 +1,16 @@
+directive @protected(authRequired: Boolean!) on FIELD_DEFINITION
+
 scalar Timestamp
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
-  createUser(input: NewUser!): User!
+  createTodo(input: NewTodo!): Todo! @protected(authRequired: true)
+  createUser(input: NewUser!): User! @protected(authRequired: false)
   loginUser(input: LoginRequest!): LoginResponse!
+    @protected(authRequired: false)
 }
 
 type Query {
-  getTodos: [Todo]!
+  getTodos: [Todo]! @protected(authRequired: true)
 }
 
 input LoginRequest {
