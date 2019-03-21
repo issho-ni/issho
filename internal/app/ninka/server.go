@@ -50,6 +50,7 @@ func (s *ninkaServer) StartServer() {
 	cancel := s.mongoClient.Connect()
 	defer cancel()
 
+	s.createIndexes()
 	s.GRPCServer.StartServer()
 }
 
@@ -67,12 +68,13 @@ func (s *ninkaServer) createIndexes() {
 	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
 	invalidTokens := s.mongoClient.Database().Collection("invalid_tokens").Indexes()
 
-	for _, index := range []mongo.IndexModel{tokenIDIndex, expiresAtIndex} {
-		result, err := invalidTokens.CreateOne(context.Background(), index, createOptions)
-		if err != nil {
-			log.Fatalf("Could not create index: %v", err)
-		}
+	indexes := []mongo.IndexModel{tokenIDIndex, expiresAtIndex}
+	results, err := invalidTokens.CreateMany(context.Background(), indexes, createOptions)
+	if err != nil {
+		log.Fatalf("Could not create indexes: %v", err)
+	}
 
+	for _, result := range results {
 		log.Debugf("Created index %s", result)
 	}
 }
