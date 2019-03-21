@@ -9,6 +9,7 @@ import (
 	"github.com/issho-ni/issho/api/youji"
 	"github.com/issho-ni/issho/internal/pkg/service"
 
+	"github.com/99designs/gqlgen-contrib/gqlapollotracing"
 	"github.com/99designs/gqlgen/handler"
 	"github.com/gorilla/mux"
 )
@@ -28,10 +29,7 @@ type clientSet struct {
 // NewGraphQLServer creates a new HTTP handler for the GraphQL service.
 func NewGraphQLServer(config *service.ServerConfig) service.Server {
 	r := mux.NewRouter()
-
-	if service.Environment.Development() {
-		r.Handle("/", handler.Playground("GraphQL playground", "/query"))
-	}
+	r.HandleFunc("/live", liveCheck)
 
 	env := service.NewGRPCClientConfig(config.TLSCert)
 	clients := &clientSet{
@@ -40,14 +38,23 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 		youji.NewClient(env),
 	}
 
+	r.Handle("/ready", newReadyChecker(clients))
+
 	server := &graphQLServer{r, config, clients}
 
 	c := graphql.Config{Resolvers: &Resolver{clients}}
 	c.Directives.Protected = protectedFieldDirective
 
-	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(c)))
-	r.HandleFunc("/live", liveCheck)
-	r.Handle("/ready", newReadyChecker(clients))
+	var options []handler.Option
+	if service.Environment.Development() {
+		r.Handle("/", handler.Playground("GraphQL playground", "/query"))
+		options = append(options, handler.RequestMiddleware(gqlapollotracing.RequestMiddleware()))
+		options = append(options, handler.Tracer(gqlapollotracing.NewTracer()))
+	} else {
+		options = append(options, handler.IntrospectionEnabled(false))
+	}
+
+	r.Handle("/query", handler.GraphQL(graphql.NewExecutableSchema(c), options...))
 
 	r.Use(timingMiddleware)
 	r.Use(requestIDMiddleware)
