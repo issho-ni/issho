@@ -4,6 +4,8 @@ import "github.com/gogo/protobuf@v1.2.1/gogoproto/gogo.proto";
 package ninka;
 option go_package = "github.com/issho-ni/issho/api/ninka";
 
+import "common/common.proto";
+
 service Ninka {
     rpc CreateToken(TokenRequest) returns (Token) {}
     rpc ValidateToken(Token) returns (TokenResponse) {}
@@ -19,6 +21,6 @@ message Token {
 }
 
 message TokenResponse {
-    bytes userID = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
-    bool success = 2;
+    bool success = 1;
+    common.Claims claims = 2;
 }

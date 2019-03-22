@@ -1,0 +1,12 @@
+syntax = "proto3";
+import "github.com/gogo/protobuf@v1.2.1/gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+package common;
+option go_package = "github.com/issho-ni/issho/api/common";
+
+message Claims {
+    bytes userID = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    bytes tokenID = 2 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    google.protobuf.Timestamp expiresAt = 3 [(gogoproto.stdtime) = true];
+}
