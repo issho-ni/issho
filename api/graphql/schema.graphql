@@ -7,6 +7,7 @@ type Mutation {
   createUser(input: NewUser!): User! @protected(authRequired: false)
   loginUser(input: LoginRequest!): LoginResponse!
     @protected(authRequired: false)
+  logoutUser(input: Boolean): Boolean! @protected(authRequired: true)
 }
 
 type Query {

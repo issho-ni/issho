@@ -56,6 +56,7 @@ type ComplexityRoot struct {
 		CreateTodo func(childComplexity int, input youji.NewTodo) int
 		CreateUser func(childComplexity int, input ninshou.NewUser) int
 		LoginUser  func(childComplexity int, input ninshou.LoginRequest) int
+		LogoutUser func(childComplexity int, input *bool) int
 	}
 
 	Query struct {
@@ -84,6 +85,7 @@ type MutationResolver interface {
 	CreateTodo(ctx context.Context, input youji.NewTodo) (*youji.Todo, error)
 	CreateUser(ctx context.Context, input ninshou.NewUser) (*ninshou.User, error)
 	LoginUser(ctx context.Context, input ninshou.LoginRequest) (*LoginResponse, error)
+	LogoutUser(ctx context.Context, input *bool) (bool, error)
 }
 type QueryResolver interface {
 	GetTodos(ctx context.Context) ([]*youji.Todo, error)
@@ -153,6 +155,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.LoginUser(childComplexity, args["input"].(ninshou.LoginRequest)), true
+
+	case "Mutation.LogoutUser":
+		if e.complexity.Mutation.LogoutUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_logoutUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.LogoutUser(childComplexity, args["input"].(*bool)), true
 
 	case "Query.GetTodos":
 		if e.complexity.Query.GetTodos == nil {
@@ -342,6 +356,7 @@ type Mutation {
   createUser(input: NewUser!): User! @protected(authRequired: false)
   loginUser(input: LoginRequest!): LoginResponse!
     @protected(authRequired: false)
+  logoutUser(input: Boolean): Boolean! @protected(authRequired: true)
 }
 
 type Query {
@@ -440,6 +455,20 @@ func (ec *executionContext) field_Mutation_loginUser_args(ctx context.Context, r
 	var arg0 ninshou.LoginRequest
 	if tmp, ok := rawArgs["input"]; ok {
 		arg0, err = ec.unmarshalNLoginRequest2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐLoginRequest(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_logoutUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *bool
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -648,6 +677,40 @@ func (ec *executionContext) _Mutation_loginUser(ctx context.Context, field graph
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNLoginResponse2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋgraphqlᚐLoginResponse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_logoutUser(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_logoutUser_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().LogoutUser(rctx, args["input"].(*bool))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getTodos(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1999,6 +2062,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "loginUser":
 			out.Values[i] = ec._Mutation_loginUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "logoutUser":
+			out.Values[i] = ec._Mutation_logoutUser(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}

@@ -9,6 +9,7 @@ import (
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/api/youji"
+	icontext "github.com/issho-ni/issho/internal/pkg/context"
 )
 
 // Resolver is the base type for GraphQL operation resolvers.
@@ -54,6 +55,17 @@ func (r *mutationResolver) LoginUser(ctx context.Context, input ninshou.LoginReq
 	}
 
 	return &graphql.LoginResponse{Token: token.Token, User: *user}, nil
+}
+
+func (r *mutationResolver) LogoutUser(ctx context.Context, _ *bool) (bool, error) {
+	claims, _ := icontext.ClaimsFromContext(ctx)
+
+	response, err := r.NinkaClient.InvalidateToken(ctx, &claims)
+	if err != nil {
+		return false, err
+	}
+
+	return response.Success, nil
 }
 
 type queryResolver struct{ *Resolver }
