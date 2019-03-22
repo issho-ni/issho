@@ -3,8 +3,8 @@ package service
 import (
 	"net"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -54,12 +54,12 @@ func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) GRPCServer {
 	opts = append(opts, grpc_middleware.WithStreamServerChain(
 		grpc_logrus.StreamServerInterceptor(logrusEntry),
 		streamServerContextInterceptor(logRequestIDFromIncomingContext),
-		streamServerContextInterceptor(logUserIDFromIncomingContext),
+		streamServerContextInterceptor(logClaimsFromIncomingContext),
 	))
 	opts = append(opts, grpc_middleware.WithUnaryServerChain(
 		grpc_logrus.UnaryServerInterceptor(logrusEntry),
 		unaryServerContextInterceptor(logRequestIDFromIncomingContext),
-		unaryServerContextInterceptor(logUserIDFromIncomingContext),
+		unaryServerContextInterceptor(logClaimsFromIncomingContext),
 	))
 
 	srv := &grpcServer{config, lis, grpc.NewServer(opts...), health.NewServer()}

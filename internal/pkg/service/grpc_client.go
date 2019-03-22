@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -46,11 +46,11 @@ func NewGRPCClient(config *GRPCClientConfig, name string, url string) GRPCClient
 	opts = append(opts, grpc.WithTransportCredentials(config.TransportCredentials))
 	opts = append(opts, grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
 		streamClientContextInterceptor(appendRequestIDToOutgoingContext),
-		streamClientContextInterceptor(appendUserIDToOutgoingContext),
+		streamClientContextInterceptor(appendClaimsToOutgoingContext),
 	)))
 	opts = append(opts, grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(
 		unaryClientContextInterceptor(appendRequestIDToOutgoingContext),
-		unaryClientContextInterceptor(appendUserIDToOutgoingContext),
+		unaryClientContextInterceptor(appendClaimsToOutgoingContext),
 	)))
 
 	cc, err := grpc.Dial(url, opts...)

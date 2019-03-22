@@ -30,7 +30,7 @@ func (h *authenticationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Reques
 
 		response, err := h.graphQLServer.NinkaClient.ValidateToken(r.Context(), token)
 		if err == nil {
-			ctx := context.NewUserIDContext(r.Context(), *response.UserID)
+			ctx := context.NewClaimsContext(r.Context(), *response.Claims)
 			r = r.WithContext(ctx)
 		}
 	}

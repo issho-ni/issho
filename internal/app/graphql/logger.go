@@ -36,9 +36,9 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		"system":           "http",
 	})
 
-	uid, ok := context.UserIDFromContext(r.Context())
+	claims, ok := context.ClaimsFromContext(r.Context())
 	if ok {
-		entry = entry.WithField("user_id", uid)
+		entry = entry.WithField("user_id", claims.UserID)
 	}
 
 	start, ok := context.TimingFromContext(r.Context())

@@ -10,7 +10,7 @@ import (
 )
 
 func protectedFieldDirective(ctx context.Context, _ interface{}, next graphql.Resolver, authRequired bool) (interface{}, error) {
-	_, ok := icontext.UserIDFromContext(ctx)
+	_, ok := icontext.ClaimsFromContext(ctx)
 
 	if authRequired && !ok {
 		return nil, fmt.Errorf("Authentication required")
