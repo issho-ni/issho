@@ -9,7 +9,7 @@ import "common/common.proto";
 service Ninka {
     rpc CreateToken(TokenRequest) returns (Token) {}
     rpc ValidateToken(Token) returns (TokenResponse) {}
-    rpc InvalidateToken(Token) returns (TokenResponse) {}
+    rpc InvalidateToken(common.Claims) returns (TokenResponse) {}
 }
 
 message TokenRequest {

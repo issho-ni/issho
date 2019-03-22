@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/internal/pkg/service"
 	"github.com/issho-ni/issho/internal/pkg/uuid"
@@ -79,7 +80,7 @@ func (s *ninkaServer) createIndexes() {
 	}
 }
 
-func (s *ninkaServer) extractClaims(token *ninka.Token) (*Claims, error) {
+func (s *ninkaServer) extractClaims(token *ninka.Token) (*common.Claims, error) {
 	t := []byte(token.Token)
 
 	claims, err := jwt.HMACCheck(t, s.secret)
@@ -89,15 +90,5 @@ func (s *ninkaServer) extractClaims(token *ninka.Token) (*Claims, error) {
 		return nil, fmt.Errorf("JWT has expired or contains invalid claims")
 	}
 
-	tokenID, err := uuid.Parse(claims.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	userID, err := uuid.Parse(claims.Subject)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Claims{tokenID, userID, claims}, nil
+	return common.ClaimsFromJWT(claims)
 }

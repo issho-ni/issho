@@ -13,12 +13,12 @@ func (s *ninkaServer) ValidateToken(ctx context.Context, in *ninka.Token) (*nink
 		return &ninka.TokenResponse{Success: false}, err
 	}
 
-	invalid, err := s.isTokenInvalid(claims.ID)
+	invalid, err := s.isTokenInvalid(claims.TokenID)
 	if err != nil {
 		return &ninka.TokenResponse{Success: false}, err
 	} else if invalid {
 		return &ninka.TokenResponse{Success: false}, fmt.Errorf("JWT has been invalidated")
 	}
 
-	return &ninka.TokenResponse{UserID: &claims.UserID, Success: true}, nil
+	return &ninka.TokenResponse{Claims: claims, Success: true}, nil
 }

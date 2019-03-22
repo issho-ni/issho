@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/internal/pkg/uuid"
 
@@ -14,23 +15,18 @@ import (
 // InvalidToken stores the token IDs of manually invalidated JWTs until their
 // normal expiration time.
 type InvalidToken struct {
-	TokenID   uuid.UUID
-	ExpiresAt time.Time
+	TokenID   *uuid.UUID
+	ExpiresAt *time.Time
 }
 
-func (s *ninkaServer) InvalidateToken(ctx context.Context, in *ninka.Token) (*ninka.TokenResponse, error) {
-	claims, err := s.extractClaims(in)
-	if err != nil {
-		return &ninka.TokenResponse{Success: false}, err
-	}
-
-	invalid, err := s.isTokenInvalid(claims.ID)
+func (s *ninkaServer) InvalidateToken(ctx context.Context, in *common.Claims) (*ninka.TokenResponse, error) {
+	invalid, err := s.isTokenInvalid(in.TokenID)
 	if err != nil {
 		return &ninka.TokenResponse{Success: false}, err
 	} else if !invalid {
 		invalidToken := &InvalidToken{
-			TokenID:   claims.ID,
-			ExpiresAt: claims.Expires.Time(),
+			TokenID:   in.TokenID,
+			ExpiresAt: in.ExpiresAt,
 		}
 
 		ins, err := bson.Marshal(invalidToken)
@@ -48,7 +44,7 @@ func (s *ninkaServer) InvalidateToken(ctx context.Context, in *ninka.Token) (*ni
 	return &ninka.TokenResponse{Success: true}, nil
 }
 
-func (s *ninkaServer) isTokenInvalid(tokenID uuid.UUID) (bool, error) {
+func (s *ninkaServer) isTokenInvalid(tokenID *uuid.UUID) (bool, error) {
 	result := &InvalidToken{}
 	filter := bson.D{{Key: "tokenid", Value: tokenID}}
 
