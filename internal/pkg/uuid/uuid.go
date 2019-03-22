@@ -37,13 +37,7 @@ func (u *UUID) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("Value for unmarshaling was not a string: %v", v)
 	}
 
-	parsed, err := uuid.Parse(str)
-	if err != nil {
-		return err
-	}
-
-	u.UUID = parsed
-	return nil
+	return u.UnmarshalJSON([]byte(str))
 }
 
 // MarshalGQL implements the graphql.Marshal interface.
@@ -107,5 +101,11 @@ func (u UUID) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
 func (u *UUID) UnmarshalJSON(data []byte) error {
-	return u.Unmarshal(data)
+	parsed, err := uuid.Parse(string(data))
+	if err != nil {
+		return err
+	}
+
+	u.UUID = parsed
+	return nil
 }
