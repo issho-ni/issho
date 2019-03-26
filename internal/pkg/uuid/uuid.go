@@ -12,9 +12,10 @@ import (
 
 // Parse decodes s into a UUID or returns an error.
 func Parse(s string) (UUID, error) {
+	var id UUID
 	parsed, err := uuid.Parse(s)
 	if err != nil {
-		return New(), err
+		return id, err
 	}
 
 	return UUID{parsed}, nil
@@ -48,7 +49,7 @@ func (u UUID) MarshalGQL(w io.Writer) {
 
 // Size is required to implement the proto.Marshaler interface.
 func (u *UUID) Size() int {
-	if u == nil || len(u.UUID) == 0 {
+	if u == nil {
 		return 0
 	}
 	return 16
@@ -56,7 +57,7 @@ func (u *UUID) Size() int {
 
 // MarshalTo is required to implement the proto.Marshaler interface.
 func (u *UUID) MarshalTo(data []byte) (int, error) {
-	if u == nil || len(u.UUID) == 0 {
+	if u == nil {
 		return 0, nil
 	}
 	copy(data, u.UUID[:])
@@ -87,7 +88,7 @@ func (u UUID) MarshalBSONValue() (bsontype.Type, []byte, error) {
 
 // UnmarshalBSONValue implements the bson.ValueUnmarshaler interface.
 func (u *UUID) UnmarshalBSONValue(bsonType bsontype.Type, data []byte) error {
-	if bsonType != bsontype.Binary && data[4] != 0x04 {
+	if bsonType != bsontype.Binary || data[0] != 0x10 || data[4] != 0x04 {
 		return fmt.Errorf("Could not unmarshal %v as a UUID", bsonType)
 	}
 
