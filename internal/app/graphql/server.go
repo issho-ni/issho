@@ -12,6 +12,7 @@ import (
 	"github.com/99designs/gqlgen-contrib/gqlapollotracing"
 	"github.com/99designs/gqlgen/handler"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 type graphQLServer struct {
@@ -45,11 +46,20 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 	c := graphql.Config{Resolvers: &Resolver{clients}}
 	c.Directives.Protected = protectedFieldDirective
 
+	corsOptions := cors.Options{
+		AllowedHeaders: []string{"Authorization", "Content-Type"},
+		AllowedMethods: []string{"GET", "OPTIONS", "POST"},
+	}
+
 	var options []handler.Option
 	if service.Environment.Development() {
 		r.Handle("/", handler.Playground("GraphQL playground", "/query"))
+
 		options = append(options, handler.RequestMiddleware(gqlapollotracing.RequestMiddleware()))
 		options = append(options, handler.Tracer(gqlapollotracing.NewTracer()))
+
+		corsOptions.AllowedOrigins = []string{"https://localhost:9000"}
+		corsOptions.Debug = true
 	} else {
 		options = append(options, handler.IntrospectionEnabled(false))
 	}
@@ -60,6 +70,7 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 	r.Use(requestIDMiddleware)
 	r.Use(server.authenticationMiddleware)
 	r.Use(loggingMiddleware)
+	r.Use(cors.New(corsOptions).Handler)
 
 	return server
 }
