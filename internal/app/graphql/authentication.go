@@ -8,7 +8,7 @@ import (
 	"github.com/issho-ni/issho/internal/pkg/context"
 )
 
-const authenticationHeader = "Authentication"
+const authorizationHeader = "Authorization"
 
 type authenticationHandler struct {
 	*graphQLServer
@@ -22,7 +22,7 @@ func (s *graphQLServer) authenticationMiddleware(next http.Handler) http.Handler
 }
 
 func (h *authenticationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	bearer := r.Header.Get(authenticationHeader)
+	bearer := r.Header.Get(authorizationHeader)
 	matches := h.bearerExpression.FindStringSubmatch(bearer)
 
 	if len(matches) == 2 {
