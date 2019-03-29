@@ -35,8 +35,13 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input youji.NewTodo) 
 }
 
 // CreateUser creates a new User.
-func (r *mutationResolver) CreateUser(ctx context.Context, input ninshou.NewUser) (*ninshou.User, error) {
-	return r.NinshouClient.CreateUser(ctx, &input)
+func (r *mutationResolver) CreateUser(ctx context.Context, input ninshou.NewUser) (*graphql.LoginResponse, error) {
+	user, err := r.NinshouClient.CreateUser(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.getLoginResponse(ctx, user)
 }
 
 // LoginUser attempts to authenticate a user given an email address and
@@ -47,14 +52,7 @@ func (r *mutationResolver) LoginUser(ctx context.Context, input ninshou.LoginReq
 		return nil, err
 	}
 
-	tokenRequest := &ninka.TokenRequest{UserID: user.Id}
-
-	token, err := r.NinkaClient.CreateToken(ctx, tokenRequest)
-	if err != nil {
-		return nil, err
-	}
-
-	return &graphql.LoginResponse{Token: token.Token, User: *user}, nil
+	return r.getLoginResponse(ctx, user)
 }
 
 func (r *mutationResolver) LogoutUser(ctx context.Context, _ *bool) (bool, error) {
@@ -66,6 +64,17 @@ func (r *mutationResolver) LogoutUser(ctx context.Context, _ *bool) (bool, error
 	}
 
 	return response.Success, nil
+}
+
+func (r *mutationResolver) getLoginResponse(ctx context.Context, user *ninshou.User) (*graphql.LoginResponse, error) {
+	tokenRequest := &ninka.TokenRequest{UserID: user.Id}
+
+	token, err := r.NinkaClient.CreateToken(ctx, tokenRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	return &graphql.LoginResponse{Token: token.Token, User: *user}, nil
 }
 
 type queryResolver struct{ *Resolver }

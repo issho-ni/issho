@@ -4,7 +4,7 @@ scalar Timestamp
 
 type Mutation {
   createTodo(input: NewTodo!): Todo! @protected(authRequired: true)
-  createUser(input: NewUser!): User! @protected(authRequired: false)
+  createUser(input: NewUser!): LoginResponse! @protected(authRequired: false)
   loginUser(input: LoginRequest!): LoginResponse!
     @protected(authRequired: false)
   logoutUser(input: Boolean): Boolean! @protected(authRequired: true)

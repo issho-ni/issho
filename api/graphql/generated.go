@@ -83,7 +83,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateTodo(ctx context.Context, input youji.NewTodo) (*youji.Todo, error)
-	CreateUser(ctx context.Context, input ninshou.NewUser) (*ninshou.User, error)
+	CreateUser(ctx context.Context, input ninshou.NewUser) (*LoginResponse, error)
 	LoginUser(ctx context.Context, input ninshou.LoginRequest) (*LoginResponse, error)
 	LogoutUser(ctx context.Context, input *bool) (bool, error)
 }
@@ -353,7 +353,7 @@ scalar Timestamp
 
 type Mutation {
   createTodo(input: NewTodo!): Todo! @protected(authRequired: true)
-  createUser(input: NewUser!): User! @protected(authRequired: false)
+  createUser(input: NewUser!): LoginResponse! @protected(authRequired: false)
   loginUser(input: LoginRequest!): LoginResponse!
     @protected(authRequired: false)
   logoutUser(input: Boolean): Boolean! @protected(authRequired: true)
@@ -639,10 +639,10 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*ninshou.User)
+	res := resTmp.(*LoginResponse)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNUser2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐUser(ctx, field.Selections, res)
+	return ec.marshalNLoginResponse2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋgraphqlᚐLoginResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_loginUser(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
