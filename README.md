@@ -5,6 +5,7 @@
 ## Requirements
 
 - [Go][] 1.12
+- [MongoDB][]
 - [mkcert][]
 
 ## Development
@@ -17,9 +18,11 @@ mkcert localhost 127.0.0.1 ::1
 In separate terminal sessions:
 
 ```bash
-go run ./cmd/ninshou
-go run ./cmd/youji
 go run ./cmd/graphql
+go run ./cmd/ninka
+go run ./cmd/ninshou
+go run ./cmd/shinninjou
+go run ./cmd/youji
 ```
 
 ### Updating GraphQL or Protocol Buffer Schemas
@@ -44,3 +47,4 @@ later][agpl].
 [agpl]: LICENSE
 [go]: https://golang.org/
 [mkcert]: https://github.com/FiloSottile/mkcert
+[mongodb]: https://www.mongodb.com/
