@@ -3,6 +3,8 @@ github.com/99designs/gqlgen v0.8.1 h1:wzs8ek4j31nb2BnXNwTCjc3X1m6I2OIBCO8biHLLji
 github.com/99designs/gqlgen v0.8.1/go.mod h1:st7qHA6ssU3uRZkmv+wzrzgX4srvIqEIdE5iuRW8GhE=
 github.com/99designs/gqlgen v0.8.2 h1:xOkDPWn/MZjkQ32pu6Axx15mNah0NAq9WalFqT+RavA=
 github.com/99designs/gqlgen v0.8.2/go.mod h1:aLyJw9xUgdJxZ8EqNQxo2pGFhXXJ/hq8t7J4yn8TgI4=
+github.com/99designs/gqlgen v0.8.3 h1:I6bMglXNKkn4KlvkSMzqZw53e1N2FF9Gud4NmsOxqiA=
+github.com/99designs/gqlgen v0.8.3/go.mod h1:aLyJw9xUgdJxZ8EqNQxo2pGFhXXJ/hq8t7J4yn8TgI4=
 github.com/99designs/gqlgen-contrib v0.0.0-20190222015228-c654377d611c h1:6PhFf4boI9ICEsb57Y8GNs+Yhk/y8x8sRvLcc1QTpYc=
 github.com/99designs/gqlgen-contrib v0.0.0-20190222015228-c654377d611c/go.mod h1:YBpBdxshfUEBRQzGDvYsWGKUnbnh+aYyOKwtzJajAq4=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
