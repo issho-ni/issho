@@ -2,6 +2,7 @@ package ninka
 
 import (
 	"context"
+	"encoding/base64"
 	"os"
 	"time"
 
@@ -36,8 +37,14 @@ func NewNinkaServer(config *service.ServerConfig) service.Server {
 	server := &ninkaServer{}
 	server.GRPCServer = service.NewGRPCServer(config, server)
 	server.mongoClient = service.NewMongoClient(config.Name)
-	server.secret = []byte(os.Getenv("NINKA_JWT_SECRET"))
 
+	secret := os.Getenv("NINKA_JWT_SECRET")
+	decoded, err := base64.StdEncoding.DecodeString(secret)
+	if err != nil {
+		log.Fatalf("Could not decode JWT secret: %v", err)
+	}
+
+	server.secret = decoded
 	return server
 }
 
