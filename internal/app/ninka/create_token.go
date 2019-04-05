@@ -7,7 +7,9 @@ import (
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/internal/pkg/uuid"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
 	"github.com/pascaldekloe/jwt"
+	log "github.com/sirupsen/logrus"
 )
 
 func (s *ninkaServer) CreateToken(ctx context.Context, in *ninka.TokenRequest) (*ninka.Token, error) {
@@ -25,6 +27,10 @@ func (s *ninkaServer) CreateToken(ctx context.Context, in *ninka.TokenRequest) (
 	if err != nil {
 		return nil, err
 	}
+
+	ctxlogrus.AddFields(ctx, log.Fields{
+		"user_id": claims.Subject,
+	})
 
 	return &ninka.Token{Token: string(token)}, nil
 }

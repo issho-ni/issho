@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/issho-ni/issho/api/ninka"
+	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
+	log "github.com/sirupsen/logrus"
 )
 
 func (s *ninkaServer) ValidateToken(ctx context.Context, in *ninka.Token) (*ninka.TokenResponse, error) {
@@ -12,6 +14,10 @@ func (s *ninkaServer) ValidateToken(ctx context.Context, in *ninka.Token) (*nink
 	if err != nil {
 		return &ninka.TokenResponse{Success: false}, err
 	}
+
+	ctxlogrus.AddFields(ctx, log.Fields{
+		"user_id": claims.UserID.String(),
+	})
 
 	invalid, err := s.isTokenInvalid(claims.TokenID)
 	if err != nil {
