@@ -64,12 +64,11 @@ type ComplexityRoot struct {
 	}
 
 	Todo struct {
-		CreatedAt func(childComplexity int) int
-		Done      func(childComplexity int) int
-		Id        func(childComplexity int) int
-		Text      func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
-		User      func(childComplexity int) int
+		CompletedAt func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		Id          func(childComplexity int) int
+		Text        func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
 	}
 
 	User struct {
@@ -175,19 +174,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetTodos(childComplexity), true
 
+	case "Todo.CompletedAt":
+		if e.complexity.Todo.CompletedAt == nil {
+			break
+		}
+
+		return e.complexity.Todo.CompletedAt(childComplexity), true
+
 	case "Todo.CreatedAt":
 		if e.complexity.Todo.CreatedAt == nil {
 			break
 		}
 
 		return e.complexity.Todo.CreatedAt(childComplexity), true
-
-	case "Todo.Done":
-		if e.complexity.Todo.Done == nil {
-			break
-		}
-
-		return e.complexity.Todo.Done(childComplexity), true
 
 	case "Todo.Id":
 		if e.complexity.Todo.Id == nil {
@@ -209,13 +208,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Todo.UpdatedAt(childComplexity), true
-
-	case "Todo.User":
-		if e.complexity.Todo.User == nil {
-			break
-		}
-
-		return e.complexity.Todo.User(childComplexity), true
 
 	case "User.CreatedAt":
 		if e.complexity.User.CreatedAt == nil {
@@ -369,7 +361,6 @@ input LoginRequest {
 }
 
 input NewTodo {
-  userID: ID!
   text: String!
 }
 
@@ -387,10 +378,9 @@ type LoginResponse {
 type Todo {
   id: ID!
   text: String!
-  done: Boolean!
-  user: User!
   createdAt: Timestamp!
   updatedAt: Timestamp
+  completedAt: Timestamp
 }
 
 type User {
@@ -849,60 +839,6 @@ func (ec *executionContext) _Todo_text(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Todo_done(ctx context.Context, field graphql.CollectedField, obj *youji.Todo) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Todo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Done, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.CollectedField, obj *youji.Todo) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Todo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.User, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ninshou.User)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNUser2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐUser(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Todo_createdAt(ctx context.Context, field graphql.CollectedField, obj *youji.Todo) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -944,6 +880,30 @@ func (ec *executionContext) _Todo_updatedAt(ctx context.Context, field graphql.C
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.UpdatedAt, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOTimestamp2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Todo_completedAt(ctx context.Context, field graphql.CollectedField, obj *youji.Todo) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Todo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CompletedAt, nil
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -1947,12 +1907,6 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, v interfa
 
 	for k, v := range asMap {
 		switch k {
-		case "userID":
-			var err error
-			it.UserID, err = ec.unmarshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "text":
 			var err error
 			it.Text, err = ec.unmarshalNString2string(ctx, v)
@@ -2146,16 +2100,6 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "done":
-			out.Values[i] = ec._Todo_done(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "user":
-			out.Values[i] = ec._Todo_user(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
 		case "createdAt":
 			out.Values[i] = ec._Todo_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -2163,6 +2107,8 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "updatedAt":
 			out.Values[i] = ec._Todo_updatedAt(ctx, field, obj)
+		case "completedAt":
+			out.Values[i] = ec._Todo_completedAt(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2617,16 +2563,6 @@ func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋ
 
 func (ec *executionContext) marshalNUser2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐUser(ctx context.Context, sel ast.SelectionSet, v ninshou.User) graphql.Marshaler {
 	return ec._User(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐUser(ctx context.Context, sel ast.SelectionSet, v *ninshou.User) graphql.Marshaler {
-	if v == nil {
-		if !ec.HasError(graphql.GetResolverContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._User(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

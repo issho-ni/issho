@@ -20,7 +20,6 @@ input LoginRequest {
 }
 
 input NewTodo {
-  userID: ID!
   text: String!
 }
 
@@ -38,10 +37,9 @@ type LoginResponse {
 type Todo {
   id: ID!
   text: String!
-  done: Boolean!
-  user: User!
   createdAt: Timestamp!
   updatedAt: Timestamp
+  completedAt: Timestamp
 }
 
 type User {

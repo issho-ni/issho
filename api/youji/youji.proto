@@ -5,8 +5,6 @@ import "google/protobuf/timestamp.proto";
 package youji;
 option go_package = "github.com/issho-ni/issho/api/youji";
 
-import "ninshou/ninshou.proto";
-
 service Youji {
     rpc CreateTodo(NewTodo) returns (Todo) {}
     rpc GetTodos(GetTodosParams) returns (Todos) {}
@@ -15,18 +13,17 @@ service Youji {
 message GetTodosParams {}
 
 message NewTodo {
-    bytes userID = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
-    string text = 2;
+    string text = 1;
 }
 
 message Todo {
     bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\"_id\""];
-    ninshou.User user = 2;
+    bytes userID = 2 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
     string text = 3;
-    bool done = 4;
-    google.protobuf.Timestamp createdAt = 5 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp updatedAt = 6 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp deletedAt = 7 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp createdAt = 4 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp updatedAt = 5 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp deletedAt = 6 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp completedAt = 7 [(gogoproto.stdtime) = true];
 }
 
 message Todos {
