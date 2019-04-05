@@ -2,11 +2,9 @@ package ninka
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"time"
 
-	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/internal/pkg/service"
 	"github.com/issho-ni/issho/internal/pkg/uuid"
@@ -78,17 +76,4 @@ func (s *ninkaServer) createIndexes() {
 	for _, result := range results {
 		log.Debugf("Created index %s", result)
 	}
-}
-
-func (s *ninkaServer) extractClaims(token *ninka.Token) (*common.Claims, error) {
-	t := []byte(token.Token)
-
-	claims, err := jwt.HMACCheck(t, s.secret)
-	if err != nil {
-		return nil, err
-	} else if ok := claims.Valid(time.Now()); !ok {
-		return nil, fmt.Errorf("JWT has expired or contains invalid claims")
-	}
-
-	return common.ClaimsFromJWT(claims)
 }

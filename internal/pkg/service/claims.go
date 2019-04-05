@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 
 	"github.com/issho-ni/issho/api/common"
-
 	icontext "github.com/issho-ni/issho/internal/pkg/context"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
@@ -29,7 +28,6 @@ func appendClaimsToOutgoingContext(ctx context.Context) context.Context {
 
 func logClaimsFromIncomingContext(ctx context.Context) context.Context {
 	md, ok := metadata.FromIncomingContext(ctx)
-
 	if !ok {
 		return ctx
 	}
