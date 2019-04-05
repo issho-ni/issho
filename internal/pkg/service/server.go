@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -28,7 +29,7 @@ type ServerConfig struct {
 
 // NewServerConfig creates a new set of server configuration values.
 func NewServerConfig(name string, defaultPort string) *ServerConfig {
-	port := os.Getenv(fmt.Sprintf("%s_PORT", name))
+	port := os.Getenv(strings.ToUpper(fmt.Sprintf("%s_port", name)))
 	if port == "" {
 		port = defaultPort
 	}
