@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/issho-ni/issho/api/ninka"
+	icontext "github.com/issho-ni/issho/internal/pkg/context"
 	"github.com/issho-ni/issho/internal/pkg/uuid"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
@@ -13,9 +14,13 @@ import (
 )
 
 func (s *ninkaServer) CreateToken(ctx context.Context, in *ninka.TokenRequest) (*ninka.Token, error) {
-	now := time.Now()
-	notBefore := now.Add(-time.Second)
-	expires := now.Add(30 * 24 * time.Hour)
+	t, ok := icontext.TimingFromContext(ctx)
+	if !ok {
+		t = time.Now()
+	}
+
+	notBefore := t
+	expires := t.Add(30 * 24 * time.Hour)
 
 	claims := &jwt.Claims{}
 	claims.ID = uuid.New().String()
