@@ -2,8 +2,9 @@ package graphql
 
 import (
 	"net/http"
+	"time"
 
-	icontext "github.com/issho-ni/issho/internal/pkg/context"
+	"github.com/issho-ni/issho/internal/pkg/context"
 )
 
 type timingHandler struct {
@@ -15,6 +16,6 @@ func timingMiddleware(next http.Handler) http.Handler {
 }
 
 func (h *timingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	ctx := icontext.NewTimingContext(r.Context())
+	ctx := context.NewTimingContext(r.Context(), time.Now())
 	h.Handler.ServeHTTP(rw, r.WithContext(ctx))
 }

@@ -47,10 +47,12 @@ func NewGRPCClient(config *GRPCClientConfig, name string, url string) GRPCClient
 	opts = append(opts, grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
 		streamClientContextInterceptor(appendRequestIDToOutgoingContext),
 		streamClientContextInterceptor(appendClaimsToOutgoingContext),
+		streamClientContextInterceptor(appendTimingToOutgoingContext),
 	)))
 	opts = append(opts, grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(
 		unaryClientContextInterceptor(appendRequestIDToOutgoingContext),
 		unaryClientContextInterceptor(appendClaimsToOutgoingContext),
+		unaryClientContextInterceptor(appendTimingToOutgoingContext),
 	)))
 
 	cc, err := grpc.Dial(url, opts...)

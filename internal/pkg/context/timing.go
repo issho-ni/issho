@@ -6,9 +6,9 @@ import (
 )
 
 // NewTimingContext creates a new context from the given parent and adds the
-// current time to it.
-func NewTimingContext(ctx context.Context) context.Context {
-	return context.WithValue(ctx, timingKey, time.Now())
+// specified time to it.
+func NewTimingContext(ctx context.Context, t time.Time) context.Context {
+	return context.WithValue(ctx, timingKey, t)
 }
 
 // TimingFromContext extracts the timing from the given context.
