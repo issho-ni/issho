@@ -12,16 +12,16 @@ func streamClientContextInterceptor(interceptor func(context.Context) context.Co
 	}
 }
 
-func unaryClientContextInterceptor(interceptor func(context.Context) context.Context) grpc.UnaryClientInterceptor {
-	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		return invoker(interceptor(ctx), method, req, reply, cc, opts...)
-	}
-}
-
 func streamServerContextInterceptor(interceptor func(context.Context) context.Context) grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		interceptor(ss.Context())
 		return handler(srv, ss)
+	}
+}
+
+func unaryClientContextInterceptor(interceptor func(context.Context) context.Context) grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		return invoker(interceptor(ctx), method, req, reply, cc, opts...)
 	}
 }
 
