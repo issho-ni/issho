@@ -29,7 +29,7 @@ func (s *ninkaServer) ValidateToken(ctx context.Context, in *ninka.Token) (*nink
 		"user_id": claims.UserID.String(),
 	})
 
-	invalid, err := s.isTokenInvalid(claims.TokenID)
+	invalid, err := s.isTokenInvalid(ctx, claims.TokenID)
 	if err != nil {
 		return &ninka.TokenResponse{Success: false}, err
 	} else if invalid {
