@@ -16,6 +16,8 @@ models:
     model: github.com/issho-ni/issho/api/ninshou.NewUser
   Todo:
     model: github.com/issho-ni/issho/api/youji.Todo
+  UpdateTodoParams:
+    model: github.com/issho-ni/issho/api/youji.UpdateTodoParams
   User:
     model: github.com/issho-ni/issho/api/ninshou.User
   ID:

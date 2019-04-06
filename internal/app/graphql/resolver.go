@@ -66,6 +66,10 @@ func (r *mutationResolver) LogoutUser(ctx context.Context, _ *bool) (bool, error
 	return response.Success, nil
 }
 
+func (r *mutationResolver) UpdateTodo(ctx context.Context, input youji.UpdateTodoParams) (*youji.Todo, error) {
+	return r.YoujiClient.UpdateTodo(ctx, &input)
+}
+
 func (r *mutationResolver) getLoginResponse(ctx context.Context, user *ninshou.User) (*graphql.LoginResponse, error) {
 	tokenRequest := &ninka.TokenRequest{UserID: user.Id}
 

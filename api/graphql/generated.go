@@ -57,6 +57,7 @@ type ComplexityRoot struct {
 		CreateUser func(childComplexity int, input ninshou.NewUser) int
 		LoginUser  func(childComplexity int, input ninshou.LoginRequest) int
 		LogoutUser func(childComplexity int, input *bool) int
+		UpdateTodo func(childComplexity int, input youji.UpdateTodoParams) int
 	}
 
 	Query struct {
@@ -85,6 +86,7 @@ type MutationResolver interface {
 	CreateUser(ctx context.Context, input ninshou.NewUser) (*LoginResponse, error)
 	LoginUser(ctx context.Context, input ninshou.LoginRequest) (*LoginResponse, error)
 	LogoutUser(ctx context.Context, input *bool) (bool, error)
+	UpdateTodo(ctx context.Context, input youji.UpdateTodoParams) (*youji.Todo, error)
 }
 type QueryResolver interface {
 	GetTodos(ctx context.Context) ([]*youji.Todo, error)
@@ -166,6 +168,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.LogoutUser(childComplexity, args["input"].(*bool)), true
+
+	case "Mutation.UpdateTodo":
+		if e.complexity.Mutation.UpdateTodo == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTodo_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTodo(childComplexity, args["input"].(youji.UpdateTodoParams)), true
 
 	case "Query.GetTodos":
 		if e.complexity.Query.GetTodos == nil {
@@ -349,6 +363,7 @@ type Mutation {
   loginUser(input: LoginRequest!): LoginResponse!
     @protected(authRequired: false)
   logoutUser(input: Boolean): Boolean! @protected(authRequired: true)
+  updateTodo(input: UpdateTodoParams!): Todo! @protected(authRequired: true)
 }
 
 type Query {
@@ -368,6 +383,12 @@ input NewUser {
   name: String!
   email: String!
   password: String!
+}
+
+input UpdateTodoParams {
+  id: ID!
+  text: String
+  done: Boolean
 }
 
 type LoginResponse {
@@ -459,6 +480,20 @@ func (ec *executionContext) field_Mutation_logoutUser_args(ctx context.Context, 
 	var arg0 *bool
 	if tmp, ok := rawArgs["input"]; ok {
 		arg0, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 youji.UpdateTodoParams
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalNUpdateTodoParams2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋyoujiᚐUpdateTodoParams(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -701,6 +736,40 @@ func (ec *executionContext) _Mutation_logoutUser(ctx context.Context, field grap
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateTodo(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateTodo_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateTodo(rctx, args["input"].(youji.UpdateTodoParams))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*youji.Todo)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNTodo2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋyoujiᚐTodo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getTodos(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1949,6 +2018,36 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, v interfa
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateTodoParams(ctx context.Context, v interface{}) (youji.UpdateTodoParams, error) {
+	var it youji.UpdateTodoParams
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+			it.Id, err = ec.unmarshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "text":
+			var err error
+			it.Text, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "done":
+			var err error
+			it.Done, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -2021,6 +2120,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "logoutUser":
 			out.Values[i] = ec._Mutation_logoutUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "updateTodo":
+			out.Values[i] = ec._Mutation_updateTodo(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
@@ -2559,6 +2663,10 @@ func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋ
 		return graphql.Null
 	}
 	return ec._Todo(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUpdateTodoParams2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋyoujiᚐUpdateTodoParams(ctx context.Context, v interface{}) (youji.UpdateTodoParams, error) {
+	return ec.unmarshalInputUpdateTodoParams(ctx, v)
 }
 
 func (ec *executionContext) marshalNUser2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐUser(ctx context.Context, sel ast.SelectionSet, v ninshou.User) graphql.Marshaler {

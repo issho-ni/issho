@@ -8,6 +8,7 @@ type Mutation {
   loginUser(input: LoginRequest!): LoginResponse!
     @protected(authRequired: false)
   logoutUser(input: Boolean): Boolean! @protected(authRequired: true)
+  updateTodo(input: UpdateTodoParams!): Todo! @protected(authRequired: true)
 }
 
 type Query {
@@ -27,6 +28,12 @@ input NewUser {
   name: String!
   email: String!
   password: String!
+}
+
+input UpdateTodoParams {
+  id: ID!
+  text: String
+  done: Boolean
 }
 
 type LoginResponse {

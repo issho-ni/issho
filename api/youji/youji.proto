@@ -8,6 +8,7 @@ option go_package = "github.com/issho-ni/issho/api/youji";
 service Youji {
     rpc CreateTodo(NewTodo) returns (Todo) {}
     rpc GetTodos(GetTodosParams) returns (Todos) {}
+    rpc UpdateTodo(UpdateTodoParams) returns (Todo) {}
 }
 
 message GetTodosParams {}
@@ -28,4 +29,10 @@ message Todo {
 
 message Todos {
     repeated Todo todos = 1;
+}
+
+message UpdateTodoParams {
+    bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\"_id\""];
+    string text = 2;
+    bool done = 3;
 }
