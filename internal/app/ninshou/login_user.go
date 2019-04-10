@@ -13,7 +13,7 @@ func (s *ninshouServer) LoginUser(ctx context.Context, in *ninshou.LoginRequest)
 	result := &ninshou.User{}
 	filter := bson.D{{Key: "email", Value: in.Email}}
 
-	collection := s.mongoClient.Database().Collection("users")
+	collection := s.mongoClient.Collection("users")
 	err := collection.FindOne(ctx, filter).Decode(result)
 	if err != nil {
 		return nil, err

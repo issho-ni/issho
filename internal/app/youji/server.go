@@ -47,7 +47,7 @@ func (s *youjiServer) createIndexes() {
 	index.Keys = bsonx.Doc{{Key: "userid", Value: bsonx.Int32(1)}}
 
 	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
-	todos := s.mongoClient.Database().Collection("todos").Indexes()
+	todos := s.mongoClient.Collection("todos").Indexes()
 
 	results, err := todos.CreateOne(context.Background(), index, createOptions)
 	if err != nil {

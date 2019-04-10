@@ -14,7 +14,7 @@ func (s *youjiServer) UpdateTodo(ctx context.Context, in *youji.UpdateTodoParams
 	claims, _ := icontext.ClaimsFromContext(ctx)
 	filter := bson.D{{Key: "_id", Value: in.Id}, {Key: "userid", Value: claims.UserID}}
 
-	collection := s.mongoClient.Database().Collection("todos")
+	collection := s.mongoClient.Collection("todos")
 	result := collection.FindOne(ctx, filter)
 
 	currentTodo := &youji.Todo{}

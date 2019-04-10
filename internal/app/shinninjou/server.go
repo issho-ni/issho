@@ -49,7 +49,7 @@ func (s *shinninjouServer) createIndexes() {
 
 	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
 
-	credentials := s.mongoClient.Database().Collection("credentials").Indexes()
+	credentials := s.mongoClient.Collection("credentials").Indexes()
 	result, err := credentials.CreateOne(context.Background(), index, createOptions)
 	if err != nil {
 		log.Fatalf("Could not create index: %v", err)

@@ -21,7 +21,7 @@ func (s *ninshouServer) CreateUser(ctx context.Context, in *ninshou.NewUser) (*n
 		return nil, err
 	}
 
-	collection := s.mongoClient.Database().Collection("users")
+	collection := s.mongoClient.Collection("users")
 	_, err = collection.InsertOne(ctx, ins)
 	if err != nil {
 		return nil, err

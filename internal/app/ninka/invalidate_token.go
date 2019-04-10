@@ -34,7 +34,7 @@ func (s *ninkaServer) InvalidateToken(ctx context.Context, in *common.Claims) (*
 			return &ninka.TokenResponse{Success: false}, err
 		}
 
-		collection := s.mongoClient.Database().Collection("invalid_tokens")
+		collection := s.mongoClient.Collection("invalid_tokens")
 		_, err = collection.InsertOne(ctx, ins)
 		if err != nil {
 			return &ninka.TokenResponse{Success: false}, err
@@ -48,7 +48,7 @@ func (s *ninkaServer) isTokenInvalid(ctx context.Context, tokenID *uuid.UUID) (b
 	result := &InvalidToken{}
 	filter := bson.D{{Key: "tokenid", Value: tokenID}}
 
-	collection := s.mongoClient.Database().Collection("invalid_tokens")
+	collection := s.mongoClient.Collection("invalid_tokens")
 	err := collection.FindOne(ctx, filter).Decode(result)
 	if err == mongo.ErrNoDocuments {
 		return false, nil

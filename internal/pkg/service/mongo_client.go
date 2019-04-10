@@ -12,6 +12,7 @@ import (
 
 // MongoClient defines the interface for a service's MongoDB connection.
 type MongoClient interface {
+	Collection(string, ...*options.CollectionOptions) *mongo.Collection
 	Connect() context.CancelFunc
 	Database() *mongo.Database
 }
@@ -59,4 +60,9 @@ func (c *mongoClient) Connect() context.CancelFunc {
 // Database returns the MongoDB database.
 func (c *mongoClient) Database() *mongo.Database {
 	return c.Client.Database(c.name)
+}
+
+// Collection returns the named collection on the MongoDB database.
+func (c *mongoClient) Collection(name string, opts ...*options.CollectionOptions) *mongo.Collection {
+	return c.Database().Collection(name, opts...)
 }

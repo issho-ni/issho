@@ -15,7 +15,7 @@ func (s *youjiServer) GetTodos(ctx context.Context, in *youji.GetTodosParams) (*
 	claims, _ := icontext.ClaimsFromContext(ctx)
 	filter := bson.D{{Key: "userid", Value: claims.UserID}}
 
-	collection := s.mongoClient.Database().Collection("todos")
+	collection := s.mongoClient.Collection("todos")
 	cur, err := collection.Find(ctx, filter)
 	if err != nil {
 		return nil, err

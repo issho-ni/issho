@@ -72,7 +72,7 @@ func (s *ninkaServer) createIndexes() {
 	expiresAtIndex.Options = options.Index().SetExpireAfterSeconds(0)
 
 	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
-	invalidTokens := s.mongoClient.Database().Collection("invalid_tokens").Indexes()
+	invalidTokens := s.mongoClient.Collection("invalid_tokens").Indexes()
 
 	indexes := []mongo.IndexModel{tokenIDIndex, expiresAtIndex}
 	results, err := invalidTokens.CreateMany(context.Background(), indexes, createOptions)

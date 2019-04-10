@@ -55,7 +55,7 @@ func (s *ninshouServer) createIndexes() {
 
 	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
 
-	users := s.mongoClient.Database().Collection("users").Indexes()
+	users := s.mongoClient.Collection("users").Indexes()
 	result, err := users.CreateOne(context.Background(), index, createOptions)
 	if err != nil {
 		log.Fatalf("Could not create index: %v", err)
