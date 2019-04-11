@@ -21,10 +21,10 @@ message Todo {
     bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\"_id\""];
     bytes userID = 2 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
     string text = 3;
-    google.protobuf.Timestamp createdAt = 4 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp updatedAt = 5 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp deletedAt = 6 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp completedAt = 7 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp completedAt = 4 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp createdAt = 5 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp updatedAt = 6 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp deletedAt = 7 [(gogoproto.stdtime) = true];
 }
 
 message Todos {
