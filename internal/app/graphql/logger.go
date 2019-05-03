@@ -28,7 +28,6 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		"http.method":      r.Method,
 		"http.protocol":    r.Proto,
 		"http.remote_addr": r.RemoteAddr,
-		"http.service":     "graphql.Graphql",
 		"http.size":        w.Size,
 		"http.status":      w.StatusCode,
 		"request_id":       rid,
