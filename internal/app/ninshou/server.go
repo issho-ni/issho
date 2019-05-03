@@ -1,14 +1,10 @@
 package ninshou
 
 import (
-	"context"
-	"time"
-
 	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/api/shinninjou"
 	"github.com/issho-ni/issho/internal/pkg/service"
 
-	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/x/bsonx"
@@ -47,19 +43,9 @@ func (s *ninshouServer) StartServer() {
 }
 
 func (s *ninshouServer) createIndexes() {
-	log.Debugf("Creating indexes")
-
 	index := mongo.IndexModel{}
 	index.Keys = bsonx.Doc{{Key: "email", Value: bsonx.Int32(1)}}
 	index.Options = options.Index().SetUnique(true)
 
-	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
-
-	users := s.mongoClient.Collection("users").Indexes()
-	result, err := users.CreateOne(context.Background(), index, createOptions)
-	if err != nil {
-		log.Fatalf("Could not create index: %v", err)
-	}
-
-	log.Debugf("Created index %s", result)
+	s.mongoClient.CreateIndexes(service.NewIndexSet("users", index))
 }

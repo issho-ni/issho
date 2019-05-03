@@ -1,10 +1,8 @@
 package ninka
 
 import (
-	"context"
 	"encoding/base64"
 	"os"
-	"time"
 
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/internal/pkg/service"
@@ -61,8 +59,6 @@ func (s *ninkaServer) StartServer() {
 }
 
 func (s *ninkaServer) createIndexes() {
-	log.Debugf("Creating indexes")
-
 	tokenIDIndex := mongo.IndexModel{}
 	tokenIDIndex.Keys = bsonx.Doc{{Key: "tokenid", Value: bsonx.Int32(1)}}
 	tokenIDIndex.Options = options.Index().SetUnique(true)
@@ -71,16 +67,5 @@ func (s *ninkaServer) createIndexes() {
 	expiresAtIndex.Keys = bsonx.Doc{{Key: "expiresat", Value: bsonx.Int32(1)}}
 	expiresAtIndex.Options = options.Index().SetExpireAfterSeconds(0)
 
-	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
-	invalidTokens := s.mongoClient.Collection("invalid_tokens").Indexes()
-
-	indexes := []mongo.IndexModel{tokenIDIndex, expiresAtIndex}
-	results, err := invalidTokens.CreateMany(context.Background(), indexes, createOptions)
-	if err != nil {
-		log.Fatalf("Could not create indexes: %v", err)
-	}
-
-	for _, result := range results {
-		log.Debugf("Created index %s", result)
-	}
+	s.mongoClient.CreateIndexes(service.NewIndexSet("invalid_tokens", tokenIDIndex, expiresAtIndex))
 }

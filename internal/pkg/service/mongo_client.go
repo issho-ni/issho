@@ -10,10 +10,22 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// IndexSet specifies the indexes to create for the given collection.
+type IndexSet struct {
+	Collection string
+	Indexes    []mongo.IndexModel
+}
+
+// NewIndexSet creates a new IndexSet.
+func NewIndexSet(collection string, indexes ...mongo.IndexModel) IndexSet {
+	return IndexSet{Collection: collection, Indexes: indexes}
+}
+
 // MongoClient defines the interface for a service's MongoDB connection.
 type MongoClient interface {
 	Collection(string, ...*options.CollectionOptions) *mongo.Collection
 	Connect() context.CancelFunc
+	CreateIndexes(...IndexSet)
 	Database() *mongo.Database
 }
 
@@ -55,6 +67,25 @@ func (c *mongoClient) Connect() context.CancelFunc {
 	cancelPing()
 
 	return cancel
+}
+
+// CreateIndexes creates the specified indexes on the client's database.
+func (c *mongoClient) CreateIndexes(indexSets ...IndexSet) {
+	log.Debug("Creating indexes")
+	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
+
+	for _, indexSet := range indexSets {
+		coll := c.Collection(indexSet.Collection).Indexes()
+
+		results, err := coll.CreateMany(context.Background(), indexSet.Indexes, createOptions)
+		if err != nil {
+			log.Fatalf("Could not create indexes: %v", err)
+		}
+
+		for _, result := range results {
+			log.Debugf("Created index %s on collection %s", result, indexSet.Collection)
+		}
+	}
 }
 
 // Database returns the MongoDB database.
