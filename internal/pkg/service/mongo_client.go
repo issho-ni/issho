@@ -31,6 +31,7 @@ type MongoClient interface {
 
 type mongoClient struct {
 	name string
+	log  *log.Entry
 	*mongo.Client
 }
 
@@ -38,12 +39,18 @@ type mongoClient struct {
 func NewMongoClient(dbName string) MongoClient {
 	uri := os.Getenv("MONGODB_URL")
 
+	entry := log.WithFields(log.Fields{
+		"mongodb.service": dbName,
+		"span.kind":       "client",
+		"system":          "mongodb",
+	})
+
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
-		log.Fatalf("Failed to create MongoDB client: %v", err)
+		entry.WithField("err", err).Fatal("Failed to create MongoDB client")
 	}
 
-	return &mongoClient{dbName, client}
+	return &mongoClient{dbName, entry, client}
 }
 
 // Connect establishes a connection to the MongoDB server.
@@ -52,18 +59,18 @@ func (c *mongoClient) Connect() context.CancelFunc {
 
 	err := c.Client.Connect(ctx)
 	if err != nil {
-		log.Fatalf("Failed to find MongoDB: %v", err)
+		c.log.WithField("err", err).Fatal("Failed to find MongoDB")
 	}
 
-	log.Debug("Connecting to MongoDB")
+	c.log.Debug("Connecting to MongoDB")
 	pingCtx, cancelPing := context.WithTimeout(context.Background(), 30*time.Second)
 
 	err = c.Client.Ping(pingCtx, nil)
 	if err != nil {
-		log.Fatalf("Failed to connect to MongoDB: %v", err)
+		c.log.WithField("err", err).Fatal("Failed to connect to MongoDB")
 	}
 
-	log.Debug("Connected to MongoDB")
+	c.log.Debug("Connected to MongoDB")
 	cancelPing()
 
 	return cancel
@@ -71,7 +78,7 @@ func (c *mongoClient) Connect() context.CancelFunc {
 
 // CreateIndexes creates the specified indexes on the client's database.
 func (c *mongoClient) CreateIndexes(indexSets ...IndexSet) {
-	log.Debug("Creating indexes")
+	c.log.Debug("Creating indexes")
 	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
 
 	for _, indexSet := range indexSets {
@@ -79,11 +86,14 @@ func (c *mongoClient) CreateIndexes(indexSets ...IndexSet) {
 
 		results, err := coll.CreateMany(context.Background(), indexSet.Indexes, createOptions)
 		if err != nil {
-			log.Fatalf("Could not create indexes: %v", err)
+			c.log.WithField("err", err).Fatal("Could not create indexes")
 		}
 
 		for _, result := range results {
-			log.Debugf("Created index %s on collection %s", result, indexSet.Collection)
+			c.log.WithFields(log.Fields{
+				"mongodb.collection": indexSet.Collection,
+				"mongodb.index":      result,
+			}).Debug("Created index")
 		}
 	}
 }
