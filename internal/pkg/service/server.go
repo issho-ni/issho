@@ -44,6 +44,7 @@ func NewServerConfig(name string, defaultPort string) *ServerConfig {
 		tlsKey = defaultTLSKey
 	}
 
+	setFormatter(name)
 	return &ServerConfig{name, port, tlsCert, tlsKey}
 }
 

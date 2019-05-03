@@ -7,7 +7,22 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func init() {
+type formatter struct {
+	fields log.Fields
+	lf     log.Formatter
+}
+
+func (f *formatter) Format(e *log.Entry) ([]byte, error) {
+	for k, v := range f.fields {
+		if _, ok := e.Data[k]; !ok {
+			e.Data[k] = v
+		}
+	}
+
+	return f.lf.Format(e)
+}
+
+func setFormatter(service string) {
 	logLevel, err := log.ParseLevel(os.Getenv("LOG_LEVEL"))
 	if err != nil {
 		logLevel = log.DebugLevel
@@ -16,7 +31,16 @@ func init() {
 	customFormatter := &log.JSONFormatter{}
 	customFormatter.TimestampFormat = time.RFC3339Nano
 
-	log.SetFormatter(customFormatter)
+	f := &formatter{
+		fields: log.Fields{
+			"service":   service,
+			"span.kind": "server",
+			"system":    "system",
+		},
+		lf: customFormatter,
+	}
+
+	log.SetFormatter(f)
 	log.SetOutput(os.Stdout)
 	log.SetLevel(logLevel)
 }
