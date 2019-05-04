@@ -50,6 +50,6 @@ func NewServerConfig(name string, defaultPort string) *ServerConfig {
 
 // Serve starts the server.
 func (s *ServerConfig) Serve(serve func() error) {
-	log.Infof("Starting service %s on port :%s", s.Name, s.Port)
+	log.WithField("port", s.Port).Info("Starting service")
 	log.Fatal(serve())
 }

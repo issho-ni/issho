@@ -39,7 +39,7 @@ func NewNinkaServer(config *service.ServerConfig) service.Server {
 	secret := os.Getenv("NINKA_JWT_SECRET")
 	decoded, err := base64.StdEncoding.DecodeString(secret)
 	if err != nil {
-		log.Fatalf("Could not decode JWT secret: %v", err)
+		log.WithField("err", err).Fatal("Could not decode JWT secret")
 	}
 
 	server.secret = decoded

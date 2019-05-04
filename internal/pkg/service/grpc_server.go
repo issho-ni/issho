@@ -34,7 +34,10 @@ func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) GRPCServer {
 	lis, err := net.Listen("tcp", ":"+config.Port)
 
 	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
+		log.WithFields(log.Fields{
+			"err":  err,
+			"port": config.Port,
+		}).Fatal("Failed to listen on port")
 	}
 
 	var opts []grpc.ServerOption
@@ -42,7 +45,7 @@ func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) GRPCServer {
 	creds, err := credentials.NewServerTLSFromFile(config.TLSCert, config.TLSKey)
 
 	if err != nil {
-		log.Fatalf("Failed to generate server credentials: %v", err)
+		log.WithField("err", err).Fatal("Failed to generate server credentials")
 	}
 
 	opts = append(opts, grpc.Creds(creds))

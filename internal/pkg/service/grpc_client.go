@@ -22,7 +22,7 @@ func NewGRPCClientConfig(tlsCert string) *GRPCClientConfig {
 	creds, err := credentials.NewClientTLSFromFile(tlsCert, "")
 
 	if err != nil {
-		log.Fatalf("Failed to generate credentials: %v", err)
+		log.WithField("err", err).Fatal("Failed to generate credentials")
 	}
 
 	return &GRPCClientConfig{creds}
@@ -57,12 +57,15 @@ func NewGRPCClient(config *GRPCClientConfig, name string, url string) GRPCClient
 
 	cc, err := grpc.Dial(url, opts...)
 	if err != nil {
-		log.Fatalf("Failed to dial %s: %v", name, err)
+		log.WithFields(log.Fields{
+			"err":          err,
+			"grpc.service": name,
+		}).Fatal("Failed to dial")
 	}
 
 	healthClient := healthpb.NewHealthClient(cc)
 
-	log.Debugf("Connecting to %s", name)
+	log.WithField("grpc.service", name).Debug("Connecting")
 	return &grpcClient{cc, config, healthClient}
 }
 
