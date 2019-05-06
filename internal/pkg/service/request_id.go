@@ -11,11 +11,14 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+const requestIDKey = "request_id"
+
 func appendRequestIDToOutgoingContext(ctx context.Context) context.Context {
 	rid, ok := icontext.RequestIDFromContext(ctx)
 
 	if ok {
-		ctx = metadata.AppendToOutgoingContext(ctx, "request_id", rid.String())
+		rids := rid.String()
+		ctx = metadata.AppendToOutgoingContext(ctx, requestIDKey, rids)
 	}
 
 	return ctx
@@ -28,7 +31,7 @@ func logRequestIDFromIncomingContext(ctx context.Context) context.Context {
 		return ctx
 	}
 
-	value := md.Get("request_id")
+	value := md.Get(requestIDKey)
 
 	if len(value) != 1 {
 		return ctx
@@ -40,7 +43,7 @@ func logRequestIDFromIncomingContext(ctx context.Context) context.Context {
 	}
 
 	ctxlogrus.AddFields(ctx, log.Fields{
-		"request_id": rid.String(),
+		requestIDKey: rid.String(),
 	})
 
 	return icontext.NewRequestIDContext(ctx, rid)

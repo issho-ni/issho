@@ -12,6 +12,9 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+const timingKey = "timing"
+const startTimeKey = "start_time"
+
 func appendTimingToOutgoingContext(ctx context.Context) context.Context {
 	t, ok := icontext.TimingFromContext(ctx)
 	if !ok {
@@ -23,7 +26,7 @@ func appendTimingToOutgoingContext(ctx context.Context) context.Context {
 		return ctx
 	}
 
-	return metadata.AppendToOutgoingContext(ctx, "timing", string(value))
+	return metadata.AppendToOutgoingContext(ctx, timingKey, string(value))
 }
 
 func logTimingFromIncomingContext(ctx context.Context) context.Context {
@@ -32,7 +35,7 @@ func logTimingFromIncomingContext(ctx context.Context) context.Context {
 		return ctx
 	}
 
-	value := md.Get("timing")
+	value := md.Get(timingKey)
 	if len(value) != 1 {
 		return ctx
 	}
@@ -44,7 +47,7 @@ func logTimingFromIncomingContext(ctx context.Context) context.Context {
 	}
 
 	ctxlogrus.AddFields(ctx, log.Fields{
-		"start_time": t.Format(time.RFC3339Nano),
+		startTimeKey: t.Format(time.RFC3339Nano),
 	})
 
 	return icontext.NewTimingContext(ctx, t)

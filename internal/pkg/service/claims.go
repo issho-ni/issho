@@ -12,6 +12,9 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+const claimsKey = "claims"
+const userIDKey = "user_id"
+
 func appendClaimsToOutgoingContext(ctx context.Context) context.Context {
 	claims, ok := icontext.ClaimsFromContext(ctx)
 	if !ok {
@@ -23,7 +26,7 @@ func appendClaimsToOutgoingContext(ctx context.Context) context.Context {
 		return ctx
 	}
 
-	return metadata.AppendToOutgoingContext(ctx, "claims", string(value))
+	return metadata.AppendToOutgoingContext(ctx, claimsKey, string(value))
 }
 
 func logClaimsFromIncomingContext(ctx context.Context) context.Context {
@@ -32,7 +35,7 @@ func logClaimsFromIncomingContext(ctx context.Context) context.Context {
 		return ctx
 	}
 
-	value := md.Get("claims")
+	value := md.Get(claimsKey)
 	if len(value) != 1 {
 		return ctx
 	}
@@ -44,7 +47,7 @@ func logClaimsFromIncomingContext(ctx context.Context) context.Context {
 	}
 
 	ctxlogrus.AddFields(ctx, log.Fields{
-		"user_id": claims.UserID.String(),
+		userIDKey: claims.UserID.String(),
 	})
 
 	return icontext.NewClaimsContext(ctx, claims)
