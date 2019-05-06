@@ -60,12 +60,16 @@ func NewGRPCClient(config *GRPCClientConfig, name string, url string) GRPCClient
 		log.WithFields(log.Fields{
 			"err":          err,
 			"grpc.service": name,
+			"span.kind":    "client",
 		}).Fatal("Failed to dial")
 	}
 
 	healthClient := healthpb.NewHealthClient(cc)
 
-	log.WithField("grpc.service", name).Debug("Connecting")
+	log.WithFields(log.Fields{
+		"grpc.service": name,
+		"span.kind":    "client",
+	}).Debug("Connecting")
 	return &grpcClient{cc, config, healthClient}
 }
 
