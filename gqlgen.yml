@@ -8,8 +8,6 @@ model:
   filename: api/graphql/models.go
   package: graphql
 models:
-  LoginRequest:
-    model: github.com/issho-ni/issho/api/ninshou.LoginRequest
   NewTodo:
     model: github.com/issho-ni/issho/api/youji.NewTodo
   NewUser:

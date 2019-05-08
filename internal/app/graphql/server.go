@@ -6,6 +6,7 @@ import (
 	"github.com/issho-ni/issho/api/graphql"
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/api/ninshou"
+	"github.com/issho-ni/issho/api/shinninjou"
 	"github.com/issho-ni/issho/api/youji"
 	"github.com/issho-ni/issho/internal/pkg/service"
 
@@ -22,9 +23,10 @@ type graphQLServer struct {
 }
 
 type clientSet struct {
-	NinkaClient   *ninka.Client
-	NinshouClient *ninshou.Client
-	YoujiClient   *youji.Client
+	NinkaClient      *ninka.Client
+	NinshouClient    *ninshou.Client
+	ShinninjouClient *shinninjou.Client
+	YoujiClient      *youji.Client
 }
 
 // NewGraphQLServer creates a new HTTP handler for the GraphQL service.
@@ -36,6 +38,7 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 	clients := &clientSet{
 		ninka.NewClient(env),
 		ninshou.NewClient(env),
+		shinninjou.NewClient(env),
 		youji.NewClient(env),
 	}
 

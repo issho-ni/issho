@@ -8,6 +8,7 @@ import (
 	"github.com/issho-ni/issho/api/graphql"
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/api/ninshou"
+	"github.com/issho-ni/issho/api/shinninjou"
 	"github.com/issho-ni/issho/api/youji"
 	icontext "github.com/issho-ni/issho/internal/pkg/context"
 )
@@ -46,8 +47,17 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input ninshou.NewUser
 
 // LoginUser attempts to authenticate a user given an email address and
 // password.
-func (r *mutationResolver) LoginUser(ctx context.Context, input ninshou.LoginRequest) (*graphql.LoginResponse, error) {
-	user, err := r.NinshouClient.LoginUser(ctx, &input)
+func (r *mutationResolver) LoginUser(ctx context.Context, input graphql.LoginRequest) (*graphql.LoginResponse, error) {
+	user, err := r.NinshouClient.GetUser(ctx, &ninshou.User{Email: input.Email})
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = r.ShinninjouClient.ValidateCredential(ctx, &shinninjou.Credential{
+		UserID:         user.Id,
+		CredentialType: shinninjou.CredentialType_PASSWORD,
+		Credential:     []byte(input.Password),
+	})
 	if err != nil {
 		return nil, err
 	}
