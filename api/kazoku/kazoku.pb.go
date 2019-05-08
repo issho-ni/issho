@@ -32,18 +32,24 @@ const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 type UserAccount_Role int32
 
 const (
-	UserAccount_MEMBER UserAccount_Role = 0
-	UserAccount_ADMIN  UserAccount_Role = 1
+	UserAccount_INACTIVE UserAccount_Role = 0
+	UserAccount_MEMBER   UserAccount_Role = 1
+	UserAccount_ADMIN    UserAccount_Role = 98
+	UserAccount_OWNER    UserAccount_Role = 99
 )
 
 var UserAccount_Role_name = map[int32]string{
-	0: "MEMBER",
-	1: "ADMIN",
+	0:  "INACTIVE",
+	1:  "MEMBER",
+	98: "ADMIN",
+	99: "OWNER",
 }
 
 var UserAccount_Role_value = map[string]int32{
-	"MEMBER": 0,
-	"ADMIN":  1,
+	"INACTIVE": 0,
+	"MEMBER":   1,
+	"ADMIN":    98,
+	"OWNER":    99,
 }
 
 func (x UserAccount_Role) String() string {
@@ -55,12 +61,14 @@ func (UserAccount_Role) EnumDescriptor() ([]byte, []int) {
 }
 
 type Account struct {
-	Id        *github_com_issho_ni_issho_internal_pkg_uuid.UUID `protobuf:"bytes,1,opt,name=id,proto3,customtype=github.com/issho-ni/issho/internal/pkg/uuid.UUID" json:"id,omitempty" bson:"_id"`
-	Name      string                                            `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	ExpiresAt *time.Time                                        `protobuf:"bytes,3,opt,name=expiresAt,proto3,stdtime" json:"expiresAt,omitempty"`
-	CreatedAt *time.Time                                        `protobuf:"bytes,4,opt,name=createdAt,proto3,stdtime" json:"createdAt,omitempty"`
-	UpdatedAt *time.Time                                        `protobuf:"bytes,5,opt,name=updatedAt,proto3,stdtime" json:"updatedAt,omitempty"`
-	DeletedAt *time.Time                                        `protobuf:"bytes,6,opt,name=deletedAt,proto3,stdtime" json:"deletedAt,omitempty"`
+	Id              *github_com_issho_ni_issho_internal_pkg_uuid.UUID `protobuf:"bytes,1,opt,name=id,proto3,customtype=github.com/issho-ni/issho/internal/pkg/uuid.UUID" json:"id,omitempty" bson:"_id"`
+	Name            string                                            `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	CreatedByUserID *github_com_issho_ni_issho_internal_pkg_uuid.UUID `protobuf:"bytes,3,opt,name=createdByUserID,proto3,customtype=github.com/issho-ni/issho/internal/pkg/uuid.UUID" json:"createdByUserID,omitempty"`
+	UpdatedByUserID *github_com_issho_ni_issho_internal_pkg_uuid.UUID `protobuf:"bytes,4,opt,name=updatedByUserID,proto3,customtype=github.com/issho-ni/issho/internal/pkg/uuid.UUID" json:"updatedByUserID,omitempty"`
+	ExpiresAt       *time.Time                                        `protobuf:"bytes,5,opt,name=expiresAt,proto3,stdtime" json:"expiresAt,omitempty"`
+	CreatedAt       *time.Time                                        `protobuf:"bytes,6,opt,name=createdAt,proto3,stdtime" json:"createdAt,omitempty"`
+	UpdatedAt       *time.Time                                        `protobuf:"bytes,7,opt,name=updatedAt,proto3,stdtime" json:"updatedAt,omitempty"`
+	DeletedAt       *time.Time                                        `protobuf:"bytes,8,opt,name=deletedAt,proto3,stdtime" json:"deletedAt,omitempty"`
 }
 
 func (m *Account) Reset()         { *m = Account{} }
@@ -132,9 +140,14 @@ func (m *Account) GetDeletedAt() *time.Time {
 }
 
 type UserAccount struct {
-	AccountID *github_com_issho_ni_issho_internal_pkg_uuid.UUID `protobuf:"bytes,1,opt,name=accountID,proto3,customtype=github.com/issho-ni/issho/internal/pkg/uuid.UUID" json:"accountID,omitempty"`
-	UserID    *github_com_issho_ni_issho_internal_pkg_uuid.UUID `protobuf:"bytes,2,opt,name=userID,proto3,customtype=github.com/issho-ni/issho/internal/pkg/uuid.UUID" json:"userID,omitempty"`
-	Role      UserAccount_Role                                  `protobuf:"varint,3,opt,name=role,proto3,enum=kazoku.UserAccount_Role" json:"role,omitempty"`
+	AccountID       *github_com_issho_ni_issho_internal_pkg_uuid.UUID `protobuf:"bytes,1,opt,name=accountID,proto3,customtype=github.com/issho-ni/issho/internal/pkg/uuid.UUID" json:"accountID,omitempty"`
+	UserID          *github_com_issho_ni_issho_internal_pkg_uuid.UUID `protobuf:"bytes,2,opt,name=userID,proto3,customtype=github.com/issho-ni/issho/internal/pkg/uuid.UUID" json:"userID,omitempty"`
+	Role            UserAccount_Role                                  `protobuf:"varint,3,opt,name=role,proto3,enum=kazoku.UserAccount_Role" json:"role,omitempty"`
+	CreatedByUserID *github_com_issho_ni_issho_internal_pkg_uuid.UUID `protobuf:"bytes,4,opt,name=createdByUserID,proto3,customtype=github.com/issho-ni/issho/internal/pkg/uuid.UUID" json:"createdByUserID,omitempty"`
+	UpdatedByUserID *github_com_issho_ni_issho_internal_pkg_uuid.UUID `protobuf:"bytes,5,opt,name=updatedByUserID,proto3,customtype=github.com/issho-ni/issho/internal/pkg/uuid.UUID" json:"updatedByUserID,omitempty"`
+	CreatedAt       *time.Time                                        `protobuf:"bytes,6,opt,name=createdAt,proto3,stdtime" json:"createdAt,omitempty"`
+	UpdatedAt       *time.Time                                        `protobuf:"bytes,7,opt,name=updatedAt,proto3,stdtime" json:"updatedAt,omitempty"`
+	DeletedAt       *time.Time                                        `protobuf:"bytes,8,opt,name=deletedAt,proto3,stdtime" json:"deletedAt,omitempty"`
 }
 
 func (m *UserAccount) Reset()         { *m = UserAccount{} }
@@ -174,7 +187,28 @@ func (m *UserAccount) GetRole() UserAccount_Role {
 	if m != nil {
 		return m.Role
 	}
-	return UserAccount_MEMBER
+	return UserAccount_INACTIVE
+}
+
+func (m *UserAccount) GetCreatedAt() *time.Time {
+	if m != nil {
+		return m.CreatedAt
+	}
+	return nil
+}
+
+func (m *UserAccount) GetUpdatedAt() *time.Time {
+	if m != nil {
+		return m.UpdatedAt
+	}
+	return nil
+}
+
+func (m *UserAccount) GetDeletedAt() *time.Time {
+	if m != nil {
+		return m.DeletedAt
+	}
+	return nil
 }
 
 func init() {
@@ -186,34 +220,39 @@ func init() {
 func init() { proto.RegisterFile("kazoku/kazoku.proto", fileDescriptor_0749abf42e57ef8a) }
 
 var fileDescriptor_0749abf42e57ef8a = []byte{
-	// 427 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x93, 0x3f, 0x8f, 0x94, 0x40,
-	0x18, 0xc6, 0x77, 0x56, 0x0e, 0xdd, 0x39, 0x63, 0x2e, 0x63, 0x43, 0x36, 0x91, 0xdd, 0x10, 0x8b,
-	0x2d, 0x74, 0xf0, 0xf0, 0x2a, 0x8b, 0x8b, 0x10, 0xae, 0x20, 0xba, 0x16, 0x13, 0xb7, 0xb1, 0x31,
-	0xfc, 0x19, 0xb9, 0xc9, 0x02, 0x43, 0x60, 0xc6, 0x18, 0x3f, 0xc5, 0x7d, 0x2c, 0xcb, 0x2b, 0x8d,
-	0xc5, 0x69, 0x76, 0x3f, 0x81, 0xd6, 0x16, 0x86, 0x19, 0x8e, 0xbd, 0xc6, 0x64, 0xb3, 0x15, 0xcf,
-	0xfb, 0xf2, 0xfe, 0x5e, 0x1e, 0x1e, 0x18, 0xf8, 0x78, 0x1d, 0x7f, 0xe5, 0x6b, 0xe9, 0xea, 0x0b,
-	0xae, 0x1b, 0x2e, 0x38, 0x32, 0x75, 0x35, 0x3d, 0xcb, 0x99, 0xb8, 0x94, 0x09, 0x4e, 0x79, 0xe9,
-	0xe6, 0x3c, 0xe7, 0xae, 0xba, 0x9d, 0xc8, 0x4f, 0xaf, 0x3f, 0x9f, 0x62, 0x0f, 0x9f, 0xaa, 0xa6,
-	0xea, 0x29, 0xa5, 0xe9, 0xe9, 0x2c, 0xe7, 0x3c, 0x2f, 0xe8, 0x30, 0xec, 0x0a, 0x56, 0xd2, 0x56,
-	0xc4, 0x65, 0xad, 0x07, 0x9c, 0xdf, 0x63, 0x78, 0xdf, 0x4f, 0x53, 0x2e, 0x2b, 0x81, 0x08, 0x1c,
-	0xb3, 0xcc, 0x02, 0x73, 0xb0, 0x78, 0x18, 0x04, 0x3f, 0x6e, 0x66, 0x2f, 0xee, 0x3c, 0x92, 0xb5,
-	0xed, 0x25, 0x7f, 0x5e, 0x31, 0x2d, 0x5c, 0x56, 0x09, 0xda, 0x54, 0x71, 0xe1, 0xd6, 0xeb, 0xdc,
-	0x95, 0x92, 0x65, 0x78, 0xb5, 0x8a, 0xc2, 0x3f, 0x37, 0x33, 0x98, 0xb4, 0xbc, 0x7a, 0xe5, 0x7c,
-	0x64, 0x99, 0x43, 0xc6, 0x2c, 0x43, 0x08, 0x1a, 0x55, 0x5c, 0x52, 0x6b, 0x3c, 0x07, 0x8b, 0x09,
-	0x51, 0x1a, 0x9d, 0xc3, 0x09, 0xfd, 0x52, 0xb3, 0x86, 0xb6, 0xbe, 0xb0, 0xee, 0xcd, 0xc1, 0xe2,
-	0xd8, 0x9b, 0x62, 0x6d, 0x14, 0xdf, 0x1a, 0xc5, 0xef, 0x6f, 0x8d, 0x06, 0xc6, 0xd5, 0xcf, 0x19,
-	0x20, 0x3b, 0xa4, 0xe3, 0xd3, 0x86, 0xc6, 0x82, 0x66, 0xbe, 0xb0, 0x8c, 0x7d, 0xf9, 0x01, 0xe9,
-	0x78, 0x59, 0x67, 0x3d, 0x7f, 0xb4, 0x2f, 0x3f, 0x20, 0x1d, 0x9f, 0xd1, 0x82, 0x6a, 0xde, 0xdc,
-	0x97, 0x1f, 0x10, 0xe7, 0x2f, 0x80, 0xc7, 0xab, 0x96, 0x36, 0xbb, 0xdc, 0x27, 0xb1, 0x96, 0x51,
-	0xd8, 0xc7, 0x7f, 0x76, 0x48, 0xfc, 0x64, 0xb7, 0x06, 0xbd, 0x85, 0xa6, 0x6c, 0x69, 0x13, 0x85,
-	0x2a, 0xf9, 0x43, 0x17, 0xf6, 0x3b, 0xd0, 0x33, 0x68, 0x34, 0xbc, 0xa0, 0xea, 0x63, 0x3d, 0xf2,
-	0x2c, 0xdc, 0xff, 0xa1, 0x77, 0x5e, 0x02, 0x13, 0x5e, 0x50, 0xa2, 0xa6, 0x9c, 0x27, 0xd0, 0xe8,
-	0x2a, 0x04, 0xa1, 0xb9, 0xbc, 0x58, 0x06, 0x17, 0xe4, 0x64, 0x84, 0x26, 0xf0, 0xc8, 0x0f, 0x97,
-	0xd1, 0xbb, 0x13, 0xe0, 0x3d, 0x80, 0xe6, 0x1b, 0xc5, 0x07, 0xe7, 0xdf, 0x36, 0x36, 0xb8, 0xde,
-	0xd8, 0xe0, 0xd7, 0xc6, 0x06, 0x57, 0x5b, 0x7b, 0x74, 0xbd, 0xb5, 0x47, 0xdf, 0xb7, 0xf6, 0xe8,
-	0xc3, 0xd3, 0xff, 0x5b, 0x8d, 0x6b, 0xd6, 0x9f, 0x90, 0xc4, 0x54, 0x69, 0xbf, 0xfc, 0x17, 0x00,
-	0x00, 0xff, 0xff, 0xfd, 0xc9, 0x16, 0xd2, 0x39, 0x03, 0x00, 0x00,
+	// 502 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x94, 0xcf, 0x6e, 0xd3, 0x4c,
+	0x14, 0xc5, 0x33, 0xf9, 0x1c, 0x37, 0x99, 0x56, 0x1f, 0xd1, 0xb0, 0xb1, 0xb2, 0x70, 0xa2, 0x88,
+	0x45, 0x16, 0x30, 0xa6, 0xa1, 0x62, 0xc1, 0xa2, 0xc2, 0x26, 0x59, 0x58, 0x90, 0x20, 0x8d, 0x1a,
+	0x90, 0x58, 0x80, 0xfc, 0x67, 0x70, 0x47, 0x71, 0x3c, 0x96, 0x3d, 0x46, 0xc0, 0x53, 0x74, 0xc3,
+	0x83, 0xf0, 0x16, 0x2c, 0xbb, 0x44, 0x2c, 0x0a, 0x4a, 0xde, 0x80, 0x27, 0x40, 0x9e, 0x71, 0x93,
+	0x52, 0x81, 0x14, 0xb5, 0xb0, 0x60, 0xe5, 0xeb, 0xf1, 0xfc, 0xce, 0x5c, 0x9f, 0x7b, 0x6c, 0x78,
+	0x73, 0xee, 0xbd, 0xe7, 0xf3, 0xc2, 0x52, 0x17, 0x9c, 0x66, 0x5c, 0x70, 0xa4, 0xab, 0xbb, 0xce,
+	0x41, 0xc4, 0xc4, 0x71, 0xe1, 0xe3, 0x80, 0x2f, 0xac, 0x88, 0x47, 0xdc, 0x92, 0x8f, 0xfd, 0xe2,
+	0xf5, 0xc3, 0x37, 0xfb, 0x78, 0x88, 0xf7, 0xe5, 0xa2, 0x5c, 0x93, 0x95, 0xa2, 0x3b, 0xdd, 0x88,
+	0xf3, 0x28, 0xa6, 0xeb, 0xcd, 0x96, 0x60, 0x0b, 0x9a, 0x0b, 0x6f, 0x91, 0xaa, 0x0d, 0xfd, 0x8f,
+	0x1a, 0xdc, 0xb1, 0x83, 0x80, 0x17, 0x89, 0x40, 0x04, 0xd6, 0x59, 0x68, 0x80, 0x1e, 0x18, 0xec,
+	0x39, 0xce, 0x97, 0xb3, 0xee, 0xdd, 0x0b, 0x47, 0xb2, 0x3c, 0x3f, 0xe6, 0x77, 0x12, 0xa6, 0x0a,
+	0x8b, 0x25, 0x82, 0x66, 0x89, 0x17, 0x5b, 0xe9, 0x3c, 0xb2, 0x8a, 0x82, 0x85, 0x78, 0x36, 0x73,
+	0x47, 0xdf, 0xcf, 0xba, 0xd0, 0xcf, 0x79, 0xf2, 0xa0, 0xff, 0x8a, 0x85, 0x7d, 0x52, 0x67, 0x21,
+	0x42, 0x50, 0x4b, 0xbc, 0x05, 0x35, 0xea, 0x3d, 0x30, 0x68, 0x11, 0x59, 0xa3, 0x97, 0xf0, 0x46,
+	0x90, 0x51, 0x4f, 0xd0, 0xd0, 0x79, 0x37, 0xcb, 0x69, 0xe6, 0x8e, 0x8c, 0xff, 0xe4, 0xa1, 0x07,
+	0x57, 0x39, 0x94, 0x5c, 0x16, 0x2b, 0xf5, 0x8b, 0x34, 0xfc, 0x49, 0x5f, 0xbb, 0x8e, 0xfe, 0x25,
+	0x31, 0x74, 0x08, 0x5b, 0xf4, 0x6d, 0xca, 0x32, 0x9a, 0xdb, 0xc2, 0x68, 0xf4, 0xc0, 0x60, 0x77,
+	0xd8, 0xc1, 0xca, 0x68, 0x7c, 0x6e, 0x34, 0x3e, 0x3a, 0x37, 0xda, 0xd1, 0x4e, 0xbe, 0x76, 0x01,
+	0xd9, 0x20, 0x25, 0x5f, 0xb5, 0x6c, 0x0b, 0x43, 0xdf, 0x96, 0x5f, 0x23, 0x25, 0x5f, 0xb5, 0x64,
+	0x0b, 0x63, 0x67, 0x5b, 0x7e, 0x8d, 0x94, 0x7c, 0x48, 0x63, 0xaa, 0xf8, 0xe6, 0xb6, 0xfc, 0x1a,
+	0xe9, 0x7f, 0x68, 0xc0, 0xdd, 0xd2, 0x8a, 0x4d, 0x6e, 0x5a, 0x9e, 0x2a, 0xdd, 0x51, 0x15, 0x9f,
+	0xab, 0x39, 0xbd, 0x91, 0x41, 0x4f, 0xa0, 0x5e, 0xa8, 0xd1, 0xd5, 0xaf, 0x21, 0x58, 0x69, 0xa0,
+	0xdb, 0x50, 0xcb, 0x78, 0x4c, 0x65, 0xcc, 0xfe, 0x1f, 0x1a, 0xb8, 0xfa, 0xc2, 0x2e, 0xbc, 0x04,
+	0x26, 0x3c, 0xa6, 0x44, 0xee, 0xfa, 0x55, 0x3e, 0xb5, 0xbf, 0x9c, 0xcf, 0xc6, 0x1f, 0xce, 0xe7,
+	0x3f, 0x9d, 0xaf, 0xfb, 0x50, 0x2b, 0xa7, 0x81, 0xf6, 0x60, 0xd3, 0x9d, 0xda, 0x8f, 0x8e, 0xdc,
+	0x67, 0xe3, 0x76, 0x0d, 0x41, 0xa8, 0x4f, 0xc6, 0x13, 0x67, 0x4c, 0xda, 0x00, 0xb5, 0x60, 0xc3,
+	0x1e, 0x4d, 0xdc, 0x69, 0xdb, 0x2f, 0xcb, 0xa7, 0xcf, 0xa7, 0x63, 0xd2, 0x0e, 0x86, 0x4d, 0xa8,
+	0x3f, 0x96, 0x83, 0x75, 0x0e, 0x3f, 0x2d, 0x4d, 0x70, 0xba, 0x34, 0xc1, 0xb7, 0xa5, 0x09, 0x4e,
+	0x56, 0x66, 0xed, 0x74, 0x65, 0xd6, 0x3e, 0xaf, 0xcc, 0xda, 0x8b, 0x5b, 0xbf, 0xb7, 0xd7, 0x4b,
+	0x59, 0xf5, 0xeb, 0xf5, 0x75, 0xd9, 0xe6, 0xbd, 0x1f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xb0, 0xd4,
+	0xf3, 0xb0, 0x92, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -285,45 +324,65 @@ func (m *Account) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintKazoku(dAtA, i, uint64(len(m.Name)))
 		i += copy(dAtA[i:], m.Name)
 	}
-	if m.ExpiresAt != nil {
+	if m.CreatedByUserID != nil {
 		dAtA[i] = 0x1a
 		i++
-		i = encodeVarintKazoku(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(*m.ExpiresAt)))
-		n2, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.ExpiresAt, dAtA[i:])
+		i = encodeVarintKazoku(dAtA, i, uint64(m.CreatedByUserID.Size()))
+		n2, err := m.CreatedByUserID.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n2
 	}
-	if m.CreatedAt != nil {
+	if m.UpdatedByUserID != nil {
 		dAtA[i] = 0x22
 		i++
-		i = encodeVarintKazoku(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(*m.CreatedAt)))
-		n3, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.CreatedAt, dAtA[i:])
+		i = encodeVarintKazoku(dAtA, i, uint64(m.UpdatedByUserID.Size()))
+		n3, err := m.UpdatedByUserID.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n3
 	}
-	if m.UpdatedAt != nil {
+	if m.ExpiresAt != nil {
 		dAtA[i] = 0x2a
 		i++
-		i = encodeVarintKazoku(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(*m.UpdatedAt)))
-		n4, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.UpdatedAt, dAtA[i:])
+		i = encodeVarintKazoku(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(*m.ExpiresAt)))
+		n4, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.ExpiresAt, dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n4
 	}
-	if m.DeletedAt != nil {
+	if m.CreatedAt != nil {
 		dAtA[i] = 0x32
 		i++
-		i = encodeVarintKazoku(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(*m.DeletedAt)))
-		n5, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.DeletedAt, dAtA[i:])
+		i = encodeVarintKazoku(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(*m.CreatedAt)))
+		n5, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.CreatedAt, dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n5
+	}
+	if m.UpdatedAt != nil {
+		dAtA[i] = 0x3a
+		i++
+		i = encodeVarintKazoku(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(*m.UpdatedAt)))
+		n6, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.UpdatedAt, dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n6
+	}
+	if m.DeletedAt != nil {
+		dAtA[i] = 0x42
+		i++
+		i = encodeVarintKazoku(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(*m.DeletedAt)))
+		n7, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.DeletedAt, dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n7
 	}
 	return i, nil
 }
@@ -347,26 +406,76 @@ func (m *UserAccount) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintKazoku(dAtA, i, uint64(m.AccountID.Size()))
-		n6, err := m.AccountID.MarshalTo(dAtA[i:])
+		n8, err := m.AccountID.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n6
+		i += n8
 	}
 	if m.UserID != nil {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintKazoku(dAtA, i, uint64(m.UserID.Size()))
-		n7, err := m.UserID.MarshalTo(dAtA[i:])
+		n9, err := m.UserID.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n7
+		i += n9
 	}
 	if m.Role != 0 {
 		dAtA[i] = 0x18
 		i++
 		i = encodeVarintKazoku(dAtA, i, uint64(m.Role))
+	}
+	if m.CreatedByUserID != nil {
+		dAtA[i] = 0x22
+		i++
+		i = encodeVarintKazoku(dAtA, i, uint64(m.CreatedByUserID.Size()))
+		n10, err := m.CreatedByUserID.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n10
+	}
+	if m.UpdatedByUserID != nil {
+		dAtA[i] = 0x2a
+		i++
+		i = encodeVarintKazoku(dAtA, i, uint64(m.UpdatedByUserID.Size()))
+		n11, err := m.UpdatedByUserID.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n11
+	}
+	if m.CreatedAt != nil {
+		dAtA[i] = 0x32
+		i++
+		i = encodeVarintKazoku(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(*m.CreatedAt)))
+		n12, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.CreatedAt, dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n12
+	}
+	if m.UpdatedAt != nil {
+		dAtA[i] = 0x3a
+		i++
+		i = encodeVarintKazoku(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(*m.UpdatedAt)))
+		n13, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.UpdatedAt, dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n13
+	}
+	if m.DeletedAt != nil {
+		dAtA[i] = 0x42
+		i++
+		i = encodeVarintKazoku(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(*m.DeletedAt)))
+		n14, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.DeletedAt, dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n14
 	}
 	return i, nil
 }
@@ -392,6 +501,14 @@ func (m *Account) Size() (n int) {
 	}
 	l = len(m.Name)
 	if l > 0 {
+		n += 1 + l + sovKazoku(uint64(l))
+	}
+	if m.CreatedByUserID != nil {
+		l = m.CreatedByUserID.Size()
+		n += 1 + l + sovKazoku(uint64(l))
+	}
+	if m.UpdatedByUserID != nil {
+		l = m.UpdatedByUserID.Size()
 		n += 1 + l + sovKazoku(uint64(l))
 	}
 	if m.ExpiresAt != nil {
@@ -429,6 +546,26 @@ func (m *UserAccount) Size() (n int) {
 	}
 	if m.Role != 0 {
 		n += 1 + sovKazoku(uint64(m.Role))
+	}
+	if m.CreatedByUserID != nil {
+		l = m.CreatedByUserID.Size()
+		n += 1 + l + sovKazoku(uint64(l))
+	}
+	if m.UpdatedByUserID != nil {
+		l = m.UpdatedByUserID.Size()
+		n += 1 + l + sovKazoku(uint64(l))
+	}
+	if m.CreatedAt != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.CreatedAt)
+		n += 1 + l + sovKazoku(uint64(l))
+	}
+	if m.UpdatedAt != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.UpdatedAt)
+		n += 1 + l + sovKazoku(uint64(l))
+	}
+	if m.DeletedAt != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.DeletedAt)
+		n += 1 + l + sovKazoku(uint64(l))
 	}
 	return n
 }
@@ -538,6 +675,70 @@ func (m *Account) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreatedByUserID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowKazoku
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthKazoku
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var v github_com_issho_ni_issho_internal_pkg_uuid.UUID
+			m.CreatedByUserID = &v
+			if err := m.CreatedByUserID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UpdatedByUserID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowKazoku
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthKazoku
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var v github_com_issho_ni_issho_internal_pkg_uuid.UUID
+			m.UpdatedByUserID = &v
+			if err := m.UpdatedByUserID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ExpiresAt", wireType)
 			}
 			var msglen int
@@ -569,7 +770,7 @@ func (m *Account) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 4:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
 			}
@@ -602,7 +803,7 @@ func (m *Account) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 5:
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UpdatedAt", wireType)
 			}
@@ -635,7 +836,7 @@ func (m *Account) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 6:
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DeletedAt", wireType)
 			}
@@ -801,6 +1002,169 @@ func (m *UserAccount) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreatedByUserID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowKazoku
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthKazoku
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var v github_com_issho_ni_issho_internal_pkg_uuid.UUID
+			m.CreatedByUserID = &v
+			if err := m.CreatedByUserID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UpdatedByUserID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowKazoku
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthKazoku
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var v github_com_issho_ni_issho_internal_pkg_uuid.UUID
+			m.UpdatedByUserID = &v
+			if err := m.UpdatedByUserID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowKazoku
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthKazoku
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.CreatedAt == nil {
+				m.CreatedAt = new(time.Time)
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.CreatedAt, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UpdatedAt", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowKazoku
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthKazoku
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.UpdatedAt == nil {
+				m.UpdatedAt = new(time.Time)
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.UpdatedAt, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DeletedAt", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowKazoku
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthKazoku
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.DeletedAt == nil {
+				m.DeletedAt = new(time.Time)
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.DeletedAt, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipKazoku(dAtA[iNdEx:])

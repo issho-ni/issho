@@ -10,18 +10,27 @@ service Kazoku {}
 message Account {
     bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\"_id\""];
     string name = 2;
-    google.protobuf.Timestamp expiresAt = 3 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp createdAt = 4 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp updatedAt = 5 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp deletedAt = 6 [(gogoproto.stdtime) = true];
+    bytes createdByUserID = 3 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    bytes updatedByUserID = 4 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    google.protobuf.Timestamp expiresAt = 5 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp createdAt = 6 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp updatedAt = 7 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp deletedAt = 8 [(gogoproto.stdtime) = true];
 }
 
 message UserAccount {
     bytes accountID = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
     bytes userID = 2 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
     enum Role {
-        MEMBER = 0;
-        ADMIN = 1;
+        INACTIVE = 0;
+        MEMBER = 1;
+        ADMIN = 98;
+        OWNER = 99;
     }
     Role role = 3;
+    bytes createdByUserID = 4 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    bytes updatedByUserID = 5 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    google.protobuf.Timestamp createdAt = 6 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp updatedAt = 7 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp deletedAt = 8 [(gogoproto.stdtime) = true];
 }
