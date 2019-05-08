@@ -36,11 +36,17 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input youji.NewTodo) 
 }
 
 // CreateUser creates a new User.
-func (r *mutationResolver) CreateUser(ctx context.Context, input ninshou.NewUser) (*graphql.LoginResponse, error) {
-	user, err := r.NinshouClient.CreateUser(ctx, &input)
+func (r *mutationResolver) CreateUser(ctx context.Context, input graphql.NewUser) (*graphql.LoginResponse, error) {
+	user, err := r.NinshouClient.CreateUser(ctx, &ninshou.User{Name: input.Name, Email: input.Email})
 	if err != nil {
 		return nil, err
 	}
+
+	_, err = r.ShinninjouClient.CreateCredential(ctx, &shinninjou.Credential{
+		UserID:         user.Id,
+		CredentialType: shinninjou.CredentialType_PASSWORD,
+		Credential:     []byte(input.Password),
+	})
 
 	return r.getLoginResponse(ctx, user)
 }

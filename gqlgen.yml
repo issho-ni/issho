@@ -10,8 +10,6 @@ model:
 models:
   NewTodo:
     model: github.com/issho-ni/issho/api/youji.NewTodo
-  NewUser:
-    model: github.com/issho-ni/issho/api/ninshou.NewUser
   Todo:
     model: github.com/issho-ni/issho/api/youji.Todo
   UpdateTodoParams:

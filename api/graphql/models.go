@@ -15,3 +15,9 @@ type LoginResponse struct {
 	Token string       `json:"token"`
 	User  ninshou.User `json:"user"`
 }
+
+type NewUser struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}

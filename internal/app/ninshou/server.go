@@ -2,7 +2,6 @@ package ninshou
 
 import (
 	"github.com/issho-ni/issho/api/ninshou"
-	"github.com/issho-ni/issho/api/shinninjou"
 	"github.com/issho-ni/issho/internal/pkg/service"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,7 +14,6 @@ type ninshouServer struct {
 	service.GRPCServer
 	mongoClient service.MongoClient
 	ninshou.NinshouServer
-	shinninjou.ShinninjouClient
 }
 
 // NewNinshouServer returns a new gRPC server for the Ninshou service.
@@ -23,10 +21,6 @@ func NewNinshouServer(config *service.ServerConfig) service.Server {
 	server := &ninshouServer{}
 	server.GRPCServer = service.NewGRPCServer(config, server)
 	server.mongoClient = service.NewMongoClient(config.Name)
-
-	env := service.NewGRPCClientConfig(config.TLSCert)
-	server.ShinninjouClient = shinninjou.NewClient(env)
-
 	return server
 }
 

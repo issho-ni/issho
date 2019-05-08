@@ -54,7 +54,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateTodo func(childComplexity int, input youji.NewTodo) int
-		CreateUser func(childComplexity int, input ninshou.NewUser) int
+		CreateUser func(childComplexity int, input NewUser) int
 		LoginUser  func(childComplexity int, input LoginRequest) int
 		LogoutUser func(childComplexity int, input *bool) int
 		UpdateTodo func(childComplexity int, input youji.UpdateTodoParams) int
@@ -83,7 +83,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateTodo(ctx context.Context, input youji.NewTodo) (*youji.Todo, error)
-	CreateUser(ctx context.Context, input ninshou.NewUser) (*LoginResponse, error)
+	CreateUser(ctx context.Context, input NewUser) (*LoginResponse, error)
 	LoginUser(ctx context.Context, input LoginRequest) (*LoginResponse, error)
 	LogoutUser(ctx context.Context, input *bool) (bool, error)
 	UpdateTodo(ctx context.Context, input youji.UpdateTodoParams) (*youji.Todo, error)
@@ -143,7 +143,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(ninshou.NewUser)), true
+		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(NewUser)), true
 
 	case "Mutation.LoginUser":
 		if e.complexity.Mutation.LoginUser == nil {
@@ -449,9 +449,9 @@ func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 ninshou.NewUser
+	var arg0 NewUser
 	if tmp, ok := rawArgs["input"]; ok {
-		arg0, err = ec.unmarshalNNewUser2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐNewUser(ctx, tmp)
+		arg0, err = ec.unmarshalNNewUser2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋgraphqlᚐNewUser(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -656,7 +656,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateUser(rctx, args["input"].(ninshou.NewUser))
+		return ec.resolvers.Mutation().CreateUser(rctx, args["input"].(NewUser))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -1988,8 +1988,8 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, v interfa
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, v interface{}) (ninshou.NewUser, error) {
-	var it ninshou.NewUser
+func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, v interface{}) (NewUser, error) {
+	var it NewUser
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -2570,7 +2570,7 @@ func (ec *executionContext) unmarshalNNewTodo2githubᚗcomᚋisshoᚑniᚋissho�
 	return ec.unmarshalInputNewTodo(ctx, v)
 }
 
-func (ec *executionContext) unmarshalNNewUser2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋninshouᚐNewUser(ctx context.Context, v interface{}) (ninshou.NewUser, error) {
+func (ec *executionContext) unmarshalNNewUser2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋgraphqlᚐNewUser(ctx context.Context, v interface{}) (NewUser, error) {
 	return ec.unmarshalInputNewUser(ctx, v)
 }
 

@@ -6,14 +6,8 @@ package ninshou;
 option go_package = "github.com/issho-ni/issho/api/ninshou";
 
 service Ninshou {
-    rpc CreateUser(NewUser) returns (User) {}
+    rpc CreateUser(User) returns (User) {}
     rpc GetUser(User) returns (User) {}
-}
-
-message NewUser {
-    string name = 1;
-    string email = 2;
-    string password = 3;
 }
 
 message User {
