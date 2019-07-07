@@ -15,7 +15,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
 	github.com/pascaldekloe/jwt v1.5.0
 	github.com/rs/cors v1.6.0
-	github.com/sirupsen/logrus v1.4.1
+	github.com/sirupsen/logrus v1.4.2
 	github.com/tidwall/pretty v0.0.0-20180105212114-65a9db5fad51 // indirect
 	github.com/vektah/gqlparser v1.1.2
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
