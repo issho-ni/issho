@@ -13,6 +13,7 @@ resources:
       uri: https://github.com/issho-ni/issho.git
   - name: issho-pipeline
     type: concourse-pipeline
+    icon: fan
     source:
       teams:
         - name: main
