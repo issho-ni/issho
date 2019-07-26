@@ -1,0 +1,49 @@
+---
+name: issho
+
+resources:
+  - name: issho-git
+    type: git
+    icon: github-circle
+    source:
+      uri: https://github.com/issho-ni/issho.git
+  - name: golang-base-docker
+    type: docker-image
+    icon: docker
+    source:
+      repository: golang
+      tag: 1.12-alpine
+  - name: issho-builder-docker
+    type: docker-image
+    icon: docker
+    source:
+      repository: issho/builder
+      username: ((docker-hub.username))
+      password: ((docker-hub.password))
+
+jobs:
+  - name: builder
+    plan:
+      - in_parallel:
+          - get: issho-git
+            trigger: true
+          - get: golang-base-docker
+            trigger: true
+      - put: issho-builder-docker
+        params:
+          build: issho-git
+          target_name: builder
+  - name: tests
+    plan:
+      - in_parallel:
+          - get: issho-git
+            trigger: true
+            passed:
+              - builder
+          - get: issho-builder-docker
+            trigger: true
+            passed:
+              - builder
+      - task: issho-tests
+        image: issho-builder-docker
+        file: issho-git/ci/tasks/issho-tests.yml

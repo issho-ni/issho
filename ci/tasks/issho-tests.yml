@@ -1,0 +1,8 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: issho/builder
+run:
+  path: scripts/issho-tests.sh
