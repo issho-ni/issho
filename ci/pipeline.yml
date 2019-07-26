@@ -1,6 +1,4 @@
 ---
-name: issho
-
 resource_types:
   - name: concourse-pipeline
     type: docker-image
@@ -49,6 +47,8 @@ jobs:
     plan:
       - in_parallel:
           - get: issho-git
+            trigger: true
+          - get: issho-pipeline
             trigger: true
           - get: golang-base-docker
             trigger: true
