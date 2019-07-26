@@ -4,5 +4,8 @@ image_resource:
   type: docker-image
   source:
     repository: issho/builder
+inputs:
+  - name: issho-git
 run:
+  dir: issho-git
   path: scripts/issho-tests.sh

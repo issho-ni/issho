@@ -29,9 +29,14 @@ jobs:
             trigger: true
           - get: golang-base-docker
             trigger: true
+            params:
+              save: true
       - put: issho-builder-docker
         params:
           build: issho-git
+          cache: true
+          load_base: golang-base-docker
+          save: true
           target_name: builder
   - name: tests
     plan:
