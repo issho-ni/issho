@@ -94,7 +94,7 @@ func (r *mutationResolver) getLoginResponse(ctx context.Context, user *ninshou.U
 		return nil, err
 	}
 
-	return &graphql.LoginResponse{Token: token.Token, User: *user}, nil
+	return &graphql.LoginResponse{Token: token.Token, User: user}, nil
 }
 
 type queryResolver struct{ *Resolver }

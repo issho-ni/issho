@@ -12,8 +12,8 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token string       `json:"token"`
-	User  ninshou.User `json:"user"`
+	Token string        `json:"token"`
+	User  *ninshou.User `json:"user"`
 }
 
 type NewUser struct {
