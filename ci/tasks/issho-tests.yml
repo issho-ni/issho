@@ -10,4 +10,4 @@ inputs:
   - name: issho-git
 run:
   dir: issho-git
-  path: scripts/issho-tests.sh
+  path: ci/scripts/issho-tests.sh

@@ -1,7 +1,6 @@
 .git/
 ci/
 deployments/
-scripts/
 .dockerignore
 .gitignore
 *.pem

@@ -45,12 +45,48 @@ resources:
       repository: gcr.io/issho-ni/builder
       username: _json_key
       password: ((iam.ops-concourse-json))
+  - name: issho-graphql-image
+    type: registry-image
+    icon: docker
+    source:
+      repository: gcr.io/issho-ni/graphql
+      username: _json_key
+      password: ((iam.ops-concourse-json))
+  - name: issho-ninka-image
+    type: registry-image
+    icon: docker
+    source:
+      repository: gcr.io/issho-ni/ninka
+      username: _json_key
+      password: ((iam.ops-concourse-json))
+  - name: issho-ninshou-image
+    type: registry-image
+    icon: docker
+    source:
+      repository: gcr.io/issho-ni/ninshou
+      username: _json_key
+      password: ((iam.ops-concourse-json))
+  - name: issho-shinninjou-image
+    type: registry-image
+    icon: docker
+    source:
+      repository: gcr.io/issho-ni/shinninjou
+      username: _json_key
+      password: ((iam.ops-concourse-json))
+  - name: issho-youji-image
+    type: registry-image
+    icon: docker
+    source:
+      repository: gcr.io/issho-ni/youji
+      username: _json_key
+      password: ((iam.ops-concourse-json))
 
 groups:
   - name: issho
     jobs:
-      - tests
       - builder
+      - tests
+      - images
   - name: pipeline
     jobs:
       - pipeline
@@ -78,6 +114,10 @@ jobs:
         privileged: true
         output_mapping:
           image: issho-builder-image
+        params:
+          TARGET: builder
+        vars:
+          command: builder
       - put: issho-builder-image
         params:
           image: issho-builder-image/image.tar
@@ -96,3 +136,94 @@ jobs:
       - task: issho-tests
         image: issho-builder-image
         file: issho-git/ci/tasks/issho-tests.yml
+  - name: images
+    plan:
+      - in_parallel:
+          - get: issho-git
+            trigger: true
+            passed:
+              - tests
+          - get: issho-builder-image
+            trigger: true
+            passed:
+              - tests
+      - in_parallel:
+          - task: issho-install
+            file: issho-git/ci/tasks/issho-builder.yml
+            privileged: true
+            output_mapping:
+              image: issho-install-image
+            params:
+              TARGET: install
+            vars:
+              command: install
+          - task: issho-scratch-build
+            file: issho-git/ci/tasks/issho-builder.yml
+            privileged: true
+            output_mapping:
+              image: issho-scratch-image
+            params:
+              TARGET: issho-scratch
+            vars:
+              command: scratch
+      - in_parallel:
+          - do:
+              - task: issho-graphql-build
+                file: issho-git/ci/tasks/issho-builder.yml
+                privileged: true
+                output_mapping:
+                  image: issho-graphql-image
+                vars:
+                  command: graphql
+              - put: issho-graphql-image
+                params:
+                  image: issho-graphql-image/image.tar
+                  additional_tags: issho-git/.git/short_ref
+          - do:
+              - task: issho-ninka-build
+                file: issho-git/ci/tasks/issho-builder.yml
+                privileged: true
+                output_mapping:
+                  image: issho-ninka-image
+                vars:
+                  command: ninka
+              - put: issho-ninka-image
+                params:
+                  image: issho-ninka-image/image.tar
+                  additional_tags: issho-git/.git/short_ref
+          - do:
+              - task: issho-ninshou-build
+                file: issho-git/ci/tasks/issho-builder.yml
+                privileged: true
+                output_mapping:
+                  image: issho-ninshou-image
+                vars:
+                  command: ninshou
+              - put: issho-ninshou-image
+                params:
+                  image: issho-ninshou-image/image.tar
+                  additional_tags: issho-git/.git/short_ref
+          - do:
+              - task: issho-shinninjou-build
+                file: issho-git/ci/tasks/issho-builder.yml
+                privileged: true
+                output_mapping:
+                  image: issho-shinninjou-image
+                vars:
+                  command: shinninjou
+              - put: issho-shinninjou-image
+                params:
+                  image: issho-shinninjou-image/image.tar
+                  additional_tags: issho-git/.git/short_ref
+          - do:
+              - task: issho-youji-build
+                file: issho-git/ci/tasks/issho-builder.yml
+                privileged: true
+                output_mapping:
+                  image: issho-youji-image
+                vars:
+                  command: youji
+              - put: issho-youji-image
+                params:
+                  image: issho-youji-image/image.tar
+                  additional_tags: issho-git/.git/short_ref

@@ -7,10 +7,10 @@ image_resource:
 inputs:
   - name: issho-git
 params:
-  REPOSITORY: gcr.io/issho-ni/builder
+  REPOSITORY: gcr.io/issho-ni/((command))
   CONTEXT: issho-git
   TAG_FILE: issho-git/.git/short_ref
-  TARGET: builder
+  BUILD_ARG_COMMAND: ((command))
 outputs:
   - name: image
 caches:
