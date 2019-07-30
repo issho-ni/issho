@@ -55,6 +55,7 @@ jobs:
             trigger: true
       - task: issho-builder
         file: issho-git/ci/tasks/issho-builder.yml
+        privileged: true
       - put: issho-builder-image
         params:
           image: issho-builder-image/image.tar
