@@ -5,7 +5,7 @@ image_resource:
   source:
     repository: gcr.io/issho-ni/builder
     username: _json_key
-    password: ((default-token.token))
+    password: ((iam.ops-concourse-json))
 inputs:
   - name: issho-git
 run:

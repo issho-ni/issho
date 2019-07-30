@@ -31,7 +31,7 @@ resources:
     source:
       repository: gcr.io/issho-ni/builder
       username: _json_key
-      password: ((default-token.token))
+      password: ((iam.ops-concourse-json))
 
 jobs:
   - name: pipeline
