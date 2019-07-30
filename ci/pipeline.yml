@@ -11,6 +11,19 @@ resources:
     icon: github-circle
     source:
       uri: https://github.com/issho-ni/issho.git
+      ignore_paths:
+        - ci/
+        - deployments/
+        - scripts/
+  - name: issho-pipeline-git
+    type: git
+    icon: github-circle
+    source:
+      uri: https://github.com/issho-ni/issho.git
+      paths:
+        - ci/
+        - deployments/
+        - scripts/
   - name: issho-pipeline
     type: concourse-pipeline
     icon: fan
@@ -33,36 +46,47 @@ resources:
       username: _json_key
       password: ((iam.ops-concourse-json))
 
+groups:
+  - name: issho
+    jobs:
+      - tests
+      - builder
+  - name: pipeline
+    jobs:
+      - pipeline
+
 jobs:
   - name: pipeline
     plan:
-      - get: issho-git
+      - get: issho-pipeline-git
         trigger: true
       - put: issho-pipeline
         params:
           pipelines:
             - name: issho
               team: main
-              config_file: issho-git/ci/pipeline.yml
+              config_file: issho-pipeline-git/ci/pipeline.yml
   - name: builder
     plan:
       - in_parallel:
           - get: issho-git
-            trigger: true
-          - get: issho-pipeline
             trigger: true
           - get: golang-base-image
             trigger: true
       - task: issho-builder
         file: issho-git/ci/tasks/issho-builder.yml
         privileged: true
+        output_mapping:
+          image: issho-builder-image
       - put: issho-builder-image
         params:
-          image: image/image.tar
+          image: issho-builder-image/image.tar
+          additional_tags: issho-git/.git/short_ref
   - name: tests
     plan:
       - in_parallel:
           - get: issho-git
+            trigger: true
             passed:
               - builder
           - get: issho-builder-image
