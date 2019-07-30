@@ -17,12 +17,12 @@ ARG CERT_HOST=localhost
 RUN go run /usr/local/go/src/crypto/tls/generate_cert.go --host $CERT_HOST && \
     mv cert.pem key.pem /
 
-FROM scratch AS issho-scratch
+FROM scratch AS scratch-base
 ENTRYPOINT ["/server"]
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=certs /cert.pem /key.pem /
 ENV TLS_CERT=/cert.pem TLS_KEY=/key.pem
 
-FROM issho-scratch
+FROM scratch-base
 ARG COMMAND
 COPY --from=install /go/bin/${COMMAND} /server
