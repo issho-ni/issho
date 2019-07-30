@@ -1,7 +1,7 @@
 ---
 resource_types:
   - name: concourse-pipeline
-    type: docker-image
+    type: registry-image
     source:
       repository: concourse/concourse-pipeline-resource
 
@@ -19,18 +19,19 @@ resources:
         - name: main
           username: ((concourse.username))
           password: ((concourse.password))
-  - name: golang-base-docker
-    type: docker-image
+  - name: golang-base-image
+    type: registry-image
     icon: docker
     source:
       repository: golang
       tag: 1.12-alpine
-      registry_mirror: https://mirror.gcr.io
-  - name: issho-builder-docker
-    type: docker-image
+  - name: issho-builder-image
+    type: registry-image
     icon: docker
     source:
       repository: gcr.io/issho-ni/builder
+      username: _json_key
+      password: ((default-token.token))
 
 jobs:
   - name: pipeline
@@ -50,27 +51,23 @@ jobs:
             trigger: true
           - get: issho-pipeline
             trigger: true
-          - get: golang-base-docker
+          - get: golang-base-image
             trigger: true
-            params:
-              save: true
-      - put: issho-builder-docker
+      - task: issho-builder
+        file: issho-git/ci/tasks/issho-builder.yml
+      - put: issho-builder-image
         params:
-          build: issho-git
-          cache: true
-          load_base: golang-base-docker
-          save: true
-          target_name: builder
+          image: issho-builder-image/image.tar
   - name: tests
     plan:
       - in_parallel:
           - get: issho-git
             passed:
               - builder
-          - get: issho-builder-docker
+          - get: issho-builder-image
             trigger: true
             passed:
               - builder
       - task: issho-tests
-        image: issho-builder-docker
+        image: issho-builder-image
         file: issho-git/ci/tasks/issho-tests.yml

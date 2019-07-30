@@ -1,0 +1,19 @@
+---
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: concourse/builder-task
+inputs:
+  - name: issho-git
+params:
+  REPOSITORY: gcr.io/issho-ni/builder
+  CONTEXT: issho-git
+  TAG_FILE: issho-git/.git/short_ref
+  TARGET: builder
+outputs:
+  - name: issho-builder-image
+caches:
+  - path: cache
+run:
+  path: build

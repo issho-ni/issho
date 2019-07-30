@@ -1,9 +1,11 @@
 ---
 platform: linux
 image_resource:
-  type: docker-image
+  type: registry-image
   source:
     repository: gcr.io/issho-ni/builder
+    username: _json_key
+    password: ((default-token.token))
 inputs:
   - name: issho-git
 run:
