@@ -58,7 +58,7 @@ jobs:
         privileged: true
       - put: issho-builder-image
         params:
-          image: issho-builder-image/image.tar
+          image: image/image.tar
   - name: tests
     plan:
       - in_parallel:

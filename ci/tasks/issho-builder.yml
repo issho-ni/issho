@@ -12,7 +12,7 @@ params:
   TAG_FILE: issho-git/.git/short_ref
   TARGET: builder
 outputs:
-  - name: issho-builder-image
+  - name: image
 caches:
   - path: cache
 run:
