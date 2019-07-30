@@ -25,13 +25,12 @@ resources:
     source:
       repository: golang
       tag: 1.12-alpine
+      registry_mirror: https://mirror.gcr.io
   - name: issho-builder-docker
     type: docker-image
     icon: docker
     source:
-      repository: issho/builder
-      username: ((docker-hub.username))
-      password: ((docker-hub.password))
+      repository: gcr.io/issho-ni/builder
 
 jobs:
   - name: pipeline
