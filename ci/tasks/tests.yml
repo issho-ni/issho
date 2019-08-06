@@ -7,7 +7,7 @@ image_resource:
     username: _json_key
     password: ((iam.ops-concourse-json))
 inputs:
-  - name: issho-git
+  - name: git
 run:
-  dir: issho-git
-  path: ci/scripts/issho-tests.sh
+  dir: git
+  path: ci/scripts/tests.sh

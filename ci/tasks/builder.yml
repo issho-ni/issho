@@ -1,0 +1,23 @@
+---
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: issho/concourse-buildkit
+
+params:
+  CACHE_LOCAL_MODE: max
+  CACHE_REGISTRY_REF: gcr.io/issho-ni/build-cache
+  CONTEXT: git
+  REPOSITORY: issho/concourse-buildkit
+
+outputs:
+  - name: image
+  - name: cache
+
+caches:
+  - path: cache
+
+run:
+  path: git/build

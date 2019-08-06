@@ -6,7 +6,7 @@ resource_types:
       repository: concourse/concourse-pipeline-resource
 
 resources:
-  - name: issho-git
+  - name: git
     type: git
     icon: github-circle
     source:
@@ -15,7 +15,7 @@ resources:
         - ci/
         - deployments/
         - scripts/
-  - name: issho-pipeline-git
+  - name: pipeline-git
     type: git
     icon: github-circle
     source:
@@ -24,7 +24,7 @@ resources:
         - ci/
         - deployments/
         - scripts/
-  - name: issho-pipeline
+  - name: pipeline
     type: concourse-pipeline
     icon: fan
     source:
@@ -32,70 +32,49 @@ resources:
         - name: main
           username: ((concourse.username))
           password: ((concourse.password))
-  - name: golang-base-image
-    type: docker-image
+  - name: golang
+    type: registry-image
     icon: docker
     source:
       repository: golang
       tag: 1.12-alpine
-  - name: issho-builder-image
-    type: docker-image
+  - name: builder
+    type: registry-image
     icon: docker
     source:
       repository: gcr.io/issho-ni/builder
       username: _json_key
       password: ((iam.ops-concourse-json))
-  - name: issho-install-image
-    type: docker-image
-    icon: docker
-    source:
-      repository: gcr.io/issho-ni/install
-      username: _json_key
-      password: ((iam.ops-concourse-json))
-  - name: issho-certs-image
-    type: docker-image
-    icon: docker
-    source:
-      repository: gcr.io/issho-ni/certs
-      username: _json_key
-      password: ((iam.ops-concourse-json))
-  - name: issho-scratch-image
-    type: docker-image
-    icon: docker
-    source:
-      repository: gcr.io/issho-ni/scratch
-      username: _json_key
-      password: ((iam.ops-concourse-json))
-  - name: issho-graphql-image
-    type: docker-image
+  - name: graphql
+    type: registry-image
     icon: docker
     source:
       repository: gcr.io/issho-ni/graphql
       username: _json_key
       password: ((iam.ops-concourse-json))
-  - name: issho-ninka-image
-    type: docker-image
+  - name: ninka
+    type: registry-image
     icon: docker
     source:
       repository: gcr.io/issho-ni/ninka
       username: _json_key
       password: ((iam.ops-concourse-json))
-  - name: issho-ninshou-image
-    type: docker-image
+  - name: ninshou
+    type: registry-image
     icon: docker
     source:
       repository: gcr.io/issho-ni/ninshou
       username: _json_key
       password: ((iam.ops-concourse-json))
-  - name: issho-shinninjou-image
-    type: docker-image
+  - name: shinninjou
+    type: registry-image
     icon: docker
     source:
       repository: gcr.io/issho-ni/shinninjou
       username: _json_key
       password: ((iam.ops-concourse-json))
-  - name: issho-youji-image
-    type: docker-image
+  - name: youji
+    type: registry-image
     icon: docker
     source:
       repository: gcr.io/issho-ni/youji
@@ -115,139 +94,97 @@ groups:
 jobs:
   - name: pipeline
     plan:
-      - get: issho-pipeline-git
+      - get: pipeline-git
         trigger: true
-      - put: issho-pipeline
+      - put: pipeline
         params:
           pipelines:
             - name: issho
               team: main
-              config_file: issho-pipeline-git/ci/pipeline.yml
+              config_file: pipeline-git/ci/pipeline.yml
   - name: builder
     plan:
       - in_parallel:
-          - get: issho-git
+          - get: git
             trigger: true
-          - get: golang-base-image
+          - get: golang
             trigger: true
-            params:
-              save: true
-      - put: issho-builder-image
+      - task: builder
+        file: git/ci/tasks/builder.yml
+        privileged: true
         params:
-          build: issho-git
-          cache: true
-          load_bases:
-            - golang-base-image
-          tag_file: issho-git/.git/short_ref
-          target_name: builder
+          TARGET: builder
+      - put: builder
+        params:
+          image: image/image.tar
+          additional_tags: git/.git/short_ref
   - name: tests
     plan:
       - in_parallel:
-          - get: issho-git
+          - get: git
             trigger: true
             passed:
               - builder
-          - get: issho-builder-image
+          - get: builder
             trigger: true
             passed:
               - builder
-            params:
-              save: true
-      - task: issho-tests
-        image: issho-builder-image
-        file: issho-git/ci/tasks/issho-tests.yml
+      - task: tests
+        image: builder
+        file: git/ci/tasks/tests.yml
   - name: images
     plan:
+      - get: git
+        trigger: true
+        passed:
+          - tests
+      - task: build-images
+        file: git/ci/tasks/builder.yml
+        output_mapping:
+          image: builder
       - in_parallel:
-          - get: issho-git
-            trigger: true
-            passed:
-              - tests
-          - get: issho-builder-image
-            trigger: true
-            passed:
-              - tests
-            params:
-              save: true
-      - put: issho-install-image
-        params:
-          build: issho-git
-          cache: true
-          cache_from:
-            - issho-builder-image
-          tag_file: issho-git/.git/short_ref
-          target_name: install
-        get_params:
-          save: true
-      - put: issho-certs-image
-        params:
-          build: issho-git
-          cache: true
-          target_name: certs
-        get_params:
-          save: true
-      - put: issho-scratch-image
-        params:
-          build: issho-git
-          cache: true
-          cache_from:
-            - issho-certs-image
-          target_name: scratch-base
-        get_params:
-          save: true
-      - in_parallel:
-          - put: issho-graphql-image
-            params:
-              build: issho-git
-              build_args:
-                COMMAND: graphql
-              cache: true
-              cache_from:
-                - issho-install-image
-              load_bases:
-                - issho-scratch-image
-              tag_file: issho-git/.git/short_ref
-          - put: issho-ninka-image
-            params:
-              build: issho-git
-              build_args:
-                COMMAND: ninka
-              cache: true
-              cache_from:
-                - issho-install-image
-              load_bases:
-                - issho-scratch-image
-              tag_file: issho-git/.git/short_ref
-          - put: issho-ninshou-image
-            params:
-              build: issho-git
-              build_args:
-                COMMAND: ninshou
-              cache: true
-              cache_from:
-                - issho-install-image
-              load_bases:
-                - issho-scratch-image
-              tag_file: issho-git/.git/short_ref
-          - put: issho-shinninjou-image
-            params:
-              build: issho-git
-              build_args:
-                COMMAND: shinninjou
-              cache: true
-              cache_from:
-                - issho-install-image
-              load_bases:
-                - issho-scratch-image
-              tag_file: issho-git/.git/short_ref
-          - put: issho-youji-image
-            params:
-              build: issho-git
-              build_args:
-                COMMAND: youji
-              cache: true
-              cache_from:
-                - issho-install-image
-              load_bases:
-                - issho-scratch-image
-              tag_file: issho-git/.git/short_ref
+          - do:
+              - task: graphql
+                file: git/ci/tasks/builder.yml
+                params:
+                  TARGET: graphql
+              - put: graphql
+                params:
+                  image: image/image.tar
+                  addditional_tags: git/.git/short_ref
+          - do:
+              - task: ninka
+                file: git/ci/tasks/builder.yml
+                params:
+                  TARGET: ninka
+              - put: ninka
+                params:
+                  image: image/image.tar
+                  addditional_tags: git/.git/short_ref
+          - do:
+              - task: ninshou
+                file: git/ci/tasks/builder.yml
+                params:
+                  TARGET: ninshou
+              - put: ninshou
+                params:
+                  image: image/image.tar
+                  addditional_tags: git/.git/short_ref
+          - do:
+              - task: shinninjou
+                file: git/ci/tasks/builder.yml
+                params:
+                  TARGET: shinninjou
+              - put: shinninjou
+                params:
+                  image: image/image.tar
+                  addditional_tags: git/.git/short_ref
+          - do:
+              - task: youji
+                file: git/ci/tasks/builder.yml
+                params:
+                  TARGET: youji
+              - put: youji
+                params:
+                  image: image/image.tar
+                  addditional_tags: git/.git/short_ref
