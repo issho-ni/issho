@@ -152,6 +152,8 @@ jobs:
             passed:
               - tests
           - get: cache
+            params:
+              format: oci
             passed:
               - builder
       - task: build-images
