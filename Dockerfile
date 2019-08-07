@@ -22,19 +22,19 @@ COPY --from=certs /cert.pem /key.pem /
 ENV TLS_CERT=/cert.pem TLS_KEY=/key.pem
 
 FROM base AS graphql
-COPY --from=install /go/bin/graphql /server
+COPY --from=builder /go/bin/graphql /server
 
 FROM base AS ninka
-COPY --from=install /go/bin/ninka /server
+COPY --from=builder /go/bin/ninka /server
 
 FROM base AS ninshou
-COPY --from=install /go/bin/ninshou /server
+COPY --from=builder /go/bin/ninshou /server
 
 FROM base AS shinninjou
-COPY --from=install /go/bin/shinninjou /server
+COPY --from=builder /go/bin/shinninjou /server
 
 FROM base AS youji
-COPY --from=install /go/bin/youji /server
+COPY --from=builder /go/bin/youji /server
 
 FROM scratch
 COPY --from=graphql /cert.pem /
