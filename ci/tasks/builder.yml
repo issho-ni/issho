@@ -7,13 +7,14 @@ image_resource:
     repository: issho/concourse-buildkit
 
 params:
-  CACHE_LOCAL_MODE: max
+  CACHE_INPUT_DIR: cache-input
+  CACHE_MODE: max
   CONTEXT: git
   REPOSITORY: issho/concourse-buildkit
 
 inputs:
   - name: git
-  - name: cache
+  - name: cache-input
     optional: true
 
 outputs:

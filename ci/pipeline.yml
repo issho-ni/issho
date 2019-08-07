@@ -113,6 +113,10 @@ jobs:
             trigger: true
           - get: golang
             trigger: true
+          - get: cache-input
+            resource: cache
+            params:
+              format: oci
       - task: builder
         file: git/ci/tasks/builder.yml
         privileged: true
@@ -151,7 +155,8 @@ jobs:
             trigger: true
             passed:
               - tests
-          - get: cache
+          - get: cache-input
+            resource: cache
             params:
               format: oci
             passed:
@@ -160,7 +165,7 @@ jobs:
         file: git/ci/tasks/builder.yml
         privileged: true
         output_mapping:
-          image: builder
+          cache: cache-input
       - in_parallel:
           - do:
               - task: graphql
