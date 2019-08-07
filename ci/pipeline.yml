@@ -137,12 +137,14 @@ jobs:
           - tests
       - task: build-images
         file: git/ci/tasks/builder.yml
+        privileged: true
         output_mapping:
           image: builder
       - in_parallel:
           - do:
               - task: graphql
                 file: git/ci/tasks/builder.yml
+                privileged: true
                 params:
                   TARGET: graphql
               - put: graphql
@@ -152,6 +154,7 @@ jobs:
           - do:
               - task: ninka
                 file: git/ci/tasks/builder.yml
+                privileged: true
                 params:
                   TARGET: ninka
               - put: ninka
@@ -161,6 +164,7 @@ jobs:
           - do:
               - task: ninshou
                 file: git/ci/tasks/builder.yml
+                privileged: true
                 params:
                   TARGET: ninshou
               - put: ninshou
@@ -170,6 +174,7 @@ jobs:
           - do:
               - task: shinninjou
                 file: git/ci/tasks/builder.yml
+                privileged: true
                 params:
                   TARGET: shinninjou
               - put: shinninjou
@@ -179,6 +184,7 @@ jobs:
           - do:
               - task: youji
                 file: git/ci/tasks/builder.yml
+                privileged: true
                 params:
                   TARGET: youji
               - put: youji
