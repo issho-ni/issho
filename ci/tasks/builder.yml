@@ -12,6 +12,11 @@ params:
   CONTEXT: git
   REPOSITORY: issho/concourse-buildkit
 
+inputs:
+  - name: git
+  - name: cache
+    optional: true
+
 outputs:
   - name: image
   - name: cache
