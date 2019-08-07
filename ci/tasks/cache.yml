@@ -1,0 +1,17 @@
+---
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: alpine
+
+inputs:
+  - name: git
+  - name: cache
+
+outputs:
+  - name: cache
+
+run:
+  path: git/ci/scripts/cache.sh

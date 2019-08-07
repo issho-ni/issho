@@ -8,7 +8,6 @@ image_resource:
 
 params:
   CACHE_LOCAL_MODE: max
-  CACHE_REGISTRY_REF: gcr.io/issho-ni/build-cache
   CONTEXT: git
   REPOSITORY: issho/concourse-buildkit
 

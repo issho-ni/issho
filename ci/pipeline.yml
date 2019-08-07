@@ -42,6 +42,13 @@ resources:
       repository: gcr.io/issho-ni/builder
       username: _json_key
       password: ((iam.ops-concourse-json))
+  - name: cache
+    type: registry-image
+    icon: docker
+    source:
+      repository: gcr.io/issho-ni/cache
+      username: _json_key
+      password: ((iam.ops-concourse-json))
   - name: graphql
     type: registry-image
     icon: docker
@@ -111,10 +118,18 @@ jobs:
         privileged: true
         params:
           TARGET: builder
-      - put: builder
-        params:
-          image: image/image.tar
-          additional_tags: git/.git/short_ref
+      - in_parallel:
+          - put: builder
+            params:
+              image: image/image.tar
+              additional_tags: git/.git/short_ref
+          - do:
+              - task: cache
+                file: git/ci/tasks/cache.yml
+              - put: cache
+                params:
+                  image: cache/image.tar
+                  additional_tags: git/.git/short_ref
   - name: tests
     plan:
       - in_parallel:
@@ -131,10 +146,14 @@ jobs:
         file: git/ci/tasks/tests.yml
   - name: images
     plan:
-      - get: git
-        trigger: true
-        passed:
-          - tests
+      - in_parallel:
+          - get: git
+            trigger: true
+            passed:
+              - tests
+          - get: cache
+            passed:
+              - builder
       - task: build-images
         file: git/ci/tasks/builder.yml
         privileged: true
