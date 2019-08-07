@@ -20,4 +20,4 @@ caches:
   - path: cache
 
 run:
-  path: git/build
+  path: build
