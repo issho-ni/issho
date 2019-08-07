@@ -12,18 +12,15 @@ resources:
     source:
       uri: https://github.com/issho-ni/issho.git
       ignore_paths:
-        - ci/
+        - ci/pipeline.yml
         - deployments/
-        - scripts/
   - name: pipeline-git
     type: git
     icon: github-circle
     source:
       uri: https://github.com/issho-ni/issho.git
       paths:
-        - ci/
-        - deployments/
-        - scripts/
+        - ci/pipeline.yml
   - name: pipeline
     type: concourse-pipeline
     icon: fan
