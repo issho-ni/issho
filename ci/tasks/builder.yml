@@ -10,6 +10,8 @@ params:
   CACHE_MODE: max
   CACHE_REGISTRY_REF: docker.io/issho/issho-build-cache
   CONTEXT: git
+  REPOSITORY: gcr.io/issho-ni/((target))
+  TARGET: ((target))
 
 inputs:
   - name: git

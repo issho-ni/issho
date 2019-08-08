@@ -112,7 +112,8 @@ jobs:
         params:
           DOCKER_HUB_USERNAME: ((docker-hub.username))
           DOCKER_HUB_PASSWORD: ((docker-hub.password))
-          REPOSITORY: gcr.io/issho-ni/builder
+        vars:
+          target: builder
       - in_parallel:
           - put: builder
             params:
@@ -150,8 +151,8 @@ jobs:
             privileged: true
             params:
               CACHE_INPUT_DIR: cache-input
-              TARGET: graphql
-              REPOSITORY: gcr.io/issho-ni/graphql
+            vars:
+              target: graphql
             output_mapping:
               image: graphql
           - task: ninka
@@ -159,8 +160,8 @@ jobs:
             privileged: true
             params:
               CACHE_INPUT_DIR: cache-input
-              TARGET: ninka
-              REPOSITORY: gcr.io/issho-ni/ninka
+            vars:
+              target: ninka
             output_mapping:
               image: ninka
           - task: ninshou
@@ -168,8 +169,8 @@ jobs:
             privileged: true
             params:
               CACHE_INPUT_DIR: cache-input
-              TARGET: ninshou
-              REPOSITORY: gcr.io/issho-ni/ninshou
+            vars:
+              target: ninshou
             output_mapping:
               image: ninshou
           - task: shinninjou
@@ -177,8 +178,8 @@ jobs:
             privileged: true
             params:
               CACHE_INPUT_DIR: cache-input
-              TARGET: shinninjou
-              REPOSITORY: gcr.io/issho-ni/shinninjou
+            vars:
+              target: shinninjou
             output_mapping:
               image: shinninjou
           - task: youji
@@ -186,8 +187,8 @@ jobs:
             privileged: true
             params:
               CACHE_INPUT_DIR: cache-input
-              TARGET: youji
-              REPOSITORY: gcr.io/issho-ni/youji
+            vars:
+              target: youji
             output_mapping:
               image: youji
       - in_parallel:
