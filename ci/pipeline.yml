@@ -139,10 +139,6 @@ jobs:
             trigger: true
             passed:
               - tests
-          - get: builder
-            trigger: true
-            passed:
-              - tests
       - task: cache
         file: git/ci/tasks/cache.yml
         privileged: true
