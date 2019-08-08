@@ -9,8 +9,9 @@ image_resource:
 params:
   CACHE_INPUT_DIR: cache-input
   CACHE_MODE: max
+  CACHE_REGISTRY_REF: gcr.io/issho-ni/cache
   CONTEXT: git
-  REPOSITORY: issho/concourse-buildkit
+  GCR_JSON_KEY: ((iam.ops-concourse-json))
 
 inputs:
   - name: git
@@ -25,4 +26,4 @@ caches:
   - path: cache
 
 run:
-  path: build
+  path: git/ci/scripts/build.sh

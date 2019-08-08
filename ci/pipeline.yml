@@ -42,13 +42,6 @@ resources:
       repository: gcr.io/issho-ni/builder
       username: _json_key
       password: ((iam.ops-concourse-json))
-  - name: cache
-    type: registry-image
-    icon: docker
-    source:
-      repository: gcr.io/issho-ni/cache
-      username: _json_key
-      password: ((iam.ops-concourse-json))
   - name: graphql
     type: registry-image
     icon: docker
@@ -113,27 +106,16 @@ jobs:
             trigger: true
           - get: golang
             trigger: true
-          - get: cache-input
-            resource: cache
-            params:
-              format: oci
       - task: builder
         file: git/ci/tasks/builder.yml
         privileged: true
         params:
           TARGET: builder
-      - in_parallel:
-          - put: builder
-            params:
-              image: image/image.tar
-              additional_tags: git/.git/short_ref
-          - do:
-              - task: cache
-                file: git/ci/tasks/cache.yml
-              - put: cache
-                params:
-                  image: cache/image.tar
-                  additional_tags: git/.git/short_ref
+          REPOSITORY: gcr.io/issho-ni/builder
+      - put: builder
+        params:
+          image: image/image.tar
+          additional_tags: git/.git/short_ref
   - name: tests
     plan:
       - in_parallel:
@@ -155,17 +137,13 @@ jobs:
             trigger: true
             passed:
               - tests
-          - get: cache-input
-            resource: cache
-            params:
-              format: oci
-            passed:
-              - builder
       - task: build-images
         file: git/ci/tasks/builder.yml
         privileged: true
         output_mapping:
           cache: cache-input
+        params:
+          REPOSITORY: gcr.io/issho-ni/build-images
       - in_parallel:
           - do:
               - task: graphql
@@ -173,6 +151,7 @@ jobs:
                 privileged: true
                 params:
                   TARGET: graphql
+                  REPOSITORY: gcr.io/issho-ni/graphql
               - put: graphql
                 params:
                   image: image/image.tar
@@ -183,6 +162,7 @@ jobs:
                 privileged: true
                 params:
                   TARGET: ninka
+                  REPOSITORY: gcr.io/issho-ni/ninka
               - put: ninka
                 params:
                   image: image/image.tar
@@ -193,6 +173,7 @@ jobs:
                 privileged: true
                 params:
                   TARGET: ninshou
+                  REPOSITORY: gcr.io/issho-ni/ninshou
               - put: ninshou
                 params:
                   image: image/image.tar
@@ -203,6 +184,7 @@ jobs:
                 privileged: true
                 params:
                   TARGET: shinninjou
+                  REPOSITORY: gcr.io/issho-ni/shinninjou
               - put: shinninjou
                 params:
                   image: image/image.tar
@@ -213,6 +195,7 @@ jobs:
                 privileged: true
                 params:
                   TARGET: youji
+                  REPOSITORY: gcr.io/issho-ni/youji
               - put: youji
                 params:
                   image: image/image.tar
