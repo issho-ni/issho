@@ -140,8 +140,6 @@ jobs:
       - task: build-images
         file: git/ci/tasks/builder.yml
         privileged: true
-        output_mapping:
-          cache: cache-input
         params:
           REPOSITORY: gcr.io/issho-ni/build-images
       - in_parallel:
