@@ -8,9 +8,10 @@ image_resource:
 
 params:
   CACHE_MODE: max
-  CACHE_REGISTRY_REF: gcr.io/issho-ni/cache
+  CACHE_REGISTRY_REF: docker.io/issho/issho-build-cache
   CONTEXT: git
-  GCR_JSON_KEY: ((iam.ops-concourse-json))
+  DOCKER_HUB_USERNAME: ((docker-hub.username))
+  DOCKER_HUB_PASSWORD: ((docker-hub.password))
 
 inputs:
   - name: git

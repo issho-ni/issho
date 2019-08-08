@@ -2,10 +2,10 @@
 
 set -eu
 
-auth=$(printf "%s:%s" "_json_key" "${GCR_JSON_KEY}" | base64 | tr -d "\n")
+auth=$(printf "%s:%s" $DOCKER_HUB_USERNAME $DOCKER_HUB_PASSWORD | base64 | tr -d "\n")
 mkdir ~/.docker
 cat <<EOF > ~/.docker/config.json
-{"auths":{"https://gcr.io/v2/":{"auth":"${auth}"}}}
+{"auths":{"https://index.docker.io/v1/":{"auth":"${auth}"}}}
 EOF
 
 build
