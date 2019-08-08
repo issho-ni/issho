@@ -153,7 +153,7 @@ jobs:
               - put: graphql
                 params:
                   image: image/image.tar
-                  addditional_tags: git/.git/short_ref
+                  additional_tags: git/.git/short_ref
           - do:
               - task: ninka
                 file: git/ci/tasks/builder.yml
@@ -164,7 +164,7 @@ jobs:
               - put: ninka
                 params:
                   image: image/image.tar
-                  addditional_tags: git/.git/short_ref
+                  additional_tags: git/.git/short_ref
           - do:
               - task: ninshou
                 file: git/ci/tasks/builder.yml
@@ -175,7 +175,7 @@ jobs:
               - put: ninshou
                 params:
                   image: image/image.tar
-                  addditional_tags: git/.git/short_ref
+                  additional_tags: git/.git/short_ref
           - do:
               - task: shinninjou
                 file: git/ci/tasks/builder.yml
@@ -186,7 +186,7 @@ jobs:
               - put: shinninjou
                 params:
                   image: image/image.tar
-                  addditional_tags: git/.git/short_ref
+                  additional_tags: git/.git/short_ref
           - do:
               - task: youji
                 file: git/ci/tasks/builder.yml
@@ -197,4 +197,4 @@ jobs:
               - put: youji
                 params:
                   image: image/image.tar
-                  addditional_tags: git/.git/short_ref
+                  additional_tags: git/.git/short_ref
