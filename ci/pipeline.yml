@@ -110,12 +110,14 @@ jobs:
         file: git/ci/tasks/builder.yml
         privileged: true
         params:
-          TARGET: builder
+          DOCKER_HUB_USERNAME: ((docker-hub.username))
+          DOCKER_HUB_PASSWORD: ((docker-hub.password))
           REPOSITORY: gcr.io/issho-ni/builder
-      - put: builder
-        params:
-          image: image/image.tar
-          additional_tags: git/.git/short_ref
+      - in_parallel:
+          - put: builder
+            params:
+              image: image/image.tar
+              additional_tags: git/.git/short_ref
   - name: tests
     plan:
       - in_parallel:
@@ -137,64 +139,79 @@ jobs:
             trigger: true
             passed:
               - tests
-      - task: build-images
-        file: git/ci/tasks/builder.yml
+          - get: builder
+            trigger: true
+            passed:
+              - tests
+      - task: cache
+        file: git/ci/tasks/cache.yml
         privileged: true
-        params:
-          REPOSITORY: gcr.io/issho-ni/build-images
+        output_mapping:
+          cache: cache-input
       - in_parallel:
-          - do:
-              - task: graphql
-                file: git/ci/tasks/builder.yml
-                privileged: true
-                params:
-                  TARGET: graphql
-                  REPOSITORY: gcr.io/issho-ni/graphql
-              - put: graphql
-                params:
-                  image: image/image.tar
-                  additional_tags: git/.git/short_ref
-          - do:
-              - task: ninka
-                file: git/ci/tasks/builder.yml
-                privileged: true
-                params:
-                  TARGET: ninka
-                  REPOSITORY: gcr.io/issho-ni/ninka
-              - put: ninka
-                params:
-                  image: image/image.tar
-                  additional_tags: git/.git/short_ref
-          - do:
-              - task: ninshou
-                file: git/ci/tasks/builder.yml
-                privileged: true
-                params:
-                  TARGET: ninshou
-                  REPOSITORY: gcr.io/issho-ni/ninshou
-              - put: ninshou
-                params:
-                  image: image/image.tar
-                  additional_tags: git/.git/short_ref
-          - do:
-              - task: shinninjou
-                file: git/ci/tasks/builder.yml
-                privileged: true
-                params:
-                  TARGET: shinninjou
-                  REPOSITORY: gcr.io/issho-ni/shinninjou
-              - put: shinninjou
-                params:
-                  image: image/image.tar
-                  additional_tags: git/.git/short_ref
-          - do:
-              - task: youji
-                file: git/ci/tasks/builder.yml
-                privileged: true
-                params:
-                  TARGET: youji
-                  REPOSITORY: gcr.io/issho-ni/youji
-              - put: youji
-                params:
-                  image: image/image.tar
-                  additional_tags: git/.git/short_ref
+          - task: graphql
+            file: git/ci/tasks/builder.yml
+            privileged: true
+            params:
+              CACHE_INPUT_DIR: cache-input
+              TARGET: graphql
+              REPOSITORY: gcr.io/issho-ni/graphql
+            output_mapping:
+              image: graphql
+          - task: ninka
+            file: git/ci/tasks/builder.yml
+            privileged: true
+            params:
+              CACHE_INPUT_DIR: cache-input
+              TARGET: ninka
+              REPOSITORY: gcr.io/issho-ni/ninka
+            output_mapping:
+              image: ninka
+          - task: ninshou
+            file: git/ci/tasks/builder.yml
+            privileged: true
+            params:
+              CACHE_INPUT_DIR: cache-input
+              TARGET: ninshou
+              REPOSITORY: gcr.io/issho-ni/ninshou
+            output_mapping:
+              image: ninshou
+          - task: shinninjou
+            file: git/ci/tasks/builder.yml
+            privileged: true
+            params:
+              CACHE_INPUT_DIR: cache-input
+              TARGET: shinninjou
+              REPOSITORY: gcr.io/issho-ni/shinninjou
+            output_mapping:
+              image: shinninjou
+          - task: youji
+            file: git/ci/tasks/builder.yml
+            privileged: true
+            params:
+              CACHE_INPUT_DIR: cache-input
+              TARGET: youji
+              REPOSITORY: gcr.io/issho-ni/youji
+            output_mapping:
+              image: youji
+      - in_parallel:
+          - put: graphql
+            params:
+              image: graphql/image.tar
+              additional_tags: git/.git/short_ref
+          - put: ninka
+            params:
+              image: ninka/image.tar
+              additional_tags: git/.git/short_ref
+          - put: ninshou
+            params:
+              image: ninshou/image.tar
+              additional_tags: git/.git/short_ref
+          - put: shinninjou
+            params:
+              image: shinninjou/image.tar
+              additional_tags: git/.git/short_ref
+          - put: youji
+            params:
+              image: youji/image.tar
+              additional_tags: git/.git/short_ref

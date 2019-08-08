@@ -10,14 +10,13 @@ params:
   CACHE_MODE: max
   CACHE_REGISTRY_REF: docker.io/issho/issho-build-cache
   CONTEXT: git
+  REPOSITORY: docker.io/issho/issho-build-cache
 
 inputs:
   - name: git
-  - name: cache-input
-    optional: true
 
 outputs:
-  - name: image
+  - name: cache
 
 run:
   path: git/ci/scripts/build.sh
