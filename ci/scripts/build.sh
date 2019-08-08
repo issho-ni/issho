@@ -2,6 +2,9 @@
 
 set -eu
 
+DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD:-}
+DOCKER_HUB_USERNAME=${DOCKER_HUB_USERNAME:-}
+
 if [ -n "$DOCKER_HUB_USERNAME" ] && [ -n "$DOCKER_HUB_PASSWORD" ]; then
     auth=$(printf "%s:%s" $DOCKER_HUB_USERNAME $DOCKER_HUB_PASSWORD | base64 | tr -d "\n")
     mkdir ~/.docker
