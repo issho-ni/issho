@@ -157,6 +157,8 @@ jobs:
             privileged: true
             params:
               CACHE_EXPORT_TYPE: registry
+              DOCKER_HUB_USERNAME: ((docker-hub.username))
+              DOCKER_HUB_PASSWORD: ((docker-hub.password))
               OUTPUT_TYPE: none
             vars:
               target: cache
