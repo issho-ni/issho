@@ -110,6 +110,8 @@ jobs:
         file: git/ci/tasks/builder.yml
         privileged: true
         params:
+          CACHE_EXPORT_TYPE: registry
+          CACHE_IMPORT_TYPE: registry
           DOCKER_HUB_USERNAME: ((docker-hub.username))
           DOCKER_HUB_PASSWORD: ((docker-hub.password))
         vars:
@@ -141,16 +143,15 @@ jobs:
             passed:
               - tests
       - task: cache
-        file: git/ci/tasks/cache.yml
+        file: git/ci/tasks/builder.yml
         privileged: true
-        output_mapping:
-          cache: cache-input
+        params:
+          CACHE_EXPORT_TYPE: local
+          CACHE_IMPORT_TYPE: registry
       - in_parallel:
           - task: graphql
             file: git/ci/tasks/builder.yml
             privileged: true
-            params:
-              CACHE_INPUT_DIR: cache-input
             vars:
               target: graphql
             output_mapping:
@@ -158,8 +159,6 @@ jobs:
           - task: ninka
             file: git/ci/tasks/builder.yml
             privileged: true
-            params:
-              CACHE_INPUT_DIR: cache-input
             vars:
               target: ninka
             output_mapping:
@@ -167,8 +166,6 @@ jobs:
           - task: ninshou
             file: git/ci/tasks/builder.yml
             privileged: true
-            params:
-              CACHE_INPUT_DIR: cache-input
             vars:
               target: ninshou
             output_mapping:
@@ -176,8 +173,6 @@ jobs:
           - task: shinninjou
             file: git/ci/tasks/builder.yml
             privileged: true
-            params:
-              CACHE_INPUT_DIR: cache-input
             vars:
               target: shinninjou
             output_mapping:
@@ -185,8 +180,6 @@ jobs:
           - task: youji
             file: git/ci/tasks/builder.yml
             privileged: true
-            params:
-              CACHE_INPUT_DIR: cache-input
             vars:
               target: youji
             output_mapping:

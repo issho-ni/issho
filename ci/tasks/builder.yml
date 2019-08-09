@@ -7,19 +7,21 @@ image_resource:
     repository: issho/concourse-buildkit
 
 params:
-  CACHE_MODE: max
-  CACHE_REGISTRY_REF: docker.io/issho/issho-build-cache
+  CACHE_EXPORT_MODE: max
+  CACHE_EXPORT_TYPE: none
+  CACHE_IMPORT_REF: docker.io/issho/issho-build-cache
   CONTEXT: git
   REPOSITORY: gcr.io/issho-ni/((target))
   TARGET: ((target))
 
 inputs:
   - name: git
-  - name: cache-input
+  - name: cache
     optional: true
 
 outputs:
   - name: image
+  - name: cache
 
 run:
   path: git/ci/scripts/build.sh
