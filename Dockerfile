@@ -36,7 +36,7 @@ COPY --from=builder /go/bin/shinninjou /server
 FROM base AS youji
 COPY --from=builder /go/bin/youji /server
 
-FROM scratch
+FROM scratch AS cache
 COPY --from=graphql /cert.pem /
 COPY --from=ninka /cert.pem /
 COPY --from=ninshou /cert.pem /

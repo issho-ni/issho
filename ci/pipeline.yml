@@ -148,6 +148,8 @@ jobs:
         params:
           CACHE_EXPORT_TYPE: local
           CACHE_IMPORT_TYPE: registry
+        vars:
+          target: cache
       - in_parallel:
           - task: graphql
             file: git/ci/tasks/builder.yml
