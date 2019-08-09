@@ -1,2 +1,6 @@
 #!/bin/sh
-go test ./...
+
+set -eu
+
+echo "Starting tests..."
+exec go test ./...
