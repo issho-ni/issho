@@ -157,6 +157,7 @@ jobs:
             privileged: true
             params:
               CACHE_EXPORT_TYPE: registry
+              OUTPUT_TYPE: none
             vars:
               target: cache
           - do:
