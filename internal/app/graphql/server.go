@@ -61,7 +61,7 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 		options = append(options, handler.RequestMiddleware(gqlapollotracing.RequestMiddleware()))
 		options = append(options, handler.Tracer(gqlapollotracing.NewTracer()))
 
-		corsOptions.AllowedOrigins = []string{"https://localhost:9000"}
+		corsOptions.AllowedOrigins = []string{"https://localhost:8080/", "https://localhost:9000"}
 		corsOptions.Debug = true
 	} else {
 		options = append(options, handler.IntrospectionEnabled(false))
