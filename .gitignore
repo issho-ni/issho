@@ -12,6 +12,7 @@
 *.out
 
 # Debug dumps
+__debug_bin
 debug
 
 # Certificates
