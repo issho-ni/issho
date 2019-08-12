@@ -7,10 +7,15 @@ import (
 	"github.com/issho-ni/issho/api/kazoku"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (s *kazokuServer) GetUserAccounts(ctx context.Context, in *kazoku.UserAccount) (*kazoku.UserAccounts, error) {
+	var cur *mongo.Cursor
+	var err error
+
 	filter := bson.M{}
+
 	if in.AccountID != nil {
 		filter["accountid"] = in.AccountID
 	} else if in.UserID != nil {
@@ -22,8 +27,7 @@ func (s *kazokuServer) GetUserAccounts(ctx context.Context, in *kazoku.UserAccou
 	results := []*kazoku.UserAccount{}
 	collection := s.mongoClient.Collection("useraccounts")
 
-	cur, err := collection.Find(ctx, filter)
-	if err != nil {
+	if cur, err = collection.Find(ctx, filter); err != nil {
 		return nil, err
 	}
 

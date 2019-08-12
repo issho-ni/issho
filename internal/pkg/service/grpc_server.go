@@ -31,20 +31,19 @@ type grpcServer struct {
 
 // NewGRPCServer creates a new listener and gRPC server for a gRPC service.
 func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) GRPCServer {
-	lis, err := net.Listen("tcp", ":"+config.Port)
+	var creds credentials.TransportCredentials
+	var err error
+	var lis net.Listener
+	var opts []grpc.ServerOption
 
-	if err != nil {
+	if lis, err = net.Listen("tcp", ":"+config.Port); err != nil {
 		log.WithFields(log.Fields{
 			"err":  err,
 			"port": config.Port,
 		}).Fatal("Failed to listen on port")
 	}
 
-	var opts []grpc.ServerOption
-
-	creds, err := credentials.NewServerTLSFromFile(config.TLSCert, config.TLSKey)
-
-	if err != nil {
+	if creds, err = credentials.NewServerTLSFromFile(config.TLSCert, config.TLSKey); err != nil {
 		log.WithField("err", err).Fatal("Failed to generate server credentials")
 	}
 

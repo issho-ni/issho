@@ -20,8 +20,9 @@ type InvalidToken struct {
 }
 
 func (s *ninkaServer) InvalidateToken(ctx context.Context, in *common.Claims) (*ninka.TokenResponse, error) {
-	invalid, err := s.isTokenInvalid(ctx, in.TokenID)
-	if err != nil {
+	var ins []byte
+
+	if invalid, err := s.isTokenInvalid(ctx, in.TokenID); err != nil {
 		return &ninka.TokenResponse{Success: false}, err
 	} else if !invalid {
 		invalidToken := &InvalidToken{
@@ -29,14 +30,12 @@ func (s *ninkaServer) InvalidateToken(ctx context.Context, in *common.Claims) (*
 			ExpiresAt: in.ExpiresAt,
 		}
 
-		ins, err := bson.Marshal(invalidToken)
-		if err != nil {
+		if ins, err = bson.Marshal(invalidToken); err != nil {
 			return &ninka.TokenResponse{Success: false}, err
 		}
 
 		collection := s.mongoClient.Collection("invalid_tokens")
-		_, err = collection.InsertOne(ctx, ins)
-		if err != nil {
+		if _, err = collection.InsertOne(ctx, ins); err != nil {
 			return &ninka.TokenResponse{Success: false}, err
 		}
 	}
@@ -49,8 +48,7 @@ func (s *ninkaServer) isTokenInvalid(ctx context.Context, tokenID *uuid.UUID) (b
 	filter := bson.D{{Key: "tokenid", Value: tokenID}}
 
 	collection := s.mongoClient.Collection("invalid_tokens")
-	err := collection.FindOne(ctx, filter).Decode(result)
-	if err == mongo.ErrNoDocuments {
+	if err := collection.FindOne(ctx, filter).Decode(result); err == mongo.ErrNoDocuments {
 		return false, nil
 	} else if err != nil {
 		return false, err

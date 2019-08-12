@@ -62,10 +62,12 @@ func TestUnmarshalTime(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := UnmarshalTime(tt.args.v)
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("UnmarshalTime() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+
 			if !tt.wantErr && got.Unix() != tt.want {
 				t.Errorf("UnmarshalTime() = %v, want %v", got.Unix(), tt.want)
 			}

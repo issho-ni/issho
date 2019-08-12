@@ -14,15 +14,13 @@ func (s *shinninjouServer) ValidateCredential(ctx context.Context, in *shinninjo
 	filter := bson.D{{Key: "userid", Value: in.UserID}, {Key: "credentialtype", Value: in.CredentialType}}
 
 	collection := s.mongoClient.Collection("credentials")
-	err := collection.FindOne(ctx, filter).Decode(result)
-	if err != nil {
+	if err := collection.FindOne(ctx, filter).Decode(result); err != nil {
 		return nil, err
 	}
 
 	switch in.CredentialType {
 	case shinninjou.CredentialType_PASSWORD:
-		err = bcrypt.CompareHashAndPassword(result.Credential, in.Credential)
-		if err != nil {
+		if err := bcrypt.CompareHashAndPassword(result.Credential, in.Credential); err != nil {
 			return nil, err
 		}
 	}

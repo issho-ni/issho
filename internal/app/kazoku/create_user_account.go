@@ -8,8 +8,10 @@ import (
 )
 
 func (s *kazokuServer) CreateUserAccount(ctx context.Context, in *kazoku.UserAccount) (*kazoku.UserAccount, error) {
-	ins, err := bson.Marshal(in)
-	if err != nil {
+	var err error
+	var ins []byte
+
+	if ins, err = bson.Marshal(in); err != nil {
 		return nil, err
 	}
 

@@ -33,6 +33,8 @@ type clientSet struct {
 
 // NewGraphQLServer creates a new HTTP handler for the GraphQL service.
 func NewGraphQLServer(config *service.ServerConfig) service.Server {
+	var options []handler.Option
+
 	r := mux.NewRouter()
 	r.HandleFunc("/live", liveCheck)
 
@@ -57,7 +59,6 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 		AllowedMethods: []string{"GET", "OPTIONS", "POST"},
 	}
 
-	var options []handler.Option
 	if service.Environment.Development() {
 		r.Handle("/", handler.Playground("GraphQL playground", "/query"))
 

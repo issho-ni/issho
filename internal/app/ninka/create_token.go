@@ -14,8 +14,12 @@ import (
 )
 
 func (s *ninkaServer) CreateToken(ctx context.Context, in *ninka.TokenRequest) (*ninka.Token, error) {
-	t, ok := icontext.TimingFromContext(ctx)
-	if !ok {
+	var err error
+	var ok bool
+	var t time.Time
+	var token []byte
+
+	if t, ok = icontext.TimingFromContext(ctx); !ok {
 		t = time.Now()
 	}
 
@@ -28,8 +32,7 @@ func (s *ninkaServer) CreateToken(ctx context.Context, in *ninka.TokenRequest) (
 	claims.NotBefore = jwt.NewNumericTime(notBefore)
 	claims.Subject = in.UserID.String()
 
-	token, err := claims.HMACSign(jwt.HS256, s.secret)
-	if err != nil {
+	if token, err = claims.HMACSign(jwt.HS256, s.secret); err != nil {
 		return nil, err
 	}
 

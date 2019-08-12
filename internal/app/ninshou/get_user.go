@@ -11,6 +11,7 @@ import (
 
 func (s *ninshouServer) GetUser(ctx context.Context, in *ninshou.User) (*ninshou.User, error) {
 	filter := bson.M{}
+
 	if in.Id != nil {
 		filter["_id"] = in.Id
 	} else if in.Email != "" {
@@ -22,8 +23,7 @@ func (s *ninshouServer) GetUser(ctx context.Context, in *ninshou.User) (*ninshou
 	result := &ninshou.User{}
 	collection := s.mongoClient.Collection("users")
 
-	err := collection.FindOne(ctx, filter).Decode(result)
-	if err != nil {
+	if err := collection.FindOne(ctx, filter).Decode(result); err != nil {
 		return nil, err
 	}
 

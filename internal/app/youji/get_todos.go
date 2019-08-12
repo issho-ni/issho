@@ -7,17 +7,20 @@ import (
 	icontext "github.com/issho-ni/issho/internal/pkg/context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (s *youjiServer) GetTodos(ctx context.Context, in *youji.GetTodosParams) (*youji.Todos, error) {
+	var cur *mongo.Cursor
+	var err error
+
 	results := []*youji.Todo{}
 
 	claims, _ := icontext.ClaimsFromContext(ctx)
 	filter := bson.D{{Key: "userid", Value: claims.UserID}}
 
 	collection := s.mongoClient.Collection("todos")
-	cur, err := collection.Find(ctx, filter)
-	if err != nil {
+	if cur, err = collection.Find(ctx, filter); err != nil {
 		return nil, err
 	}
 

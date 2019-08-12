@@ -37,16 +37,17 @@ type mongoClient struct {
 
 // NewMongoClient creates a new MongoDB client for connecting to the specified database.
 func NewMongoClient(dbName string) MongoClient {
-	uri := os.Getenv("MONGODB_URL")
+	var client *mongo.Client
+	var err error
 
+	uri := os.Getenv("MONGODB_URL")
 	entry := log.WithFields(log.Fields{
 		"mongodb.service": dbName,
 		"span.kind":       "client",
 		"system":          "mongodb",
 	})
 
-	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
-	if err != nil {
+	if client, err = mongo.NewClient(options.Client().ApplyURI(uri)); err != nil {
 		entry.WithField("err", err).Fatal("Failed to create MongoDB client")
 	}
 
@@ -57,16 +58,14 @@ func NewMongoClient(dbName string) MongoClient {
 func (c *mongoClient) Connect() context.CancelFunc {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
-	err := c.Client.Connect(ctx)
-	if err != nil {
+	if err := c.Client.Connect(ctx); err != nil {
 		c.log.WithField("err", err).Fatal("Failed to find MongoDB")
 	}
 
 	c.log.Debug("Connecting to MongoDB")
 	pingCtx, cancelPing := context.WithTimeout(context.Background(), 30*time.Second)
 
-	err = c.Client.Ping(pingCtx, nil)
-	if err != nil {
+	if err := c.Client.Ping(pingCtx, nil); err != nil {
 		c.log.WithField("err", err).Fatal("Failed to connect to MongoDB")
 	}
 
@@ -78,14 +77,16 @@ func (c *mongoClient) Connect() context.CancelFunc {
 
 // CreateIndexes creates the specified indexes on the client's database.
 func (c *mongoClient) CreateIndexes(indexSets ...IndexSet) {
+	var err error
+	var results []string
+
 	c.log.Debug("Creating indexes")
 	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
 
 	for _, indexSet := range indexSets {
 		coll := c.Collection(indexSet.Collection).Indexes()
 
-		results, err := coll.CreateMany(context.Background(), indexSet.Indexes, createOptions)
-		if err != nil {
+		if results, err = coll.CreateMany(context.Background(), indexSet.Indexes, createOptions); err != nil {
 			c.log.WithField("err", err).Fatal("Could not create indexes")
 		}
 

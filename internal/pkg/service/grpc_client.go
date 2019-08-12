@@ -19,9 +19,10 @@ type GRPCClientConfig struct {
 
 // NewGRPCClientConfig generates a new service client environment.
 func NewGRPCClientConfig(tlsCert string) *GRPCClientConfig {
-	creds, err := credentials.NewClientTLSFromFile(tlsCert, "")
+	var creds credentials.TransportCredentials
+	var err error
 
-	if err != nil {
+	if creds, err = credentials.NewClientTLSFromFile(tlsCert, ""); err != nil {
 		log.WithField("err", err).Fatal("Failed to generate credentials")
 	}
 
@@ -42,7 +43,10 @@ type grpcClient struct {
 
 // NewGRPCClient establishes a client connection to a gRPC service.
 func NewGRPCClient(config *GRPCClientConfig, name string, url string) GRPCClient {
+	var cc *grpc.ClientConn
+	var err error
 	var opts []grpc.DialOption
+
 	opts = append(opts, grpc.WithTransportCredentials(config.TransportCredentials))
 	opts = append(opts, grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
 		streamClientContextInterceptor(appendRequestIDToOutgoingContext),
@@ -55,8 +59,7 @@ func NewGRPCClient(config *GRPCClientConfig, name string, url string) GRPCClient
 		unaryClientContextInterceptor(appendTimingToOutgoingContext),
 	)))
 
-	cc, err := grpc.Dial(url, opts...)
-	if err != nil {
+	if cc, err = grpc.Dial(url, opts...); err != nil {
 		log.WithFields(log.Fields{
 			"err":          err,
 			"grpc.service": name,
@@ -84,11 +87,13 @@ type GRPCStatus struct {
 }
 
 func (c *grpcClient) HealthCheck() *GRPCStatus {
+	var err error
+	var resp *healthpb.HealthCheckResponse
+
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	resp, err := c.HealthClient.Check(ctx, &healthpb.HealthCheckRequest{})
-	if err != nil {
+	if resp, err = c.HealthClient.Check(ctx, &healthpb.HealthCheckRequest{}); err != nil {
 		return &GRPCStatus{false, err}
 	}
 

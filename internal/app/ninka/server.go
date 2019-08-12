@@ -37,12 +37,12 @@ func NewNinkaServer(config *service.ServerConfig) service.Server {
 	server.mongoClient = service.NewMongoClient(config.Name)
 
 	secret := os.Getenv("NINKA_JWT_SECRET")
-	decoded, err := base64.StdEncoding.DecodeString(secret)
-	if err != nil {
+	if decoded, err := base64.StdEncoding.DecodeString(secret); err != nil {
 		log.WithField("err", err).Fatal("Could not decode JWT secret")
+	} else {
+		server.secret = decoded
 	}
 
-	server.secret = decoded
 	return server
 }
 

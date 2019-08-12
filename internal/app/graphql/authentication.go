@@ -23,13 +23,11 @@ func (s *graphQLServer) authenticationMiddleware(next http.Handler) http.Handler
 
 func (h *authenticationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	bearer := r.Header.Get(authorizationHeader)
-	matches := h.bearerExpression.FindStringSubmatch(bearer)
 
-	if len(matches) == 2 {
+	if matches := h.bearerExpression.FindStringSubmatch(bearer); len(matches) == 2 {
 		token := &ninka.Token{Token: matches[1]}
 
-		response, err := h.graphQLServer.NinkaClient.ValidateToken(r.Context(), token)
-		if err == nil {
+		if response, err := h.graphQLServer.NinkaClient.ValidateToken(r.Context(), token); err == nil {
 			ctx := context.NewClaimsContext(r.Context(), *response.Claims)
 			r = r.WithContext(ctx)
 		}

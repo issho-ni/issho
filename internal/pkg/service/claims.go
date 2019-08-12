@@ -16,13 +16,16 @@ const claimsKey = "claims"
 const userIDKey = "user_id"
 
 func appendClaimsToOutgoingContext(ctx context.Context) context.Context {
-	claims, ok := icontext.ClaimsFromContext(ctx)
-	if !ok {
+	var claims common.Claims
+	var err error
+	var ok bool
+	var value []byte
+
+	if claims, ok = icontext.ClaimsFromContext(ctx); !ok {
 		return ctx
 	}
 
-	value, err := json.Marshal(claims)
-	if err != nil {
+	if value, err = json.Marshal(claims); err != nil {
 		return ctx
 	}
 
@@ -30,19 +33,20 @@ func appendClaimsToOutgoingContext(ctx context.Context) context.Context {
 }
 
 func logClaimsFromIncomingContext(ctx context.Context) context.Context {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return ctx
-	}
-
-	value := md.Get(claimsKey)
-	if len(value) != 1 {
-		return ctx
-	}
-
 	var claims common.Claims
-	err := json.Unmarshal([]byte(value[0]), &claims)
-	if err != nil {
+	var md metadata.MD
+	var ok bool
+	var value []string
+
+	if md, ok = metadata.FromIncomingContext(ctx); !ok {
+		return ctx
+	}
+
+	if value = md.Get(claimsKey); len(value) != 1 {
+		return ctx
+	}
+
+	if err := json.Unmarshal([]byte(value[0]), &claims); err != nil {
 		return ctx
 	}
 

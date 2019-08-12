@@ -16,13 +16,16 @@ const timingKey = "timing"
 const startTimeKey = "start_time"
 
 func appendTimingToOutgoingContext(ctx context.Context) context.Context {
-	t, ok := icontext.TimingFromContext(ctx)
-	if !ok {
+	var err error
+	var ok bool
+	var t time.Time
+	var value []byte
+
+	if t, ok = icontext.TimingFromContext(ctx); !ok {
 		return ctx
 	}
 
-	value, err := json.Marshal(t)
-	if err != nil {
+	if value, err = json.Marshal(t); err != nil {
 		return ctx
 	}
 
@@ -30,19 +33,20 @@ func appendTimingToOutgoingContext(ctx context.Context) context.Context {
 }
 
 func logTimingFromIncomingContext(ctx context.Context) context.Context {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return ctx
-	}
-
-	value := md.Get(timingKey)
-	if len(value) != 1 {
-		return ctx
-	}
-
+	var md metadata.MD
+	var ok bool
 	var t time.Time
-	err := json.Unmarshal([]byte(value[0]), &t)
-	if err != nil {
+	var value []string
+
+	if md, ok = metadata.FromIncomingContext(ctx); !ok {
+		return ctx
+	}
+
+	if value = md.Get(timingKey); len(value) != 1 {
+		return ctx
+	}
+
+	if err := json.Unmarshal([]byte(value[0]), &t); err != nil {
 		return ctx
 	}
 

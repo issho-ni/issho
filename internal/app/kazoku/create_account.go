@@ -10,6 +10,9 @@ import (
 )
 
 func (s *kazokuServer) CreateAccount(ctx context.Context, in *kazoku.Account) (*kazoku.Account, error) {
+	var err error
+	var ins []byte
+
 	id := uuid.New()
 	in.Id = &id
 	// TODO Get this timestamp from the context request timing
@@ -18,8 +21,7 @@ func (s *kazokuServer) CreateAccount(ctx context.Context, in *kazoku.Account) (*
 	expires := now.Add(365 * 24 * time.Hour)
 	in.ExpiresAt = &expires
 
-	ins, err := bson.Marshal(in)
-	if err != nil {
+	if ins, err = bson.Marshal(in); err != nil {
 		return nil, err
 	}
 

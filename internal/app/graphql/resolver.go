@@ -67,12 +67,16 @@ type mutationResolver struct{ *Resolver }
 
 // CreateAccount creates a new Account.
 func (r *mutationResolver) CreateAccount(ctx context.Context, input graphql.NewAccount) (*graphql.LoginResponse, error) {
-	loginResponse, err := r.CreateUser(ctx, *input.User)
-	if err != nil {
+	var err error
+	var loginResponse *graphql.LoginResponse
+
+	if loginResponse, err = r.CreateUser(ctx, *input.User); err != nil {
 		return nil, err
 	}
 
-	_, err = r.KazokuClient.CreateAccount(ctx, &kazoku.Account{Name: input.Name, CreatedByUserID: loginResponse.User.Id})
+	if _, err = r.KazokuClient.CreateAccount(ctx, &kazoku.Account{Name: input.Name, CreatedByUserID: loginResponse.User.Id}); err != nil {
+		return nil, err
+	}
 
 	return loginResponse, nil
 }
@@ -84,16 +88,20 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input youji.NewTodo) 
 
 // CreateUser creates a new User.
 func (r *mutationResolver) CreateUser(ctx context.Context, input graphql.NewUser) (*graphql.LoginResponse, error) {
-	user, err := r.NinshouClient.CreateUser(ctx, &ninshou.User{Name: input.Name, Email: input.Email})
-	if err != nil {
+	var err error
+	var user *ninshou.User
+
+	if user, err = r.NinshouClient.CreateUser(ctx, &ninshou.User{Name: input.Name, Email: input.Email}); err != nil {
 		return nil, err
 	}
 
-	_, err = r.ShinninjouClient.CreateCredential(ctx, &shinninjou.Credential{
+	if _, err = r.ShinninjouClient.CreateCredential(ctx, &shinninjou.Credential{
 		UserID:         user.Id,
 		CredentialType: shinninjou.CredentialType_PASSWORD,
 		Credential:     []byte(input.Password),
-	})
+	}); err != nil {
+		return nil, err
+	}
 
 	return r.getLoginResponse(ctx, user)
 }
@@ -101,17 +109,18 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input graphql.NewUser
 // LoginUser attempts to authenticate a user given an email address and
 // password.
 func (r *mutationResolver) LoginUser(ctx context.Context, input graphql.LoginRequest) (*graphql.LoginResponse, error) {
-	user, err := r.NinshouClient.GetUser(ctx, &ninshou.User{Email: input.Email})
-	if err != nil {
+	var err error
+	var user *ninshou.User
+
+	if user, err = r.NinshouClient.GetUser(ctx, &ninshou.User{Email: input.Email}); err != nil {
 		return nil, err
 	}
 
-	_, err = r.ShinninjouClient.ValidateCredential(ctx, &shinninjou.Credential{
+	if _, err = r.ShinninjouClient.ValidateCredential(ctx, &shinninjou.Credential{
 		UserID:         user.Id,
 		CredentialType: shinninjou.CredentialType_PASSWORD,
 		Credential:     []byte(input.Password),
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
 
@@ -119,10 +128,12 @@ func (r *mutationResolver) LoginUser(ctx context.Context, input graphql.LoginReq
 }
 
 func (r *mutationResolver) LogoutUser(ctx context.Context, _ *bool) (bool, error) {
+	var err error
+	var response *ninka.TokenResponse
+
 	claims, _ := icontext.ClaimsFromContext(ctx)
 
-	response, err := r.NinkaClient.InvalidateToken(ctx, &claims)
-	if err != nil {
+	if response, err = r.NinkaClient.InvalidateToken(ctx, &claims); err != nil {
 		return false, err
 	}
 
@@ -134,10 +145,12 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, input youji.UpdateTod
 }
 
 func (r *mutationResolver) getLoginResponse(ctx context.Context, user *ninshou.User) (*graphql.LoginResponse, error) {
+	var err error
+	var token *ninka.Token
+
 	tokenRequest := &ninka.TokenRequest{UserID: user.Id}
 
-	token, err := r.NinkaClient.CreateToken(ctx, tokenRequest)
-	if err != nil {
+	if token, err = r.NinkaClient.CreateToken(ctx, tokenRequest); err != nil {
 		return nil, err
 	}
 

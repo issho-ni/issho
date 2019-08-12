@@ -7,10 +7,13 @@ import (
 	icontext "github.com/issho-ni/issho/internal/pkg/context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (s *youjiServer) UpdateTodo(ctx context.Context, in *youji.UpdateTodoParams) (*youji.Todo, error) {
+	var update primitive.M
+
 	claims, _ := icontext.ClaimsFromContext(ctx)
 	filter := bson.D{{Key: "_id", Value: in.Id}, {Key: "userid", Value: claims.UserID}}
 
@@ -22,17 +25,15 @@ func (s *youjiServer) UpdateTodo(ctx context.Context, in *youji.UpdateTodoParams
 		return nil, err
 	}
 
-	update := currentTodo.UpdateOperatorsFromParams(in)
-	if len(update) == 0 {
+	if update = currentTodo.UpdateOperatorsFromParams(in); len(update) == 0 {
 		return currentTodo, nil
 	}
 
 	opts := &options.FindOneAndUpdateOptions{}
 	opts.SetReturnDocument(options.After)
-	result = collection.FindOneAndUpdate(ctx, filter, update, opts)
 
 	todo := &youji.Todo{}
-	if err := result.Decode(todo); err != nil {
+	if err := collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(todo); err != nil {
 		return nil, err
 	}
 

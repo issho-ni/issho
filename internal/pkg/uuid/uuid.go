@@ -12,9 +12,11 @@ import (
 
 // Parse decodes s into a UUID or returns an error.
 func Parse(s string) (UUID, error) {
+	var err error
 	var id UUID
-	parsed, err := uuid.Parse(s)
-	if err != nil {
+	var parsed uuid.UUID
+
+	if parsed, err = uuid.Parse(s); err != nil {
 		return id, err
 	}
 
@@ -33,8 +35,10 @@ func New() UUID {
 
 // UnmarshalGQL implements the graphql.Unmarshal interface.
 func (u *UUID) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
+	var ok bool
+	var str string
+
+	if str, ok = v.(string); !ok {
 		return fmt.Errorf("Value for unmarshaling was not a string: %v", v)
 	}
 
@@ -66,18 +70,19 @@ func (u *UUID) MarshalTo(data []byte) (int, error) {
 
 // Unmarshal is required to implement the proto.Marshaler interface.
 func (u *UUID) Unmarshal(data []byte) error {
+	var err error
+	var uid uuid.UUID
+
 	if len(data) == 0 {
 		u = nil
 		return nil
 	}
 
-	uid, err := uuid.FromBytes(data)
-	if err != nil {
+	if uid, err = uuid.FromBytes(data); err == nil {
+		u.UUID = uid
+	} else {
 		return err
 	}
-
-	u.UUID = uid
-	return nil
 }
 
 // MarshalBSONValue implements the bson.ValueMarshaler interface.
@@ -102,11 +107,9 @@ func (u UUID) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
 func (u *UUID) UnmarshalJSON(data []byte) error {
-	parsed, err := uuid.Parse(string(data))
-	if err != nil {
+	if parsed, err := uuid.Parse(string(data)); err == nil {
+		u.UUID = parsed
+	} else {
 		return err
 	}
-
-	u.UUID = parsed
-	return nil
 }

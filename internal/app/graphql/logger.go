@@ -35,13 +35,11 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		"system":           "http",
 	})
 
-	claims, ok := context.ClaimsFromContext(r.Context())
-	if ok {
+	if claims, ok := context.ClaimsFromContext(r.Context()); ok {
 		entry = entry.WithField("user_id", claims.UserID)
 	}
 
-	start, ok := context.TimingFromContext(r.Context())
-	if ok {
+	if start, ok := context.TimingFromContext(r.Context()); ok {
 		since := math.Round(time.Since(start).Seconds()*1e6) / 1e3
 		entry = entry.WithField("http.time_ms", since).WithTime(start)
 	}

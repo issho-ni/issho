@@ -11,6 +11,7 @@ import (
 
 func (s *kazokuServer) GetAccount(ctx context.Context, in *kazoku.Account) (*kazoku.Account, error) {
 	filter := bson.M{}
+
 	if in.Id != nil {
 		filter["_id"] = in.Id
 	} else {
@@ -20,8 +21,7 @@ func (s *kazokuServer) GetAccount(ctx context.Context, in *kazoku.Account) (*kaz
 	result := &kazoku.Account{}
 	collection := s.mongoClient.Collection("accounts")
 
-	err := collection.FindOne(ctx, filter).Decode(result)
-	if err != nil {
+	if err := collection.FindOne(ctx, filter).Decode(result); err != nil {
 		return nil, err
 	}
 
