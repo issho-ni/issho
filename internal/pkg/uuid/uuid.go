@@ -83,6 +83,8 @@ func (u *UUID) Unmarshal(data []byte) error {
 	} else {
 		return err
 	}
+
+	return nil
 }
 
 // MarshalBSONValue implements the bson.ValueMarshaler interface.
@@ -112,4 +114,6 @@ func (u *UUID) UnmarshalJSON(data []byte) error {
 	} else {
 		return err
 	}
+
+	return nil
 }
