@@ -6,6 +6,7 @@ import (
 	"context"
 
 	"github.com/issho-ni/issho/api/graphql"
+	"github.com/issho-ni/issho/api/kazoku"
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/api/shinninjou"
@@ -18,6 +19,11 @@ type Resolver struct {
 	*clientSet
 }
 
+// Account returns a new account resolver.
+func (r *Resolver) Account() graphql.AccountResolver {
+	return &accountResolver{r}
+}
+
 // Mutation returns a new mutation resolver.
 func (r *Resolver) Mutation() graphql.MutationResolver {
 	return &mutationResolver{r}
@@ -28,7 +34,48 @@ func (r *Resolver) Query() graphql.QueryResolver {
 	return &queryResolver{r}
 }
 
+// User returns a new user resolver.
+func (r *Resolver) User() graphql.UserResolver {
+	return &userResolver{r}
+}
+
+// UserAccount returns a new user account resolver.
+func (r *Resolver) UserAccount() graphql.UserAccountResolver {
+	return &userAccountResolver{r}
+}
+
+type accountResolver struct{ *Resolver }
+
+func (r *accountResolver) UserAccounts(ctx context.Context, obj *kazoku.Account) ([]*kazoku.UserAccount, error) {
+	userAccounts, err := r.KazokuClient.GetUserAccounts(ctx, &kazoku.UserAccount{AccountID: obj.Id})
+	return userAccounts.GetUserAccounts(), err
+}
+
+// CreatedBy returns the user object for the createdByUserID field on an
+// Account.
+func (r *accountResolver) CreatedBy(ctx context.Context, obj *kazoku.Account) (*ninshou.User, error) {
+	return r.NinshouClient.GetUser(ctx, &ninshou.User{Id: obj.CreatedByUserID})
+}
+
+// UpdatedBy returns the user object for the updatedByUserID field on an
+// Account.
+func (r *accountResolver) UpdatedBy(ctx context.Context, obj *kazoku.Account) (*ninshou.User, error) {
+	return r.NinshouClient.GetUser(ctx, &ninshou.User{Id: obj.UpdatedByUserID})
+}
+
 type mutationResolver struct{ *Resolver }
+
+// CreateAccount creates a new Account.
+func (r *mutationResolver) CreateAccount(ctx context.Context, input graphql.NewAccount) (*graphql.LoginResponse, error) {
+	loginResponse, err := r.CreateUser(ctx, *input.User)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = r.KazokuClient.CreateAccount(ctx, &kazoku.Account{Name: input.Name, CreatedByUserID: loginResponse.User.Id})
+
+	return loginResponse, nil
+}
 
 // CreateTodo creates a new Todo.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input youji.NewTodo) (*youji.Todo, error) {
@@ -103,4 +150,38 @@ type queryResolver struct{ *Resolver }
 func (r *queryResolver) GetTodos(ctx context.Context) ([]*youji.Todo, error) {
 	todos, err := r.YoujiClient.GetTodos(ctx, &youji.GetTodosParams{})
 	return todos.GetTodos(), err
+}
+
+type userResolver struct{ *Resolver }
+
+// UserAccounts returns the user account objects whose userID field matches the
+// ID field on a User.
+func (r *userResolver) UserAccounts(ctx context.Context, obj *ninshou.User) ([]*kazoku.UserAccount, error) {
+	userAccounts, err := r.KazokuClient.GetUserAccounts(ctx, &kazoku.UserAccount{UserID: obj.Id})
+	return userAccounts.GetUserAccounts(), err
+}
+
+type userAccountResolver struct{ *Resolver }
+
+// Account returns the account object for the accountID field on a userAccount
+// object.
+func (r *userAccountResolver) Account(ctx context.Context, obj *kazoku.UserAccount) (*kazoku.Account, error) {
+	return r.KazokuClient.GetAccount(ctx, &kazoku.Account{Id: obj.AccountID})
+}
+
+// User returns the user object for the userID field on a userAccount object.
+func (r *userAccountResolver) User(ctx context.Context, obj *kazoku.UserAccount) (*ninshou.User, error) {
+	return r.NinshouClient.GetUser(ctx, &ninshou.User{Id: obj.UserID})
+}
+
+// CreatedBy returns the user object for the createdByUserID field on a
+// userAccount object.
+func (r *userAccountResolver) CreatedBy(ctx context.Context, obj *kazoku.UserAccount) (*ninshou.User, error) {
+	return r.NinshouClient.GetUser(ctx, &ninshou.User{Id: obj.CreatedByUserID})
+}
+
+// UpdatedBy returns the user object for the updatedByUserID field on a
+// userAccount object.
+func (r *userAccountResolver) UpdatedBy(ctx context.Context, obj *kazoku.UserAccount) (*ninshou.User, error) {
+	return r.NinshouClient.GetUser(ctx, &ninshou.User{Id: obj.UpdatedByUserID})
 }

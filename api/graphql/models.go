@@ -3,6 +3,7 @@
 package graphql
 
 import (
+	"github.com/issho-ni/issho/api/kazoku"
 	"github.com/issho-ni/issho/api/ninshou"
 )
 
@@ -12,8 +13,14 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token string        `json:"token"`
-	User  *ninshou.User `json:"user"`
+	Token   string          `json:"token"`
+	Account *kazoku.Account `json:"account"`
+	User    *ninshou.User   `json:"user"`
+}
+
+type NewAccount struct {
+	Name string   `json:"name"`
+	User *NewUser `json:"user"`
 }
 
 type NewUser struct {

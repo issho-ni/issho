@@ -8,6 +8,8 @@ model:
   filename: api/graphql/models.go
   package: graphql
 models:
+  Account:
+    model: github.com/issho-ni/issho/api/kazoku.Account
   NewTodo:
     model: github.com/issho-ni/issho/api/youji.NewTodo
   Todo:
@@ -16,9 +18,13 @@ models:
     model: github.com/issho-ni/issho/api/youji.UpdateTodoParams
   User:
     model: github.com/issho-ni/issho/api/ninshou.User
+  UserAccount:
+    model: github.com/issho-ni/issho/api/kazoku.UserAccount
   ID:
     model: github.com/issho-ni/issho/internal/pkg/uuid.UUID
   Password:
     model: github.com/issho-ni/issho/internal/pkg/credentials.Password
+  Role:
+    model: github.com/issho-ni/issho/api/kazoku.UserAccount_Role
   Timestamp:
     model: github.com/issho-ni/issho/internal/pkg/graphql.Time

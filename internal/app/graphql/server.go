@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/issho-ni/issho/api/graphql"
+	"github.com/issho-ni/issho/api/kazoku"
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/api/shinninjou"
@@ -23,6 +24,7 @@ type graphQLServer struct {
 }
 
 type clientSet struct {
+	KazokuClient     *kazoku.Client
 	NinkaClient      *ninka.Client
 	NinshouClient    *ninshou.Client
 	ShinninjouClient *shinninjou.Client
@@ -36,6 +38,7 @@ func NewGraphQLServer(config *service.ServerConfig) service.Server {
 
 	env := service.NewGRPCClientConfig(config.TLSCert)
 	clients := &clientSet{
+		kazoku.NewClient(env),
 		ninka.NewClient(env),
 		ninshou.NewClient(env),
 		shinninjou.NewClient(env),

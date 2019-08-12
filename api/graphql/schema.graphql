@@ -2,7 +2,16 @@ directive @protected(authRequired: Boolean!) on FIELD_DEFINITION
 
 scalar Timestamp
 
+enum Role {
+  INACTIVE
+  MEMBER
+  ADMIN
+  OWNER
+}
+
 type Mutation {
+  createAccount(input: NewAccount!): LoginResponse!
+    @protected(authRequired: false)
   createTodo(input: NewTodo!): Todo! @protected(authRequired: true)
   createUser(input: NewUser!): LoginResponse! @protected(authRequired: false)
   loginUser(input: LoginRequest!): LoginResponse!
@@ -18,6 +27,11 @@ type Query {
 input LoginRequest {
   email: String!
   password: String!
+}
+
+input NewAccount {
+  name: String!
+  user: NewUser!
 }
 
 input NewTodo {
@@ -36,8 +50,20 @@ input UpdateTodoParams {
   done: Boolean
 }
 
+type Account {
+  id: ID!
+  name: String!
+  userAccounts: [UserAccount]!
+  createdBy: User!
+  updatedBy: User
+  expiresAt: Timestamp!
+  createdAt: Timestamp!
+  updatedAt: Timestamp
+}
+
 type LoginResponse {
   token: String!
+  account: Account!
   user: User!
 }
 
@@ -49,10 +75,21 @@ type Todo {
   completedAt: Timestamp
 }
 
+type UserAccount {
+  account: Account!
+  user: User!
+  role: Role!
+  createdBy: User!
+  updatedBy: User
+  createdAt: Timestamp!
+  updatedAt: Timestamp
+}
+
 type User {
   id: ID!
   name: String!
   email: String!
+  userAccounts: [UserAccount]!
   createdAt: Timestamp!
   updatedAt: Timestamp
 }
