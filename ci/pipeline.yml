@@ -137,11 +137,10 @@ jobs:
         file: git/ci/tasks/tests.yml
   - name: images
     plan:
-      - in_parallel:
-          - get: git
-            trigger: true
-            passed:
-              - tests
+      - get: git
+        trigger: true
+        passed:
+          - tests
       - task: warm-cache
         file: git/ci/tasks/builder.yml
         privileged: true
@@ -152,70 +151,84 @@ jobs:
         vars:
           target: cache
       - in_parallel:
-          - task: update-cache
-            file: git/ci/tasks/builder.yml
-            privileged: true
-            params:
-              CACHE_EXPORT_TYPE: registry
-              DOCKER_HUB_USERNAME: ((docker-hub.username))
-              DOCKER_HUB_PASSWORD: ((docker-hub.password))
-              OUTPUT_TYPE: none
-            vars:
-              target: cache
+          - try:
+              task: update-cache
+              file: git/ci/tasks/builder.yml
+              privileged: true
+              params:
+                CACHE_EXPORT_TYPE: registry
+                DOCKER_HUB_USERNAME: ((docker-hub.username))
+                DOCKER_HUB_PASSWORD: ((docker-hub.password))
+                OUTPUT_TYPE: none
+              vars:
+                target: cache
           - do:
               - task: graphql
                 file: git/ci/tasks/builder.yml
                 privileged: true
+                params:
+                  CACHE_EXPORT_TYPE: none
                 vars:
                   target: graphql
                 output_mapping:
                   image: graphql
+              - put: graphql
+                params:
+                  image: graphql/image.tar
+                  additional_tags: git/.git/short_ref
+          - do:
               - task: ninka
                 file: git/ci/tasks/builder.yml
                 privileged: true
+                params:
+                  CACHE_EXPORT_TYPE: none
                 vars:
                   target: ninka
                 output_mapping:
                   image: ninka
+              - put: ninka
+                params:
+                  image: ninka/image.tar
+                  additional_tags: git/.git/short_ref
+          - do:
               - task: ninshou
                 file: git/ci/tasks/builder.yml
                 privileged: true
+                params:
+                  CACHE_EXPORT_TYPE: none
                 vars:
                   target: ninshou
                 output_mapping:
                   image: ninshou
+              - put: ninshou
+                params:
+                  image: ninshou/image.tar
+                  additional_tags: git/.git/short_ref
+          - do:
               - task: shinninjou
                 file: git/ci/tasks/builder.yml
                 privileged: true
+                params:
+                  CACHE_EXPORT_TYPE: none
                 vars:
                   target: shinninjou
                 output_mapping:
                   image: shinninjou
+              - put: shinninjou
+                params:
+                  image: shinninjou/image.tar
+                  additional_tags: git/.git/short_ref
+          - do:
               - task: youji
                 file: git/ci/tasks/builder.yml
                 privileged: true
+                params:
+                  CACHE_EXPORT_TYPE: none
                 vars:
                   target: youji
                 output_mapping:
                   image: youji
-              - in_parallel:
-                  - put: graphql
-                    params:
-                      image: graphql/image.tar
-                      additional_tags: git/.git/short_ref
-                  - put: ninka
-                    params:
-                      image: ninka/image.tar
-                      additional_tags: git/.git/short_ref
-                  - put: ninshou
-                    params:
-                      image: ninshou/image.tar
-                      additional_tags: git/.git/short_ref
-                  - put: shinninjou
-                    params:
-                      image: shinninjou/image.tar
-                      additional_tags: git/.git/short_ref
-                  - put: youji
-                    params:
-                      image: youji/image.tar
-                      additional_tags: git/.git/short_ref
+              - put: youji
+                params:
+                  image: youji/image.tar
+                  additional_tags: git/.git/short_ref
