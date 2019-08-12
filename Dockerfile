@@ -24,6 +24,9 @@ ENV TLS_CERT=/cert.pem TLS_KEY=/key.pem
 FROM base AS graphql
 COPY --from=builder /go/bin/graphql /server
 
+FROM base AS kazoku
+COPY --from=builder /go/bin/kazoku /server
+
 FROM base AS ninka
 COPY --from=builder /go/bin/ninka /server
 
@@ -38,6 +41,7 @@ COPY --from=builder /go/bin/youji /server
 
 FROM scratch AS cache
 COPY --from=graphql /cert.pem /
+COPY --from=kazoku /cert.pem /
 COPY --from=ninka /cert.pem /
 COPY --from=ninshou /cert.pem /
 COPY --from=shinninjou /cert.pem /

@@ -3,14 +3,22 @@ kind: Deployment
 metadata:
   name: youji
   namespace: issho
+  labels:
+    app.kubernetes.io/component: tasks
+    app.kubernetes.io/instance: issho-ni
+    app.kubernetes.io/name: youji
 spec:
   selector:
     matchLabels:
-      app: youji
+      app.kubernetes.io/component: tasks
+      app.kubernetes.io/instance: issho-ni
+      app.kubernetes.io/name: youji
   template:
     metadata:
       labels:
-        app: youji
+        app.kubernetes.io/component: tasks
+        app.kubernetes.io/instance: issho-ni
+        app.kubernetes.io/name: youji
     spec:
       containers:
         - name: youji

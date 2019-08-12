@@ -24,6 +24,14 @@ mkcert localhost 127.0.0.1 ::1
 
 Port that the GraphQL service listens on (`8080` by default).
 
+#### `KAZOKU_PORT`
+
+Port that the Kazoku service listens on (`8085` by default).
+
+#### `KAZOKU_URL`
+
+Address of the Kazoku service (listening at `localhost:8085` by default).
+
 #### `MONGODB_URL`
 
 Address of the MongoDB instance to use (e.g. `mongodb://localhost:27017`).
@@ -71,6 +79,7 @@ In separate terminal sessions:
 
 ```bash
 go run ./cmd/graphql
+go run ./cmd/kazoku
 go run ./cmd/ninka
 go run ./cmd/ninshou
 go run ./cmd/shinninjou

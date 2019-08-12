@@ -3,18 +3,24 @@ kind: Deployment
 metadata:
   name: graphql
   namespace: issho
+  labels:
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/instance: issho-ni
+    app.kubernetes.io/name: graphql
 spec:
   selector:
     matchLabels:
-      app: graphql
+      app.kubernetes.io/instance: issho-ni
+      app.kubernetes.io/name: graphql
   template:
     metadata:
       labels:
-        app: graphql
+        app.kubernetes.io/instance: issho-ni
+        app.kubernetes.io/name: graphql
     spec:
       containers:
         - name: graphql
-          image: gcr.io/issho-ni/issho-graphql
+          image: gcr.io/issho-ni/graphql
           resources:
             limits:
               memory: "128Mi"
@@ -22,10 +28,16 @@ spec:
           env:
             - name: GRAPHQL_PORT
               value: "8080"
+            - name: KAZOKU_URL
+              value: kazoku:443
+            - name: NINKA_URL
+              value: ninka:443
             - name: NINSHOU_URL
-              value: ninshou.issho.svc.cluster.local:443
+              value: ninshou:443
+            - name: SHINNINJOU_URL
+              value: shinninjou:443
             - name: YOUJI_URL
-              value: youji.issho.svc.cluster.local:443
+              value: youji:443
           ports:
             - name: https
               containerPort: 8080

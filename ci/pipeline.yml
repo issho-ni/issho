@@ -49,6 +49,13 @@ resources:
       repository: gcr.io/issho-ni/graphql
       username: _json_key
       password: ((iam.ops-concourse-json))
+  - name: kazoku
+    type: registry-image
+    icon: docker
+    source:
+      repository: gcr.io/issho-ni/kazoku
+      username: _json_key
+      password: ((iam.ops-concourse-json))
   - name: ninka
     type: registry-image
     icon: docker
@@ -175,6 +182,20 @@ jobs:
               - put: graphql
                 params:
                   image: graphql/image.tar
+                  additional_tags: git/.git/short_ref
+          - do:
+              - task: kazoku
+                file: git/ci/tasks/builder.yml
+                privileged: true
+                params:
+                  CACHE_EXPORT_TYPE: none
+                vars:
+                  target: kazoku
+                output_mapping:
+                  image: kazoku
+              - put: kazoku
+                params:
+                  image: kazoku/image.tar
                   additional_tags: git/.git/short_ref
           - do:
               - task: ninka

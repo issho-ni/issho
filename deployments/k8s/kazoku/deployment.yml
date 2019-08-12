@@ -1,37 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ninshou
+  name: kazoku
   namespace: issho
   labels:
-    app.kubernetes.io/component: users
+    app.kubernetes.io/component: accounts
     app.kubernetes.io/instance: issho-ni
-    app.kubernetes.io/name: ninshou
+    app.kubernetes.io/name: kazoku
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/component: users
+      app.kubernetes.io/component: accounts
       app.kubernetes.io/instance: issho-ni
-      app.kubernetes.io/name: ninshou
+      app.kubernetes.io/name: kazoku
   template:
     metadata:
       labels:
-        app.kubernetes.io/component: users
+        app.kubernetes.io/component: accounts
         app.kubernetes.io/instance: issho-ni
-        app.kubernetes.io/name: ninshou
+        app.kubernetes.io/name: kazoku
     spec:
       containers:
-        - name: ninshou
-          image: gcr.io/issho-ni/ninshou
+        - name: kazoku
+          image: gcr.io/issho-ni/kazoku
           resources:
             limits:
               memory: 128Mi
               cpu: 500m
           env:
-            - name: NINSHOU_PORT
-              value: "8081"
+            - name: KAZOKU_PORT
+              value: "8085"
             - name: MONGODB_URL
               value: mongodb://mongodb:27017
           ports:
             - name: https
-              containerPort: 8081
+              containerPort: 8085

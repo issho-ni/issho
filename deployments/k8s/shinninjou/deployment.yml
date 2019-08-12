@@ -1,37 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ninshou
+  name: shinninjou
   namespace: issho
   labels:
-    app.kubernetes.io/component: users
+    app.kubernetes.io/component: authentication
     app.kubernetes.io/instance: issho-ni
-    app.kubernetes.io/name: ninshou
+    app.kubernetes.io/name: shinninjou
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/component: users
+      app.kubernetes.io/component: authentication
       app.kubernetes.io/instance: issho-ni
-      app.kubernetes.io/name: ninshou
+      app.kubernetes.io/name: shinninjou
   template:
     metadata:
       labels:
-        app.kubernetes.io/component: users
+        app.kubernetes.io/component: authentication
         app.kubernetes.io/instance: issho-ni
-        app.kubernetes.io/name: ninshou
+        app.kubernetes.io/name: shinninjou
     spec:
       containers:
-        - name: ninshou
-          image: gcr.io/issho-ni/ninshou
+        - name: shinninjou
+          image: gcr.io/issho-ni/shinninjou
           resources:
             limits:
               memory: 128Mi
               cpu: 500m
           env:
-            - name: NINSHOU_PORT
-              value: "8081"
+            - name: SHINNINJOU_PORT
+              value: "8083"
             - name: MONGODB_URL
               value: mongodb://mongodb:27017
           ports:
             - name: https
-              containerPort: 8081
+              containerPort: 8083

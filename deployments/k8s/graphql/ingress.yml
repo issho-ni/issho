@@ -3,6 +3,10 @@ kind: Ingress
 metadata:
   name: graphql
   namespace: issho
+  labels:
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/instance: issho-ni
+    app.kubernetes.io/name: graphql
 spec:
   rules:
     - host: issho.k8s.localhost

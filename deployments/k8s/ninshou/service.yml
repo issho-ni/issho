@@ -3,9 +3,15 @@ kind: Service
 metadata:
   name: ninshou
   namespace: issho
+  labels:
+    app.kubernetes.io/component: users
+    app.kubernetes.io/instance: issho-ni
+    app.kubernetes.io/name: ninshou
 spec:
   selector:
-    app: ninshou
+    app.kubernetes.io/component: users
+    app.kubernetes.io/instance: issho-ni
+    app.kubernetes.io/name: ninshou
   type: ClusterIP
   ports:
     - name: https

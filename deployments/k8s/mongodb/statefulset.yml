@@ -2,12 +2,19 @@ apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
   name: mongodb
+  namespace: issho
+  labels:
+    app.kubernetes.io/component: database
+    app.kubernetes.io/instance: issho-ni
+    app.kubernetes.io/name: mongodb
 spec:
   serviceName: mongodb
   template:
     metadata:
       labels:
-        app: mongodb
+        app.kubernetes.io/component: database
+        app.kubernetes.io/instance: issho-ni
+        app.kubernetes.io/name: mongodb
     spec:
       containers:
         - name: mongodb
