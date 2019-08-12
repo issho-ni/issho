@@ -5,17 +5,22 @@ import "google/protobuf/timestamp.proto";
 package kazoku;
 option go_package = "github.com/issho-ni/issho/api/kazoku";
 
-service Kazoku {}
+service Kazoku {
+    rpc CreateAccount(Account) returns (Account) {}
+    rpc CreateUserAccount(UserAccount) returns (UserAccount) {}
+    rpc GetAccount(Account) returns (Account) {}
+    rpc GetUserAccounts(UserAccount) returns (UserAccounts) {}
+}
 
 message Account {
     bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\"_id\""];
     string name = 2;
     bytes createdByUserID = 3 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
-    bytes updatedByUserID = 4 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    bytes updatedByUserID = 4 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\",omitempty\""];
     google.protobuf.Timestamp expiresAt = 5 [(gogoproto.stdtime) = true];
     google.protobuf.Timestamp createdAt = 6 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp updatedAt = 7 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp deletedAt = 8 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp updatedAt = 7 [(gogoproto.stdtime) = true, (gogoproto.moretags) = "bson:\",omitempty\""];
+    google.protobuf.Timestamp deletedAt = 8 [(gogoproto.stdtime) = true, (gogoproto.moretags) = "bson:\",omitempty\""];
 }
 
 message UserAccount {
@@ -29,8 +34,12 @@ message UserAccount {
     }
     Role role = 3;
     bytes createdByUserID = 4 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
-    bytes updatedByUserID = 5 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    bytes updatedByUserID = 5 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\",omitempty\""];
     google.protobuf.Timestamp createdAt = 6 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp updatedAt = 7 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp deletedAt = 8 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp updatedAt = 7 [(gogoproto.stdtime) = true, (gogoproto.moretags) = "bson:\",omitempty\""];
+    google.protobuf.Timestamp deletedAt = 8 [(gogoproto.stdtime) = true, (gogoproto.moretags) = "bson:\",omitempty\""];
+}
+
+message UserAccounts {
+    repeated UserAccount userAccounts = 1;
 }
