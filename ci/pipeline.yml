@@ -123,11 +123,10 @@ jobs:
           DOCKER_HUB_PASSWORD: ((docker-hub.password))
         vars:
           target: builder
-      - in_parallel:
-          - put: builder
-            params:
-              image: image/image.tar
-              additional_tags: git/.git/short_ref
+      - put: builder
+        params:
+          image: image/image.tar
+          additional_tags: git/.git/short_ref
   - name: tests
     plan:
       - in_parallel:
@@ -142,6 +141,9 @@ jobs:
       - task: tests
         image: builder
         file: git/ci/tasks/tests.yml
+      - task: coverage
+        image: builder
+        file: git/ci/tasks/coverage.yml
   - name: images
     plan:
       - get: git
@@ -158,98 +160,90 @@ jobs:
         vars:
           target: cache
       - in_parallel:
-          - try:
-              task: update-cache
-              file: git/ci/tasks/builder.yml
-              privileged: true
-              params:
-                CACHE_EXPORT_TYPE: registry
-                DOCKER_HUB_USERNAME: ((docker-hub.username))
-                DOCKER_HUB_PASSWORD: ((docker-hub.password))
-                OUTPUT_TYPE: none
-              vars:
-                target: cache
-          - do:
-              - task: graphql
-                file: git/ci/tasks/builder.yml
-                privileged: true
-                params:
-                  CACHE_EXPORT_TYPE: none
-                vars:
-                  target: graphql
-                output_mapping:
-                  image: graphql
-              - put: graphql
-                params:
-                  image: graphql/image.tar
-                  additional_tags: git/.git/short_ref
-          - do:
-              - task: kazoku
-                file: git/ci/tasks/builder.yml
-                privileged: true
-                params:
-                  CACHE_EXPORT_TYPE: none
-                vars:
-                  target: kazoku
-                output_mapping:
-                  image: kazoku
-              - put: kazoku
-                params:
-                  image: kazoku/image.tar
-                  additional_tags: git/.git/short_ref
-          - do:
-              - task: ninka
-                file: git/ci/tasks/builder.yml
-                privileged: true
-                params:
-                  CACHE_EXPORT_TYPE: none
-                vars:
-                  target: ninka
-                output_mapping:
-                  image: ninka
-              - put: ninka
-                params:
-                  image: ninka/image.tar
-                  additional_tags: git/.git/short_ref
-          - do:
-              - task: ninshou
-                file: git/ci/tasks/builder.yml
-                privileged: true
-                params:
-                  CACHE_EXPORT_TYPE: none
-                vars:
-                  target: ninshou
-                output_mapping:
-                  image: ninshou
-              - put: ninshou
-                params:
-                  image: ninshou/image.tar
-                  additional_tags: git/.git/short_ref
-          - do:
-              - task: shinninjou
-                file: git/ci/tasks/builder.yml
-                privileged: true
-                params:
-                  CACHE_EXPORT_TYPE: none
-                vars:
-                  target: shinninjou
-                output_mapping:
-                  image: shinninjou
-              - put: shinninjou
-                params:
-                  image: shinninjou/image.tar
-                  additional_tags: git/.git/short_ref
-          - do:
-              - task: youji
-                file: git/ci/tasks/builder.yml
-                privileged: true
-                params:
-                  CACHE_EXPORT_TYPE: none
-                vars:
-                  target: youji
-                output_mapping:
-                  image: youji
-              - put: youji
-                params:
-                  image: youji/image.tar
-                  additional_tags: git/.git/short_ref
+          limit: 2
+          fail_fast: true
+          steps:
+            - do:
+                - task: graphql
+                  file: git/ci/tasks/builder.yml
+                  privileged: true
+                  params:
+                    CACHE_EXPORT_TYPE: none
+                  vars:
+                    target: graphql
+                  output_mapping:
+                    image: graphql
+                - put: graphql
+                  params:
+                    image: graphql/image.tar
+                    additional_tags: git/.git/short_ref
+            - do:
+                - task: kazoku
+                  file: git/ci/tasks/builder.yml
+                  privileged: true
+                  params:
+                    CACHE_EXPORT_TYPE: none
+                  vars:
+                    target: kazoku
+                  output_mapping:
+                    image: kazoku
+                - put: kazoku
+                  params:
+                    image: kazoku/image.tar
+                    additional_tags: git/.git/short_ref
+            - do:
+                - task: ninka
+                  file: git/ci/tasks/builder.yml
+                  privileged: true
+                  params:
+                    CACHE_EXPORT_TYPE: none
+                  vars:
+                    target: ninka
+                  output_mapping:
+                    image: ninka
+                - put: ninka
+                  params:
+                    image: ninka/image.tar
+                    additional_tags: git/.git/short_ref
+            - do:
+                - task: ninshou
+                  file: git/ci/tasks/builder.yml
+                  privileged: true
+                  params:
+                    CACHE_EXPORT_TYPE: none
+                  vars:
+                    target: ninshou
+                  output_mapping:
+                    image: ninshou
+                - put: ninshou
+                  params:
+                    image: ninshou/image.tar
+                    additional_tags: git/.git/short_ref
+            - do:
+                - task: shinninjou
+                  file: git/ci/tasks/builder.yml
+                  privileged: true
+                  params:
+                    CACHE_EXPORT_TYPE: none
+                  vars:
+                    target: shinninjou
+                  output_mapping:
+                    image: shinninjou
+                - put: shinninjou
+                  params:
+                    image: shinninjou/image.tar
+                    additional_tags: git/.git/short_ref
+            - do:
+                - task: youji
+                  file: git/ci/tasks/builder.yml
+                  privileged: true
+                  params:
+                    CACHE_EXPORT_TYPE: none
+                  vars:
+                    target: youji
+                  output_mapping:
+                    image: youji
+                - put: youji
+                  params:
+                    image: youji/image.tar
+                    additional_tags: git/.git/short_ref

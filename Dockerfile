@@ -4,7 +4,7 @@ FROM golang-base AS builder
 WORKDIR $GOPATH/src/github.com/issho-ni/issho
 ENV CGO_ENABLED=0
 ENV GO111MODULE=on
-RUN apk --update --no-cache add build-base git
+RUN apk add bash build-base curl git
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . ./

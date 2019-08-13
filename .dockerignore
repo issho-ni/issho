@@ -6,6 +6,7 @@
 *.graphql
 *.proto
 ci/
+coverage.out
 deployments/
 Dockerfile
 gqlgen.yml

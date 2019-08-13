@@ -1,6 +1,7 @@
 # issho-ni
 
 [![Build Status](https://ci.issho-ni.co/api/v1/teams/main/pipelines/issho/badge)](https://ci.issho-ni.co/main/pipelines/issho)
+[![codecov](https://codecov.io/gh/issho-ni/issho/branch/master/graph/badge.svg)](https://codecov.io/gh/issho-ni/issho)
 [![Go Report Card](https://goreportcard.com/badge/github.com/issho-ni/issho)](https://goreportcard.com/report/github.com/issho-ni/issho)
 
 ## Requirements

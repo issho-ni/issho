@@ -8,12 +8,12 @@ image_resource:
     username: _json_key
     password: ((iam.ops-concourse-json))
 
-inputs:
-  - name: git
+params:
+  CODECOV_TOKEN: ((codecov.token))
 
-outputs:
+inputs:
   - name: git
 
 run:
   dir: git
-  path: ci/scripts/tests.sh
+  path: ci/scripts/coverage.sh
