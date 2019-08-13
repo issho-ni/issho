@@ -2,7 +2,6 @@ package graphql
 
 import (
 	"net/http"
-	"reflect"
 	"sync"
 
 	"github.com/issho-ni/issho/internal/pkg/service"
@@ -16,17 +15,18 @@ type readyChecker struct {
 	healthCheckers []func() *service.GRPCStatus
 }
 
-func newReadyChecker(cs *clientSet) *readyChecker {
-	v := reflect.Indirect(reflect.ValueOf(cs))
+func newReadyChecker(cs ClientSet) *readyChecker {
 	healthCheckers := make([]func() *service.GRPCStatus, 0)
 
-	for i := 0; i < v.NumField(); i++ {
-		client := reflect.Indirect(reflect.ValueOf(v.Field(i).Interface()))
-		serviceClient := client.FieldByName("GRPCClient").Interface().(service.GRPCClient)
-		healthCheckers = append(healthCheckers, serviceClient.HealthCheck)
+	for _, client := range cs.AllClients() {
+		healthCheckers = append(healthCheckers, client.HealthCheck)
 	}
 
 	return &readyChecker{healthCheckers}
+}
+
+func (s *readyChecker) Length() int {
+	return len(s.healthCheckers)
 }
 
 func (s *readyChecker) ServeHTTP(rw http.ResponseWriter, r *http.Request) {

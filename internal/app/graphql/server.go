@@ -23,14 +23,6 @@ type graphQLServer struct {
 	*clientSet
 }
 
-type clientSet struct {
-	KazokuClient     *kazoku.Client
-	NinkaClient      *ninka.Client
-	NinshouClient    *ninshou.Client
-	ShinninjouClient *shinninjou.Client
-	YoujiClient      *youji.Client
-}
-
 // NewGraphQLServer creates a new HTTP handler for the GraphQL service.
 func NewGraphQLServer(config *service.ServerConfig) service.Server {
 	var options []handler.Option
