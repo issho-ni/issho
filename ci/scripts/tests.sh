@@ -3,4 +3,4 @@
 set -eu
 
 echo "Starting tests..."
-exec go test ./...
+exec go list ./... | grep -v "mock" | xargs go test
