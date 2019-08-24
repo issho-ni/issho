@@ -15,7 +15,7 @@ jobs:
           key: ./Dockerfile | ./go.sum | "builder"
           path: /tmp/buildkit-caches/builder
       - script: |
-          ci/scripts/build.sh builder
+          sudo ci/scripts/build.sh builder
   - job: installer
     dependsOn:
       - builder
@@ -32,7 +32,7 @@ jobs:
           key: '**/*.go | "installer"'
           path: /tmp/buildkit-caches/installer
       - script: |
-          ci/scripts/build.sh installer
+          sudo ci/scripts/build.sh installer
   - job: base
     dependsOn: []
     pool:
@@ -44,7 +44,7 @@ jobs:
           key: ./Dockerfile | "base"
           path: /tmp/buildkit-caches/base
       - script: |
-          ci/scripts/build.sh base
+          sudo ci/scripts/build.sh base
   - job: images
     dependsOn:
       - base
@@ -72,7 +72,7 @@ jobs:
           key: '**/*.go | "installer"'
           path: /tmp/buildkit-caches/installer
       - script: |
-          ci/script/build.sh
+          sudo ci/script/build.sh
           docker load -i $(command).tar
         env:
           BUILDCTL_ARGS: --opt build-arg:COMMAND=$(command) --output type=docker,name=issho/$(command),dest=./$(command).tar
