@@ -1,0 +1,77 @@
+jobs:
+  - job: builder
+    dependsOn: []
+    pool:
+      vmImage: ubuntu-latest
+    container: jbhannah/buildkit-ubuntu
+    steps:
+      - task: CacheBeta@0
+        inputs:
+          key: ./Dockerfile | ./go.sum | "builder"
+          path: /tmp/buildkit-caches/builder
+      - script: |
+          ci/scripts/build.sh builder
+  - job: installer
+    dependsOn:
+      - builder
+    pool:
+      vmImage: ubuntu-latest
+    container: jbhannah/buildkit-ubuntu
+    steps:
+      - task: CacheBeta@0
+        inputs:
+          key: ./Dockerfile | ./go.sum | "builder"
+          path: /tmp/buildkit-caches/builder
+      - task: CacheBeta@0
+        inputs:
+          key: '**/*.go | "installer"'
+          path: /tmp/buildkit-caches/installer
+      - script: |
+          ci/scripts/build.sh installer
+  - job: base
+    dependsOn: []
+    pool:
+      vmImage: ubuntu-latest
+    container: jbhannah/buildkit-ubuntu
+    steps:
+      - task: CacheBeta@0
+        inputs:
+          key: ./Dockerfile | "base"
+          path: /tmp/buildkit-caches/base
+      - script: |
+          ci/scripts/build.sh base
+  - job: images
+    dependsOn:
+      - base
+      - installer
+    pool:
+      vmImage: ubuntu-latest
+    container: jbhannah/buildkit-ubuntu
+    strategy:
+      matrix:
+        graphql:
+          command: graphql
+        kazoku:
+          command: kazoku
+        ninka:
+          command: ninka
+        ninshou:
+          command: ninshou
+        shinninjou:
+          command: shinninjou
+        youji:
+          command: youji
+    steps:
+      - task: CacheBeta@0
+        inputs:
+          key: '**/*.go | "installer"'
+          path: /tmp/buildkit-caches/installer
+      - script: |
+          ci/script/build.sh
+          docker load -i $(command).tar
+        env:
+          BUILDCTL_ARGS: --opt build-arg:COMMAND=$(command) --output type=docker,name=issho/$(command),dest=./$(command).tar
+      - task: Docker@2
+        inputs:
+          command: push
+          repository: issho/$(command)

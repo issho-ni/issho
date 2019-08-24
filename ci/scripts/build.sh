@@ -2,13 +2,25 @@
 
 set -eu
 
-DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD:-}
-DOCKER_HUB_USERNAME=${DOCKER_HUB_USERNAME:-}
+BUILDCTL_ARGS=${BUILDCTL_ARGS:-}
+CACHE_BASE=${CACHE_BASE:-/tmp/buildkit-caches}
+TARGET=${1:-}
 
-if [ -n "$DOCKER_HUB_USERNAME" ] && [ -n "$DOCKER_HUB_PASSWORD" ]; then
-    auth=$(printf "%s:%s" $DOCKER_HUB_USERNAME $DOCKER_HUB_PASSWORD | base64 | tr -d "\n")
-    mkdir ~/.docker
-    echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"auth\":\"${auth}\"}}}" > ~/.docker/config.json
+if [ -n "${TARGET}" ]; then
+    BUILDCTL_ARGS="${BUILDCTL_ARGS} --opt target=${TARGET}"
+
+    if [ -n "${CACHE_BASE}" ]; then
+        mkdir -p ${CACHE_BASE}
+        BUILDCTL_ARGS="${BUILDCTL_ARGS} --export-cache type=local,mode=max,dest=${CACHE_BASE}/${TARGET}"
+    fi
 fi
 
-exec build
+if [ -n "${CACHE_BASE}" ]; then
+    for d in $(find ${CACHE_BASE} -maxdepth 1 -mindepth 1 -type d); do
+        if [ -f ${d}/index.json ]; then
+            BUILDCTL_ARGS="${BUILDCTL_ARGS} --import-cache type=local,src=${d}"
+        fi
+    done
+fi
+
+buildctl build --frontend dockerfile.v0 --local context=. --local dockerfile=. $BUILDCTL_ARGS
