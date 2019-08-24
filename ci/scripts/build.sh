@@ -3,14 +3,14 @@
 set -eu
 
 BUILDCTL_ARGS=${BUILDCTL_ARGS:-}
-CACHE_BASE=${CACHE_BASE:-/tmp/buildkit-caches}
+CACHE_BASE=${CACHE_BASE:-./cache}
 TARGET=${1:-}
 
 if [ -n "${TARGET}" ]; then
     BUILDCTL_ARGS="${BUILDCTL_ARGS} --opt target=${TARGET}"
 
     if [ -n "${CACHE_BASE}" ]; then
-        mkdir -p ${CACHE_BASE}
+        mkdir -p ${CACHE_BASE}/${TARGET}
         BUILDCTL_ARGS="${BUILDCTL_ARGS} --export-cache type=local,mode=max,dest=${CACHE_BASE}/${TARGET}"
     fi
 fi
