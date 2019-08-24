@@ -1,9 +1,14 @@
+resources:
+  containers:
+    - container: buildkit
+      image: jbhannah/buildkit-ubuntu:latest
+      options: --privileged
 jobs:
   - job: builder
     dependsOn: []
     pool:
       vmImage: ubuntu-latest
-    container: jbhannah/buildkit-ubuntu:latest
+    container: buildkit
     steps:
       - task: CacheBeta@0
         inputs:
@@ -16,7 +21,7 @@ jobs:
       - builder
     pool:
       vmImage: ubuntu-latest
-    container: jbhannah/buildkit-ubuntu:latest
+    container: buildkit
     steps:
       - task: CacheBeta@0
         inputs:
@@ -32,7 +37,7 @@ jobs:
     dependsOn: []
     pool:
       vmImage: ubuntu-latest
-    container: jbhannah/buildkit-ubuntu:latest
+    container: buildkit
     steps:
       - task: CacheBeta@0
         inputs:
@@ -46,7 +51,7 @@ jobs:
       - installer
     pool:
       vmImage: ubuntu-latest
-    container: jbhannah/buildkit-ubuntu:latest
+    container: buildkit
     strategy:
       matrix:
         graphql:
