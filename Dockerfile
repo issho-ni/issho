@@ -12,7 +12,6 @@ FROM builder AS installer
 COPY api api/
 COPY cmd cmd/
 COPY internal internal/
-COPY mock mock/
 RUN go test ./... \
     && go install ./cmd/...
 
