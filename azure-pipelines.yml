@@ -71,6 +71,10 @@ jobs:
         inputs:
           key: '**/*.go | "installer"'
           path: ./cache/installer
+      - task: CacheBeta@0
+        inputs:
+          key: ./Dockerfile | "base"
+          path: ./cache/base
       - script: |
           sudo ci/script/build.sh | docker load
         env:
