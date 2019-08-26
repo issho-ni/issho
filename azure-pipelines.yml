@@ -76,6 +76,31 @@ jobs:
           docker load -i $(command).tar
         env:
           BUILDCTL_ARGS: --opt build-arg:COMMAND=$(command) --output type=docker,name=issho/$(command),dest=./$(command).tar
+      - publish: ./$(command).tar
+        artifact: $(command).tar
+  - job: push
+    dependsOn: images
+    pool:
+      vmImage: ubuntu-latest
+    strategy:
+      matrix:
+        graphql:
+          command: graphql
+        kazoku:
+          command: kazoku
+        ninka:
+          command: ninka
+        ninshou:
+          command: ninshou
+        shinninjou:
+          command: shinninjou
+        youji:
+          command: youji
+    steps:
+      - download: current
+        artifact: $(command).tar
+      - script: |
+          docker load -i $(command).tar
       - task: Docker@2
         inputs:
           command: push
