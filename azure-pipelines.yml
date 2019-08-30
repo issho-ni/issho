@@ -76,7 +76,7 @@ jobs:
           key: ./Dockerfile | "base"
           path: ./cache/base
       - script: |
-          ci/script/build.sh | docker load
+          ci/scripts/build.sh | docker load
         env:
           BUILDCTL_ARGS: --opt build-arg:COMMAND=$(command) --output type=docker,name=issho/$(command)
       - task: Docker@2
