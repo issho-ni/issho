@@ -15,7 +15,7 @@ jobs:
           key: ./Dockerfile | ./go.sum | "builder"
           path: ./cache/builder
       - script: |
-          sudo ci/scripts/build.sh builder
+          ci/scripts/build.sh builder
   - job: installer
     dependsOn:
       - builder
@@ -32,7 +32,7 @@ jobs:
           key: '**/*.go | "installer"'
           path: ./cache/installer
       - script: |
-          sudo ci/scripts/build.sh installer
+          ci/scripts/build.sh installer
   - job: base
     dependsOn: []
     pool:
@@ -44,7 +44,7 @@ jobs:
           key: ./Dockerfile | "base"
           path: ./cache/base
       - script: |
-          sudo ci/scripts/build.sh base
+          ci/scripts/build.sh base
   - job: images
     dependsOn:
       - base
@@ -76,7 +76,7 @@ jobs:
           key: ./Dockerfile | "base"
           path: ./cache/base
       - script: |
-          sudo ci/script/build.sh | docker load
+          ci/script/build.sh | docker load
         env:
           BUILDCTL_ARGS: --opt build-arg:COMMAND=$(command) --output type=docker,name=issho/$(command)
       - task: Docker@2
