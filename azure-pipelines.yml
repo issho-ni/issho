@@ -2,7 +2,7 @@ resources:
   containers:
     - container: buildkit
       image: jbhannah/buildkit-ubuntu:latest
-      options: --privileged -v "/usr/bin/docker":"/usr/bin/docker" -v "/var/lib/docker":"/var/lib/docker"
+      options: --privileged -v "/usr/bin/docker":"/usr/bin/docker"
 jobs:
   - job: builder
     dependsOn: []
