@@ -12,7 +12,7 @@ require (
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.3
-	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
+	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
 	github.com/pascaldekloe/jwt v1.5.0
 	github.com/rs/cors v1.7.0
 	github.com/sirupsen/logrus v1.4.2
