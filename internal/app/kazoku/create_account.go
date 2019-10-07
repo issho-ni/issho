@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/issho-ni/issho/api/kazoku"
+	icontext "github.com/issho-ni/issho/internal/pkg/context"
 	"github.com/issho-ni/issho/internal/pkg/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -12,13 +13,17 @@ import (
 func (s *kazokuServer) CreateAccount(ctx context.Context, in *kazoku.Account) (*kazoku.Account, error) {
 	var err error
 	var ins []byte
+	var ok bool
+	var t time.Time
+
+	if t, ok = icontext.TimingFromContext(ctx); !ok {
+		t = time.Now()
+	}
 
 	id := uuid.New()
 	in.Id = &id
-	// TODO Get this timestamp from the context request timing
-	now := time.Now()
-	in.CreatedAt = &now
-	expires := now.Add(365 * 24 * time.Hour)
+	in.CreatedAt = &t
+	expires := t.Add(365 * 24 * time.Hour)
 	in.ExpiresAt = &expires
 
 	if ins, err = bson.Marshal(in); err != nil {
@@ -35,7 +40,7 @@ func (s *kazokuServer) CreateAccount(ctx context.Context, in *kazoku.Account) (*
 		UserID:          in.CreatedByUserID,
 		Role:            kazoku.UserAccount_OWNER,
 		CreatedByUserID: in.CreatedByUserID,
-		CreatedAt:       &now,
+		CreatedAt:       &t,
 	}
 
 	if _, err = s.CreateUserAccount(ctx, userAccount); err != nil {

@@ -14,11 +14,16 @@ import (
 func (s *youjiServer) CreateTodo(ctx context.Context, in *youji.NewTodo) (*youji.Todo, error) {
 	var err error
 	var ins []byte
+	var ok bool
+	var t time.Time
+
+	if t, ok = icontext.TimingFromContext(ctx); !ok {
+		t = time.Now()
+	}
 
 	claims, _ := icontext.ClaimsFromContext(ctx)
 	id := uuid.New()
-	now := time.Now()
-	todo := &youji.Todo{Id: &id, UserID: claims.UserID, Text: in.GetText(), CreatedAt: &now}
+	todo := &youji.Todo{Id: &id, UserID: claims.UserID, Text: in.GetText(), CreatedAt: &t}
 
 	if ins, err = bson.Marshal(todo); err != nil {
 		return nil, err
