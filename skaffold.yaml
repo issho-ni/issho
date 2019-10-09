@@ -47,3 +47,11 @@ portForward:
     namespace: issho
     port: 443
     localPort: 8080
+profiles:
+  - name: production
+    deploy:
+      kubectl:
+        manifests:
+          - deployments/k8s/namespace.yml
+          - deployments/k8s/**/deployment.yml
+          - deployments/k8s/**/service.yml

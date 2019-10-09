@@ -32,6 +32,9 @@ spec:
               value: /cert.pem
             - name: TLS_KEY
               value: /key.pem
+          envFrom:
+            - secretRef:
+                name: ninka
           ports:
             - name: https
               containerPort: 8084
