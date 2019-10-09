@@ -21,7 +21,7 @@ spec:
           image: mongo
           resources:
             limits:
-              memory: 64Mi
+              memory: 1Gi
               cpu: 100m
           ports:
             - name: mongodb
