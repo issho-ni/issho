@@ -27,15 +27,19 @@ spec:
             - name: GRAPHQL_PORT
               value: "8080"
             - name: KAZOKU_URL
-              value: kazoku:443
+              value: kazoku.issho.svc:443
             - name: NINKA_URL
-              value: ninka:443
+              value: ninka.issho.svc:443
             - name: NINSHOU_URL
-              value: ninshou:443
+              value: ninshou.issho.svc:443
             - name: SHINNINJOU_URL
-              value: shinninjou:443
+              value: shinninjou.issho.svc:443
             - name: YOUJI_URL
-              value: youji:443
+              value: youji.issho.svc:443
+            - name: TLS_CERT
+              value: /cert.pem
+            - name: TLS_KEY
+              value: /key.pem
           ports:
             - name: https
               containerPort: 8080

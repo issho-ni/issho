@@ -7,32 +7,32 @@ build:
     - image: graphql
       docker:
         buildArgs:
-          CERT_HOST: "*.issho.svc.cluster.local"
+          CERT_HOST: "*.issho.svc"
           COMMAND: graphql
     - image: youji
       docker:
         buildArgs:
-          CERT_HOST: "*.issho.svc.cluster.local"
+          CERT_HOST: "*.issho.svc"
           COMMAND: youji
     - image: kazoku
       docker:
         buildArgs:
-          CERT_HOST: "*.issho.svc.cluster.local"
+          CERT_HOST: "*.issho.svc"
           COMMAND: kazoku
     - image: ninka
       docker:
         buildArgs:
-          CERT_HOST: "*.issho.svc.cluster.local"
+          CERT_HOST: "*.issho.svc"
           COMMAND: ninka
     - image: ninshou
       docker:
         buildArgs:
-          CERT_HOST: "*.issho.svc.cluster.local"
+          CERT_HOST: "*.issho.svc"
           COMMAND: ninshou
     - image: shinninjou
       docker:
         buildArgs:
-          CERT_HOST: "*.issho.svc.cluster.local"
+          CERT_HOST: "*.issho.svc"
           COMMAND: shinninjou
   local:
     useBuildkit: true
