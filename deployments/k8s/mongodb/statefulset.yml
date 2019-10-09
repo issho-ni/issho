@@ -21,18 +21,17 @@ spec:
           image: mongo
           resources:
             limits:
-              memory: 128Mi
-              cpu: 500m
+              memory: 64Mi
+              cpu: 100m
           ports:
-            - containerPort: 27017
+            - name: mongodb
+              containerPort: 27017
           volumeMounts:
-            - name: mongodb-persistent-storage-claim
+            - name: data
               mountPath: /data/db
   volumeClaimTemplates:
     - metadata:
-        name: mongodb-persistent-storage-claim
-        annotations:
-          volume.beta.kubernetes.io/storage-class: "hostpath"
+        name: data
       spec:
         accessModes:
           - ReadWriteOnce

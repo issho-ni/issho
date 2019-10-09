@@ -1,0 +1,49 @@
+apiVersion: skaffold/v1beta15
+kind: Config
+metadata:
+  name: issho
+build:
+  artifacts:
+    - image: graphql
+      docker:
+        buildArgs:
+          CERT_HOST: "*.issho.svc.cluster.local"
+          COMMAND: graphql
+    - image: youji
+      docker:
+        buildArgs:
+          CERT_HOST: "*.issho.svc.cluster.local"
+          COMMAND: youji
+    - image: kazoku
+      docker:
+        buildArgs:
+          CERT_HOST: "*.issho.svc.cluster.local"
+          COMMAND: kazoku
+    - image: ninka
+      docker:
+        buildArgs:
+          CERT_HOST: "*.issho.svc.cluster.local"
+          COMMAND: ninka
+    - image: ninshou
+      docker:
+        buildArgs:
+          CERT_HOST: "*.issho.svc.cluster.local"
+          COMMAND: ninshou
+    - image: shinninjou
+      docker:
+        buildArgs:
+          CERT_HOST: "*.issho.svc.cluster.local"
+          COMMAND: shinninjou
+  local:
+    useBuildkit: true
+deploy:
+  kubectl:
+    manifests:
+      - deployments/k8s/namespace.yml
+      - deployments/k8s/**/*.yml
+portForward:
+  - resourceType: Service
+    resourceName: graphql
+    namespace: issho
+    port: 443
+    localPort: 8080

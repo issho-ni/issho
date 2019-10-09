@@ -3,30 +3,26 @@ kind: Deployment
 metadata:
   name: ninshou
   namespace: issho
-  labels:
+  labels: &labels
     app.kubernetes.io/component: users
     app.kubernetes.io/instance: issho-ni
     app.kubernetes.io/name: ninshou
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/component: users
-      app.kubernetes.io/instance: issho-ni
-      app.kubernetes.io/name: ninshou
+      <<: *labels
   template:
     metadata:
       labels:
-        app.kubernetes.io/component: users
-        app.kubernetes.io/instance: issho-ni
-        app.kubernetes.io/name: ninshou
+        <<: *labels
     spec:
       containers:
         - name: ninshou
-          image: gcr.io/issho-ni/ninshou
+          image: docker.io/issho/ninshou
           resources:
             limits:
-              memory: 128Mi
-              cpu: 500m
+              memory: 64Mi
+              cpu: 100m
           env:
             - name: NINSHOU_PORT
               value: "8081"

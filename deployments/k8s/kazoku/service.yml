@@ -3,15 +3,13 @@ kind: Service
 metadata:
   name: kazoku
   namespace: issho
-  labels:
+  labels: &labels
     app.kubernetes.io/component: accounts
     app.kubernetes.io/instance: issho-ni
     app.kubernetes.io/name: kazoku
 spec:
   selector:
-    app.kubernetes.io/component: accounts
-    app.kubernetes.io/instance: issho-ni
-    app.kubernetes.io/name: kazoku
+    <<: *labels
   type: ClusterIP
   ports:
     - name: https

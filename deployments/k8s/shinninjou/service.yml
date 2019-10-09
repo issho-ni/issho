@@ -3,15 +3,13 @@ kind: Service
 metadata:
   name: shinninjou
   namespace: issho
-  labels:
+  labels: &labels
     app.kubernetes.io/component: authentication
     app.kubernetes.io/instance: issho-ni
     app.kubernetes.io/name: shinninjou
 spec:
   selector:
-    app.kubernetes.io/component: authentication
-    app.kubernetes.io/instance: issho-ni
-    app.kubernetes.io/name: shinninjou
+    <<: *labels
   type: ClusterIP
   ports:
     - name: https
