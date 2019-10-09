@@ -1182,16 +1182,21 @@ func (ec *executionContext) _Mutation_createAccount(ctx context.Context, field g
 			if err != nil {
 				return nil, err
 			}
+			if ec.directives.Protected == nil {
+				return nil, errors.New("directive protected is not implemented")
+			}
 			return ec.directives.Protected(ctx, nil, directive0, authRequired)
 		}
+
 		tmp, err := directive1(rctx)
 		if err != nil {
 			return nil, err
 		}
+		if tmp == nil {
+			return nil, nil
+		}
 		if data, ok := tmp.(*LoginResponse); ok {
 			return data, nil
-		} else if tmp == nil {
-			return nil, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/issho-ni/issho/api/graphql.LoginResponse`, tmp)
 	})
@@ -1245,16 +1250,21 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 			if err != nil {
 				return nil, err
 			}
+			if ec.directives.Protected == nil {
+				return nil, errors.New("directive protected is not implemented")
+			}
 			return ec.directives.Protected(ctx, nil, directive0, authRequired)
 		}
+
 		tmp, err := directive1(rctx)
 		if err != nil {
 			return nil, err
 		}
+		if tmp == nil {
+			return nil, nil
+		}
 		if data, ok := tmp.(*youji.Todo); ok {
 			return data, nil
-		} else if tmp == nil {
-			return nil, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/issho-ni/issho/api/youji.Todo`, tmp)
 	})
@@ -1308,16 +1318,21 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 			if err != nil {
 				return nil, err
 			}
+			if ec.directives.Protected == nil {
+				return nil, errors.New("directive protected is not implemented")
+			}
 			return ec.directives.Protected(ctx, nil, directive0, authRequired)
 		}
+
 		tmp, err := directive1(rctx)
 		if err != nil {
 			return nil, err
 		}
+		if tmp == nil {
+			return nil, nil
+		}
 		if data, ok := tmp.(*LoginResponse); ok {
 			return data, nil
-		} else if tmp == nil {
-			return nil, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/issho-ni/issho/api/graphql.LoginResponse`, tmp)
 	})
@@ -1371,16 +1386,21 @@ func (ec *executionContext) _Mutation_loginUser(ctx context.Context, field graph
 			if err != nil {
 				return nil, err
 			}
+			if ec.directives.Protected == nil {
+				return nil, errors.New("directive protected is not implemented")
+			}
 			return ec.directives.Protected(ctx, nil, directive0, authRequired)
 		}
+
 		tmp, err := directive1(rctx)
 		if err != nil {
 			return nil, err
 		}
+		if tmp == nil {
+			return nil, nil
+		}
 		if data, ok := tmp.(*LoginResponse); ok {
 			return data, nil
-		} else if tmp == nil {
-			return nil, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/issho-ni/issho/api/graphql.LoginResponse`, tmp)
 	})
@@ -1434,11 +1454,18 @@ func (ec *executionContext) _Mutation_logoutUser(ctx context.Context, field grap
 			if err != nil {
 				return nil, err
 			}
+			if ec.directives.Protected == nil {
+				return nil, errors.New("directive protected is not implemented")
+			}
 			return ec.directives.Protected(ctx, nil, directive0, authRequired)
 		}
+
 		tmp, err := directive1(rctx)
 		if err != nil {
 			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
 		}
 		if data, ok := tmp.(bool); ok {
 			return data, nil
@@ -1495,16 +1522,21 @@ func (ec *executionContext) _Mutation_updateTodo(ctx context.Context, field grap
 			if err != nil {
 				return nil, err
 			}
+			if ec.directives.Protected == nil {
+				return nil, errors.New("directive protected is not implemented")
+			}
 			return ec.directives.Protected(ctx, nil, directive0, authRequired)
 		}
+
 		tmp, err := directive1(rctx)
 		if err != nil {
 			return nil, err
 		}
+		if tmp == nil {
+			return nil, nil
+		}
 		if data, ok := tmp.(*youji.Todo); ok {
 			return data, nil
-		} else if tmp == nil {
-			return nil, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/issho-ni/issho/api/youji.Todo`, tmp)
 	})
@@ -1551,11 +1583,18 @@ func (ec *executionContext) _Query_getTodos(ctx context.Context, field graphql.C
 			if err != nil {
 				return nil, err
 			}
+			if ec.directives.Protected == nil {
+				return nil, errors.New("directive protected is not implemented")
+			}
 			return ec.directives.Protected(ctx, nil, directive0, authRequired)
 		}
+
 		tmp, err := directive1(rctx)
 		if err != nil {
 			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
 		}
 		if data, ok := tmp.([]*youji.Todo); ok {
 			return data, nil
