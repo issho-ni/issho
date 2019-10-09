@@ -51,16 +51,26 @@ func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) GRPCServer {
 
 	logger := log.StandardLogger()
 	logrusEntry := log.NewEntry(logger)
-
 	grpc_logrus.ReplaceGrpcLogger(logrusEntry)
+
+	grpcLogrusOpts := []grpc_logrus.Option{
+		grpc_logrus.WithDecider(func(methodFullName string, err error) bool {
+			if err == nil && methodFullName == "/grpc.health.v1.Health/Check" {
+				return false
+			}
+
+			return true
+		}),
+	}
+
 	opts = append(opts, grpc_middleware.WithStreamServerChain(
-		grpc_logrus.StreamServerInterceptor(logrusEntry),
+		grpc_logrus.StreamServerInterceptor(logrusEntry, grpcLogrusOpts...),
 		streamServerContextInterceptor(logRequestIDFromIncomingContext),
 		streamServerContextInterceptor(logClaimsFromIncomingContext),
 		streamServerContextInterceptor(logTimingFromIncomingContext),
 	))
 	opts = append(opts, grpc_middleware.WithUnaryServerChain(
-		grpc_logrus.UnaryServerInterceptor(logrusEntry),
+		grpc_logrus.UnaryServerInterceptor(logrusEntry, grpcLogrusOpts...),
 		unaryServerContextInterceptor(logRequestIDFromIncomingContext),
 		unaryServerContextInterceptor(logClaimsFromIncomingContext),
 		unaryServerContextInterceptor(logTimingFromIncomingContext),

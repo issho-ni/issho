@@ -22,29 +22,31 @@ func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	w := &loggingResponseWriter{rw, 0, 0}
 	h.Handler.ServeHTTP(w, r)
 
-	rid, _ := context.RequestIDFromContext(r.Context())
+	if r.RequestURI != "/live" && r.RequestURI != "/ready" {
+		rid, _ := context.RequestIDFromContext(r.Context())
 
-	entry := log.WithFields(log.Fields{
-		"http.method":      r.Method,
-		"http.protocol":    r.Proto,
-		"http.remote_addr": r.RemoteAddr,
-		"http.size":        w.Size,
-		"http.status":      w.StatusCode,
-		"request_id":       rid,
-		"span.kind":        "server",
-		"system":           "http",
-	})
+		entry := log.WithFields(log.Fields{
+			"http.method":      r.Method,
+			"http.protocol":    r.Proto,
+			"http.remote_addr": r.RemoteAddr,
+			"http.size":        w.Size,
+			"http.status":      w.StatusCode,
+			"request_id":       rid,
+			"span.kind":        "server",
+			"system":           "http",
+		})
 
-	if claims, ok := context.ClaimsFromContext(r.Context()); ok {
-		entry = entry.WithField("user_id", claims.UserID)
+		if claims, ok := context.ClaimsFromContext(r.Context()); ok {
+			entry = entry.WithField("user_id", claims.UserID)
+		}
+
+		if start, ok := context.TimingFromContext(r.Context()); ok {
+			since := math.Round(time.Since(start).Seconds()*1e6) / 1e3
+			entry = entry.WithField("http.time_ms", since).WithTime(start)
+		}
+
+		entry.Info(r.RequestURI)
 	}
-
-	if start, ok := context.TimingFromContext(r.Context()); ok {
-		since := math.Round(time.Since(start).Seconds()*1e6) / 1e3
-		entry = entry.WithField("http.time_ms", since).WithTime(start)
-	}
-
-	entry.Info(r.RequestURI)
 }
 
 type loggingResponseWriter struct {
