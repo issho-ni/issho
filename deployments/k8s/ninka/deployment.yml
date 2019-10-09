@@ -28,6 +28,8 @@ spec:
               value: "8084"
             - name: MONGODB_URL
               value: mongodb://mongodb:27017
+            - name: NINSHOU_URL
+              value: ninshou.issho.svc:443
             - name: TLS_CERT
               value: /cert.pem
             - name: TLS_KEY

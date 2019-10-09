@@ -7,6 +7,7 @@ import (
 
 	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/api/ninka"
+	"github.com/issho-ni/issho/api/ninshou"
 	icontext "github.com/issho-ni/issho/internal/pkg/context"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
@@ -36,6 +37,10 @@ func (s *ninkaServer) ValidateToken(ctx context.Context, in *ninka.Token) (*nink
 		return &ninka.TokenResponse{Success: false}, err
 	} else if invalid {
 		return &ninka.TokenResponse{Success: false}, fmt.Errorf("JWT has been invalidated")
+	}
+
+	if _, err := s.ninshouClient.GetUser(ctx, &ninshou.User{Id: claims.UserID}); err != nil {
+		return &ninka.TokenResponse{Success: false}, err
 	}
 
 	return &ninka.TokenResponse{Claims: claims, Success: true}, nil

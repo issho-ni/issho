@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/issho-ni/issho/api/ninka"
+	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/internal/pkg/service"
 	"github.com/issho-ni/issho/internal/pkg/uuid"
 
@@ -17,8 +18,9 @@ import (
 )
 
 type ninkaServer struct {
+	mongoClient   service.MongoClient
+	ninshouClient *ninshou.Client
 	service.GRPCServer
-	mongoClient service.MongoClient
 	ninka.NinkaServer
 	secret []byte
 }
@@ -35,6 +37,9 @@ func NewNinkaServer(config *service.ServerConfig) service.Server {
 	server := &ninkaServer{}
 	server.GRPCServer = service.NewGRPCServer(config, server)
 	server.mongoClient = service.NewMongoClient(config.Name)
+
+	env := service.NewGRPCClientConfig(config.TLSCert)
+	server.ninshouClient = ninshou.NewClient(env)
 
 	secret := os.Getenv("NINKA_JWT_SECRET")
 	if secret == "" {
