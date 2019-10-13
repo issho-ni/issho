@@ -10,7 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *kazokuServer) CreateAccount(ctx context.Context, in *kazoku.Account) (*kazoku.Account, error) {
+// CreateAccount creates a new account owned by the creating user ID.
+func (s *Server) CreateAccount(ctx context.Context, in *kazoku.Account) (*kazoku.Account, error) {
 	var err error
 	var ins []byte
 	var ok bool

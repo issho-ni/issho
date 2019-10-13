@@ -9,6 +9,6 @@ const defaultPort = "8084"
 
 func main() {
 	config := service.NewServerConfig("ninka", defaultPort)
-	server := ninka.NewNinkaServer(config)
+	server := ninka.NewServer(config)
 	server.StartServer()
 }

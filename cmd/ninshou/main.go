@@ -9,6 +9,6 @@ const defaultPort = "8081"
 
 func main() {
 	config := service.NewServerConfig("ninshou", defaultPort)
-	server := ninshou.NewNinshouServer(config)
+	server := ninshou.NewServer(config)
 	server.StartServer()
 }

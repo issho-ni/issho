@@ -1,4 +1,4 @@
-package service
+package grpc
 
 import (
 	"context"
@@ -11,14 +11,14 @@ import (
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
-// GRPCClientConfig defines the interface for the environment of a service's
+// ClientConfig defines the interface for the environment of a service's
 // connection as a client to other services.
-type GRPCClientConfig struct {
+type ClientConfig struct {
 	credentials.TransportCredentials
 }
 
-// NewGRPCClientConfig generates a new service client environment.
-func NewGRPCClientConfig(tlsCert string) *GRPCClientConfig {
+// NewClientConfig generates a new service client environment.
+func NewClientConfig(tlsCert string) *ClientConfig {
 	var creds credentials.TransportCredentials
 	var err error
 
@@ -26,23 +26,23 @@ func NewGRPCClientConfig(tlsCert string) *GRPCClientConfig {
 		log.WithField("err", err).Fatal("Failed to generate credentials")
 	}
 
-	return &GRPCClientConfig{creds}
+	return &ClientConfig{creds}
 }
 
-// GRPCClient is the generic client to a gRPC service.
-type GRPCClient interface {
+// Client is the generic client to a gRPC service.
+type Client interface {
 	ClientConn() *grpc.ClientConn
-	HealthCheck() *GRPCStatus
+	HealthCheck() *Status
 }
 
-type grpcClient struct {
+type client struct {
 	cc *grpc.ClientConn
-	*GRPCClientConfig
+	*ClientConfig
 	healthpb.HealthClient
 }
 
-// NewGRPCClient establishes a client connection to a gRPC service.
-func NewGRPCClient(config *GRPCClientConfig, name string, url string) GRPCClient {
+// NewClient establishes a client connection to a gRPC service.
+func NewClient(config *ClientConfig, name string, url string) Client {
 	var cc *grpc.ClientConn
 	var err error
 	var opts []grpc.DialOption
@@ -73,20 +73,20 @@ func NewGRPCClient(config *GRPCClientConfig, name string, url string) GRPCClient
 		"grpc.service": name,
 		"span.kind":    "client",
 	}).Debug("Connecting")
-	return &grpcClient{cc, config, healthClient}
+	return &client{cc, config, healthClient}
 }
 
-func (c *grpcClient) ClientConn() *grpc.ClientConn {
+func (c *client) ClientConn() *grpc.ClientConn {
 	return c.cc
 }
 
-// GRPCStatus represents the response to a gRPC health check.
-type GRPCStatus struct {
+// Status represents the response to a gRPC health check.
+type Status struct {
 	Result bool
 	Error  error
 }
 
-func (c *grpcClient) HealthCheck() *GRPCStatus {
+func (c *client) HealthCheck() *Status {
 	var err error
 	var resp *healthpb.HealthCheckResponse
 
@@ -94,8 +94,8 @@ func (c *grpcClient) HealthCheck() *GRPCStatus {
 	defer cancel()
 
 	if resp, err = c.HealthClient.Check(ctx, &healthpb.HealthCheckRequest{}); err != nil {
-		return &GRPCStatus{false, err}
+		return &Status{false, err}
 	}
 
-	return &GRPCStatus{resp.GetStatus() == healthpb.HealthCheckResponse_SERVING, nil}
+	return &Status{resp.GetStatus() == healthpb.HealthCheckResponse_SERVING, nil}
 }

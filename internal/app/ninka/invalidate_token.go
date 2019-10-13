@@ -19,7 +19,10 @@ type InvalidToken struct {
 	ExpiresAt *time.Time
 }
 
-func (s *ninkaServer) InvalidateToken(ctx context.Context, in *common.Claims) (*ninka.TokenResponse, error) {
+// InvalidateToken saves the given token ID in the list of invalidated tokens.
+// The record expires at the same time that the token itself would expire. If
+// the token is already invalid, nothing is done.
+func (s *Server) InvalidateToken(ctx context.Context, in *common.Claims) (*ninka.TokenResponse, error) {
 	var ins []byte
 
 	if invalid, err := s.isTokenInvalid(ctx, in.TokenID); err != nil {
@@ -43,7 +46,7 @@ func (s *ninkaServer) InvalidateToken(ctx context.Context, in *common.Claims) (*
 	return &ninka.TokenResponse{Success: true}, nil
 }
 
-func (s *ninkaServer) isTokenInvalid(ctx context.Context, tokenID *uuid.UUID) (bool, error) {
+func (s *Server) isTokenInvalid(ctx context.Context, tokenID *uuid.UUID) (bool, error) {
 	result := &InvalidToken{}
 	filter := bson.D{{Key: "tokenid", Value: tokenID}}
 

@@ -9,6 +9,6 @@ const defaultPort = "8083"
 
 func main() {
 	config := service.NewServerConfig("shinninjou", defaultPort)
-	server := shinninjou.NewShinninjouServer(config)
+	server := shinninjou.NewServer(config)
 	server.StartServer()
 }

@@ -9,6 +9,6 @@ const defaultPort = "8085"
 
 func main() {
 	config := service.NewServerConfig("kazoku", defaultPort)
-	server := kazoku.NewKazokuServer(config)
+	server := kazoku.NewServer(config)
 	server.StartServer()
 }

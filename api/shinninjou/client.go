@@ -5,18 +5,18 @@ package shinninjou
 import (
 	"os"
 
-	"github.com/issho-ni/issho/internal/pkg/service"
+	"github.com/issho-ni/issho/internal/pkg/grpc"
 )
 
 // Client is the client to the Shinninjou gRPC service.
 type Client struct {
-	service.GRPCClient
+	grpc.Client
 	ShinninjouClient
 }
 
 // NewClient returns a client to the Shinninjou gRPC service.
-func NewClient(config *service.GRPCClientConfig) *Client {
+func NewClient(config *grpc.ClientConfig) *Client {
 	url := os.Getenv("SHINNINJOU_URL")
-	c := service.NewGRPCClient(config, "shinninjou", url)
+	c := grpc.NewClient(config, "shinninjou", url)
 	return &Client{c, NewShinninjouClient(c.ClientConn())}
 }

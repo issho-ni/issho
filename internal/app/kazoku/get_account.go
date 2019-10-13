@@ -9,7 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *kazokuServer) GetAccount(ctx context.Context, in *kazoku.Account) (*kazoku.Account, error) {
+// GetAccount finds an account by account ID.
+func (s *Server) GetAccount(ctx context.Context, in *kazoku.Account) (*kazoku.Account, error) {
 	filter := bson.M{}
 
 	if in.Id != nil {

@@ -7,7 +7,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *kazokuServer) CreateUserAccount(ctx context.Context, in *kazoku.UserAccount) (*kazoku.UserAccount, error) {
+// CreateUserAccount creates a new association between a user and an account.
+func (s *Server) CreateUserAccount(ctx context.Context, in *kazoku.UserAccount) (*kazoku.UserAccount, error) {
 	var err error
 	var ins []byte
 

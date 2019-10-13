@@ -9,8 +9,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/issho-ni/issho/api/kazoku"
 	mock_kazoku "github.com/issho-ni/issho/api/mock/kazoku"
-	mock_service "github.com/issho-ni/issho/internal/mock/pkg/service"
-	"github.com/issho-ni/issho/internal/pkg/service"
+	mock_grpc "github.com/issho-ni/issho/internal/mock/pkg/grpc"
+	"github.com/issho-ni/issho/internal/pkg/grpc"
 )
 
 func Test_liveCheck(t *testing.T) {
@@ -42,7 +42,7 @@ func Test_newReadyChecker(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
 	mockClient := &kazoku.Client{
-		GRPCClient:   mock_service.NewMockGRPCClient(ctrl),
+		Client:       mock_grpc.NewMockClient(ctrl),
 		KazokuClient: mock_kazoku.NewMockKazokuClient(ctrl),
 	}
 	mockClientSet := &clientSet{KazokuClient: mockClient}
@@ -69,15 +69,15 @@ func Test_newReadyChecker(t *testing.T) {
 func Test_readyChecker_ServeHTTP(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
-	passingStatus := &service.GRPCStatus{Result: true, Error: nil}
-	mockPassingClient := mock_service.NewMockGRPCClient(ctrl)
+	passingStatus := &grpc.Status{Result: true, Error: nil}
+	mockPassingClient := mock_grpc.NewMockClient(ctrl)
 	mockPassingClient.EXPECT().HealthCheck().Return(passingStatus).AnyTimes()
 
-	failingStatus := &service.GRPCStatus{Result: false, Error: fmt.Errorf("Error")}
-	mockFailingClient := mock_service.NewMockGRPCClient(ctrl)
+	failingStatus := &grpc.Status{Result: false, Error: fmt.Errorf("Error")}
+	mockFailingClient := mock_grpc.NewMockClient(ctrl)
 	mockFailingClient.EXPECT().HealthCheck().Return(failingStatus).AnyTimes()
 
-	type healthCheckers []func() *service.GRPCStatus
+	type healthCheckers []func() *grpc.Status
 
 	allPassing := healthCheckers{mockPassingClient.HealthCheck}
 	allFailing := healthCheckers{mockFailingClient.HealthCheck}

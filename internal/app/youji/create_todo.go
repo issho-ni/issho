@@ -11,7 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *youjiServer) CreateTodo(ctx context.Context, in *youji.NewTodo) (*youji.Todo, error) {
+// CreateTodo creates a new todo record.
+func (s *Server) CreateTodo(ctx context.Context, in *youji.NewTodo) (*youji.Todo, error) {
 	var err error
 	var ins []byte
 	var ok bool

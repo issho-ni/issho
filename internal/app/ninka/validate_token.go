@@ -15,7 +15,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (s *ninkaServer) ValidateToken(ctx context.Context, in *ninka.Token) (*ninka.TokenResponse, error) {
+// ValidateToken checks the validity of a token's signature, claims, user ID,
+// and expiration time.
+func (s *Server) ValidateToken(ctx context.Context, in *ninka.Token) (*ninka.TokenResponse, error) {
 	var claims *common.Claims
 	var err error
 	var ok bool
@@ -46,7 +48,7 @@ func (s *ninkaServer) ValidateToken(ctx context.Context, in *ninka.Token) (*nink
 	return &ninka.TokenResponse{Claims: claims, Success: true}, nil
 }
 
-func (s *ninkaServer) extractClaims(token *ninka.Token, t time.Time) (*common.Claims, error) {
+func (s *Server) extractClaims(token *ninka.Token, t time.Time) (*common.Claims, error) {
 	var claims *jwt.Claims
 	var err error
 

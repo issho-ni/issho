@@ -11,12 +11,12 @@ import (
 const authorizationHeader = "Authorization"
 
 type authenticationHandler struct {
-	*graphQLServer
+	*Server
 	http.Handler
 	bearerExpression *regexp.Regexp
 }
 
-func (s *graphQLServer) authenticationMiddleware(next http.Handler) http.Handler {
+func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
 	bearerExpression, _ := regexp.Compile(`Bearer (\S+)`)
 	return &authenticationHandler{s, next, bearerExpression}
 }
@@ -27,7 +27,7 @@ func (h *authenticationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Reques
 	if matches := h.bearerExpression.FindStringSubmatch(bearer); len(matches) == 2 {
 		token := &ninka.Token{Token: matches[1]}
 
-		if response, err := h.graphQLServer.NinkaClient.ValidateToken(r.Context(), token); err == nil {
+		if response, err := h.Server.NinkaClient.ValidateToken(r.Context(), token); err == nil {
 			ctx := context.NewClaimsContext(r.Context(), *response.Claims)
 			r = r.WithContext(ctx)
 		}

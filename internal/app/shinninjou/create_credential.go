@@ -9,7 +9,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *shinninjouServer) CreateCredential(ctx context.Context, in *shinninjou.Credential) (*shinninjou.CredentialResponse, error) {
+// CreateCredential creates an authentication credential for the current user.
+// If the credential is a password, a bcrypt hash is generated and stored.
+func (s *Server) CreateCredential(ctx context.Context, in *shinninjou.Credential) (*shinninjou.CredentialResponse, error) {
 	var err error
 	var ins []byte
 	var password []byte

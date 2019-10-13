@@ -10,7 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (s *youjiServer) GetTodos(ctx context.Context, in *youji.GetTodosParams) (*youji.Todos, error) {
+// GetTodos finds all todo records for the current user by user ID.
+func (s *Server) GetTodos(ctx context.Context, in *youji.GetTodosParams) (*youji.Todos, error) {
 	var cur *mongo.Cursor
 	var err error
 

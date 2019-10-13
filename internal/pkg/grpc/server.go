@@ -1,7 +1,9 @@
-package service
+package grpc
 
 import (
 	"net"
+
+	"github.com/issho-ni/issho/internal/pkg/service"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
@@ -12,31 +14,30 @@ import (
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
-type grpcService interface {
-	Server
+// Service defines the interface of a server for a gRPC service.
+type Service interface {
+	service.Server
 	RegisterServer(srv *grpc.Server)
 }
 
-// GRPCServer defines the interface for a gRPC server.
-type GRPCServer interface {
-	Server
-}
-
-type grpcServer struct {
-	*ServerConfig
+// Server defines the structure of the server for a gRPC service.
+type Server struct {
+	*service.ServerConfig
 	net.Listener
 	grpcServer   *grpc.Server
 	healthServer *health.Server
 }
 
-// NewGRPCServer creates a new listener and gRPC server for a gRPC service.
-func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) GRPCServer {
+// NewServer creates a new listener and gRPC server for a gRPC service.
+func NewServer(config *service.ServerConfig, srv Service) *Server {
 	var creds credentials.TransportCredentials
 	var err error
-	var lis net.Listener
 	var opts []grpc.ServerOption
+	var s *Server
 
-	if lis, err = net.Listen("tcp", ":"+config.Port); err != nil {
+	s.ServerConfig = config
+
+	if s.Listener, err = net.Listen("tcp", ":"+config.Port); err != nil {
 		log.WithFields(log.Fields{
 			"err":  err,
 			"port": config.Port,
@@ -76,17 +77,19 @@ func NewGRPCServer(config *ServerConfig, grpcSvc grpcService) GRPCServer {
 		unaryServerContextInterceptor(logTimingFromIncomingContext),
 	))
 
-	srv := &grpcServer{config, lis, grpc.NewServer(opts...), health.NewServer()}
-	healthpb.RegisterHealthServer(srv.grpcServer, srv.healthServer)
-	grpcSvc.RegisterServer(srv.grpcServer)
+	s.grpcServer = grpc.NewServer(opts...)
+	s.healthServer = health.NewServer()
+	healthpb.RegisterHealthServer(s.grpcServer, s.healthServer)
 
-	return srv
+	srv.RegisterServer(s.grpcServer)
+	return s
 }
 
-func (s *grpcServer) serve() error {
+func (s *Server) serve() error {
 	return s.grpcServer.Serve(s.Listener)
 }
 
-func (s *grpcServer) StartServer() {
-	s.Serve(s.serve)
+// StartServer provides the callback function to start the server.
+func (s *Server) StartServer() {
+	s.ServerConfig.Serve(s.serve)
 }

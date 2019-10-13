@@ -9,6 +9,6 @@ const defaultPort = "8082"
 
 func main() {
 	config := service.NewServerConfig("youji", defaultPort)
-	server := youji.NewYoujiServer(config)
+	server := youji.NewServer(config)
 	server.StartServer()
 }

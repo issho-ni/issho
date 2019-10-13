@@ -9,6 +9,6 @@ const defaultPort = "8080"
 
 func main() {
 	config := service.NewServerConfig("graphql", defaultPort)
-	server := graphql.NewGraphQLServer(config)
+	server := graphql.NewServer(config)
 	server.StartServer()
 }

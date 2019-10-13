@@ -13,7 +13,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (s *ninkaServer) CreateToken(ctx context.Context, in *ninka.TokenRequest) (*ninka.Token, error) {
+// CreateToken creates and signs a new JWT for an authenticated user.
+func (s *Server) CreateToken(ctx context.Context, in *ninka.TokenRequest) (*ninka.Token, error) {
 	var err error
 	var ok bool
 	var t time.Time

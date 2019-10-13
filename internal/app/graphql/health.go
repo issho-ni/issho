@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/issho-ni/issho/internal/pkg/service"
+	"github.com/issho-ni/issho/internal/pkg/grpc"
 )
 
 func liveCheck(rw http.ResponseWriter, r *http.Request) {
@@ -12,11 +12,11 @@ func liveCheck(rw http.ResponseWriter, r *http.Request) {
 }
 
 type readyChecker struct {
-	healthCheckers []func() *service.GRPCStatus
+	healthCheckers []func() *grpc.Status
 }
 
 func newReadyChecker(cs ClientSet) *readyChecker {
-	healthCheckers := make([]func() *service.GRPCStatus, 0)
+	healthCheckers := make([]func() *grpc.Status, 0)
 
 	for _, client := range cs.AllClients() {
 		healthCheckers = append(healthCheckers, client.HealthCheck)
@@ -30,12 +30,12 @@ func (s *readyChecker) Length() int {
 }
 
 func (s *readyChecker) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	results := make(chan *service.GRPCStatus, len(s.healthCheckers))
+	results := make(chan *grpc.Status, len(s.healthCheckers))
 	wg := sync.WaitGroup{}
 
 	for _, checker := range s.healthCheckers {
 		wg.Add(1)
-		go func(c func() *service.GRPCStatus, wg *sync.WaitGroup) {
+		go func(c func() *grpc.Status, wg *sync.WaitGroup) {
 			defer wg.Done()
 			results <- c()
 		}(checker, &wg)

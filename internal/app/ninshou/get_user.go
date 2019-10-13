@@ -9,7 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *ninshouServer) GetUser(ctx context.Context, in *ninshou.User) (*ninshou.User, error) {
+// GetUser finds a user record by user ID or email address.
+func (s *Server) GetUser(ctx context.Context, in *ninshou.User) (*ninshou.User, error) {
 	filter := bson.M{}
 
 	if in.Id != nil {

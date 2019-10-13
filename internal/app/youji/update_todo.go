@@ -11,7 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (s *youjiServer) UpdateTodo(ctx context.Context, in *youji.UpdateTodoParams) (*youji.Todo, error) {
+// UpdateTodo updates a todo record.
+func (s *Server) UpdateTodo(ctx context.Context, in *youji.UpdateTodoParams) (*youji.Todo, error) {
 	var update primitive.M
 
 	claims, _ := icontext.ClaimsFromContext(ctx)

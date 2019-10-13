@@ -5,18 +5,18 @@ package youji
 import (
 	"os"
 
-	"github.com/issho-ni/issho/internal/pkg/service"
+	"github.com/issho-ni/issho/internal/pkg/grpc"
 )
 
 // Client is the client to the Youji gRPC service.
 type Client struct {
-	service.GRPCClient
+	grpc.Client
 	YoujiClient
 }
 
 // NewClient returns a client to the Youji gRPC service.
-func NewClient(config *service.GRPCClientConfig) *Client {
+func NewClient(config *grpc.ClientConfig) *Client {
 	url := os.Getenv("YOUJI_URL")
-	c := service.NewGRPCClient(config, "youji", url)
+	c := grpc.NewClient(config, "youji", url)
 	return &Client{c, NewYoujiClient(c.ClientConn())}
 }

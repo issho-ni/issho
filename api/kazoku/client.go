@@ -5,18 +5,18 @@ package kazoku
 import (
 	"os"
 
-	"github.com/issho-ni/issho/internal/pkg/service"
+	"github.com/issho-ni/issho/internal/pkg/grpc"
 )
 
 // Client is the client for the Kazoku gRPC service.
 type Client struct {
-	service.GRPCClient
+	grpc.Client
 	KazokuClient
 }
 
 // NewClient returns a client to the Kazoku gRPC service.
-func NewClient(config *service.GRPCClientConfig) *Client {
+func NewClient(config *grpc.ClientConfig) *Client {
 	url := os.Getenv("KAZOKU_URL")
-	c := service.NewGRPCClient(config, "kazoku", url)
+	c := grpc.NewClient(config, "kazoku", url)
 	return &Client{c, NewKazokuClient(c.ClientConn())}
 }

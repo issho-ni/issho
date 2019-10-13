@@ -11,7 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s *ninshouServer) CreateUser(ctx context.Context, in *ninshou.User) (*ninshou.User, error) {
+// CreateUser creates a new user record.
+func (s *Server) CreateUser(ctx context.Context, in *ninshou.User) (*ninshou.User, error) {
 	var err error
 	var ins []byte
 	var ok bool

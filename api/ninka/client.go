@@ -5,18 +5,18 @@ package ninka
 import (
 	"os"
 
-	"github.com/issho-ni/issho/internal/pkg/service"
+	"github.com/issho-ni/issho/internal/pkg/grpc"
 )
 
 // Client is the client to the Ninka gRPC service.
 type Client struct {
-	service.GRPCClient
+	grpc.Client
 	NinkaClient
 }
 
 // NewClient returns a client to the Ninka gRPC service.
-func NewClient(config *service.GRPCClientConfig) *Client {
+func NewClient(config *grpc.ClientConfig) *Client {
 	url := os.Getenv("NINKA_URL")
-	c := service.NewGRPCClient(config, "ninka", url)
+	c := grpc.NewClient(config, "ninka", url)
 	return &Client{c, NewNinkaClient(c.ClientConn())}
 }

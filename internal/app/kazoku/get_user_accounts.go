@@ -10,7 +10,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (s *kazokuServer) GetUserAccounts(ctx context.Context, in *kazoku.UserAccount) (*kazoku.UserAccounts, error) {
+// GetUserAccounts finds all associated users for a given account ID, or all
+// associated accounts for a given user ID.
+func (s *Server) GetUserAccounts(ctx context.Context, in *kazoku.UserAccount) (*kazoku.UserAccounts, error) {
 	var cur *mongo.Cursor
 	var err error
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/api/ninshou"
+	"github.com/issho-ni/issho/internal/pkg/grpc"
 	"github.com/issho-ni/issho/internal/pkg/service"
 	"github.com/issho-ni/issho/internal/pkg/uuid"
 
@@ -14,13 +15,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/x/bsonx"
-	"google.golang.org/grpc"
+	ggrpc "google.golang.org/grpc"
 )
 
-type ninkaServer struct {
+// Server defines the structure of a server for the Kazoku service.
+type Server struct {
+	service.Server
 	mongoClient   service.MongoClient
 	ninshouClient *ninshou.Client
-	service.GRPCServer
 	ninka.NinkaServer
 	secret []byte
 }
@@ -32,14 +34,14 @@ type Claims struct {
 	*jwt.Claims
 }
 
-// NewNinkaServer returns a new gRPC server for the Ninka service.
-func NewNinkaServer(config *service.ServerConfig) service.Server {
-	server := &ninkaServer{}
-	server.GRPCServer = service.NewGRPCServer(config, server)
-	server.mongoClient = service.NewMongoClient(config.Name)
+// NewServer returns a new gRPC server for the Ninka service.
+func NewServer(config *service.ServerConfig) service.Server {
+	var s *Server
+	s.Server = grpc.NewServer(config, s)
+	s.mongoClient = service.NewMongoClient(config.Name)
 
-	env := service.NewGRPCClientConfig(config.TLSCert)
-	server.ninshouClient = ninshou.NewClient(env)
+	env := grpc.NewClientConfig(config.TLSCert)
+	s.ninshouClient = ninshou.NewClient(env)
 
 	secret := os.Getenv("NINKA_JWT_SECRET")
 	if secret == "" {
@@ -47,25 +49,27 @@ func NewNinkaServer(config *service.ServerConfig) service.Server {
 	} else if decoded, err := base64.StdEncoding.DecodeString(secret); err != nil {
 		log.WithField("err", err).Fatal("Could not decode JWT secret")
 	} else {
-		server.secret = decoded
+		s.secret = decoded
 	}
 
-	return server
+	return s
 }
 
-func (s *ninkaServer) RegisterServer(srv *grpc.Server) {
+// RegisterServer registers the gRPC server as a Ninka service handler.
+func (s *Server) RegisterServer(srv *ggrpc.Server) {
 	ninka.RegisterNinkaServer(srv, s)
 }
 
-func (s *ninkaServer) StartServer() {
+// StartServer initializes the MongoDB connection and database and starts the server.
+func (s *Server) StartServer() {
 	cancel := s.mongoClient.Connect()
 	defer cancel()
 
 	s.createIndexes()
-	s.GRPCServer.StartServer()
+	s.Server.StartServer()
 }
 
-func (s *ninkaServer) createIndexes() {
+func (s *Server) createIndexes() {
 	tokenIDIndex := mongo.IndexModel{}
 	tokenIDIndex.Keys = bsonx.Doc{{Key: "tokenid", Value: bsonx.Int32(1)}}
 	tokenIDIndex.Options = options.Index().SetUnique(true)

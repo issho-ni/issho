@@ -8,12 +8,12 @@ import (
 	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/api/shinninjou"
 	"github.com/issho-ni/issho/api/youji"
-	"github.com/issho-ni/issho/internal/pkg/service"
+	"github.com/issho-ni/issho/internal/pkg/grpc"
 )
 
 // ClientSet is a basket for all GRPC service clients.
 type ClientSet interface {
-	AllClients() []service.GRPCClient
+	AllClients() []grpc.Client
 }
 
 type clientSet struct {
@@ -25,14 +25,14 @@ type clientSet struct {
 }
 
 // AllClients returns a slice of all configured clients.
-func (cs *clientSet) AllClients() []service.GRPCClient {
+func (cs *clientSet) AllClients() []grpc.Client {
 	v := reflect.Indirect(reflect.ValueOf(cs))
-	clients := make([]service.GRPCClient, 0)
+	clients := make([]grpc.Client, 0)
 
 	for i := 0; i < v.NumField(); i++ {
 		if client := reflect.Indirect(reflect.ValueOf(v.Field(i).Interface())); client.IsValid() {
-			serviceClient := client.FieldByName("GRPCClient").Interface().(service.GRPCClient)
-			clients = append(clients, serviceClient)
+			grpcClient := client.FieldByName("Client").Interface().(grpc.Client)
+			clients = append(clients, grpcClient)
 		}
 	}
 

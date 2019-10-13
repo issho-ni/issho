@@ -5,18 +5,18 @@ package ninshou
 import (
 	"os"
 
-	"github.com/issho-ni/issho/internal/pkg/service"
+	"github.com/issho-ni/issho/internal/pkg/grpc"
 )
 
 // Client is the client to the Ninshou gRPC service.
 type Client struct {
-	service.GRPCClient
+	grpc.Client
 	NinshouClient
 }
 
 // NewClient returns a client to the Ninshou gRPC service.
-func NewClient(config *service.GRPCClientConfig) *Client {
+func NewClient(config *grpc.ClientConfig) *Client {
 	url := os.Getenv("NINSHOU_URL")
-	c := service.NewGRPCClient(config, "ninshou", url)
+	c := grpc.NewClient(config, "ninshou", url)
 	return &Client{c, NewNinshouClient(c.ClientConn())}
 }
