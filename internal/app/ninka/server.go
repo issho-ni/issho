@@ -7,12 +7,13 @@ import (
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/internal/pkg/grpc"
+	"github.com/issho-ni/issho/internal/pkg/mongo"
 	"github.com/issho-ni/issho/internal/pkg/service"
 	"github.com/issho-ni/issho/internal/pkg/uuid"
 
 	"github.com/pascaldekloe/jwt"
 	log "github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/mongo"
+	mmongo "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 	ggrpc "google.golang.org/grpc"
@@ -20,11 +21,10 @@ import (
 
 // Server defines the structure of a server for the Kazoku service.
 type Server struct {
-	service.Server
-	mongoClient   service.MongoClient
-	ninshouClient *ninshou.Client
+	*grpc.Server
 	ninka.NinkaServer
-	secret []byte
+	ninshouClient *ninshou.Client
+	secret        []byte
 }
 
 // Claims represents a set of claims with the token ID parsed into a UUID.
@@ -38,7 +38,6 @@ type Claims struct {
 func NewServer(config *service.ServerConfig) service.Server {
 	var s *Server
 	s.Server = grpc.NewServer(config, s)
-	s.mongoClient = service.NewMongoClient(config.Name)
 
 	env := grpc.NewClientConfig(config.TLSCert)
 	s.ninshouClient = ninshou.NewClient(env)
@@ -62,21 +61,18 @@ func (s *Server) RegisterServer(srv *ggrpc.Server) {
 
 // StartServer initializes the MongoDB connection and database and starts the server.
 func (s *Server) StartServer() {
-	cancel := s.mongoClient.Connect()
-	defer cancel()
-
-	s.createIndexes()
+	s.defineIndexes()
 	s.Server.StartServer()
 }
 
-func (s *Server) createIndexes() {
-	tokenIDIndex := mongo.IndexModel{}
+func (s *Server) defineIndexes() {
+	var tokenIDIndex mmongo.IndexModel
 	tokenIDIndex.Keys = bsonx.Doc{{Key: "tokenid", Value: bsonx.Int32(1)}}
 	tokenIDIndex.Options = options.Index().SetUnique(true)
 
-	expiresAtIndex := mongo.IndexModel{}
+	var expiresAtIndex mmongo.IndexModel
 	expiresAtIndex.Keys = bsonx.Doc{{Key: "expiresat", Value: bsonx.Int32(1)}}
 	expiresAtIndex.Options = options.Index().SetExpireAfterSeconds(0)
 
-	s.mongoClient.CreateIndexes(service.NewIndexSet("invalid_tokens", tokenIDIndex, expiresAtIndex))
+	s.MongoClient.DefineIndexes(mongo.NewIndexSet("invalid_tokens", tokenIDIndex, expiresAtIndex))
 }

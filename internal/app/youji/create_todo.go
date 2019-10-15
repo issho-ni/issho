@@ -30,7 +30,7 @@ func (s *Server) CreateTodo(ctx context.Context, in *youji.NewTodo) (*youji.Todo
 		return nil, err
 	}
 
-	collection := s.mongoClient.Collection("todos")
+	collection := s.MongoClient.Collection("todos")
 	if _, err = collection.InsertOne(ctx, ins); err != nil {
 		return nil, err
 	}

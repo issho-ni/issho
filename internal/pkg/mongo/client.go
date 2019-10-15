@@ -1,4 +1,4 @@
-package service
+package mongo
 
 import (
 	"context"
@@ -21,41 +21,52 @@ func NewIndexSet(collection string, indexes ...mongo.IndexModel) IndexSet {
 	return IndexSet{Collection: collection, Indexes: indexes}
 }
 
-// MongoClient defines the interface for a service's MongoDB connection.
-type MongoClient interface {
+// Client defines the interface for a service's MongoDB connection.
+type Client interface {
 	Collection(string, ...*options.CollectionOptions) *mongo.Collection
 	Connect() context.CancelFunc
-	CreateIndexes(...IndexSet)
 	Database() *mongo.Database
+	DefineIndexes(...IndexSet)
 }
 
-type mongoClient struct {
+type client struct {
 	name string
 	log  *log.Entry
 	*mongo.Client
+	indexSets []IndexSet
 }
 
-// NewMongoClient creates a new MongoDB client for connecting to the specified database.
-func NewMongoClient(dbName string) MongoClient {
-	var client *mongo.Client
-	var err error
+// NewClient creates a new MongoDB client for connecting to the specified database.
+func NewClient(dbName string) Client {
+	c := &client{name: dbName}
 
-	uri := os.Getenv("MONGODB_URL")
-	entry := log.WithFields(log.Fields{
+	c.log = log.WithFields(log.Fields{
 		"mongodb.service": dbName,
 		"span.kind":       "client",
 		"system":          "mongodb",
 	})
 
-	if client, err = mongo.NewClient(options.Client().ApplyURI(uri)); err != nil {
-		entry.WithField("err", err).Fatal("Failed to create MongoDB client")
+	uri := os.Getenv("MONGODB_URL")
+	if uri == "" {
+		c.log.Fatal("MongoDB URL must be set")
 	}
 
-	return &mongoClient{dbName, entry, client}
+	cc, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	if err != nil {
+		c.log.WithField("err", err).Fatal("Failed to create MongoDB client")
+	}
+
+	c.Client = cc
+	return c
+}
+
+// Collection returns the named collection on the MongoDB database.
+func (c *client) Collection(name string, opts ...*options.CollectionOptions) *mongo.Collection {
+	return c.Database().Collection(name, opts...)
 }
 
 // Connect establishes a connection to the MongoDB server.
-func (c *mongoClient) Connect() context.CancelFunc {
+func (c *client) Connect() context.CancelFunc {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	if err := c.Client.Connect(ctx); err != nil {
@@ -69,24 +80,32 @@ func (c *mongoClient) Connect() context.CancelFunc {
 		c.log.WithField("err", err).Fatal("Failed to connect to MongoDB")
 	}
 
-	c.log.Debug("Connected to MongoDB")
 	cancelPing()
+	c.log.Debug("Connected to MongoDB")
+
+	c.createIndexes()
 
 	return cancel
 }
 
-// CreateIndexes creates the specified indexes on the client's database.
-func (c *mongoClient) CreateIndexes(indexSets ...IndexSet) {
-	var err error
-	var results []string
+// Database returns the MongoDB database.
+func (c *client) Database() *mongo.Database {
+	return c.Client.Database(c.name)
+}
 
+// DefineIndexes specifies indexes to create on the database on connection.
+func (c *client) DefineIndexes(indexSets ...IndexSet) {
+	c.indexSets = append(c.indexSets, indexSets...)
+}
+
+func (c *client) createIndexes() {
 	c.log.Debug("Creating indexes")
 	createOptions := options.CreateIndexes().SetMaxTime(10 * time.Second)
 
-	for _, indexSet := range indexSets {
-		coll := c.Collection(indexSet.Collection).Indexes()
-
-		if results, err = coll.CreateMany(context.Background(), indexSet.Indexes, createOptions); err != nil {
+	for _, indexSet := range c.indexSets {
+		iv := c.Collection(indexSet.Collection).Indexes()
+		results, err := iv.CreateMany(context.Background(), indexSet.Indexes, createOptions)
+		if err != nil {
 			c.log.WithField("err", err).Fatal("Could not create indexes")
 		}
 
@@ -97,14 +116,4 @@ func (c *mongoClient) CreateIndexes(indexSets ...IndexSet) {
 			}).Debug("Created index")
 		}
 	}
-}
-
-// Database returns the MongoDB database.
-func (c *mongoClient) Database() *mongo.Database {
-	return c.Client.Database(c.name)
-}
-
-// Collection returns the named collection on the MongoDB database.
-func (c *mongoClient) Collection(name string, opts ...*options.CollectionOptions) *mongo.Collection {
-	return c.Database().Collection(name, opts...)
 }

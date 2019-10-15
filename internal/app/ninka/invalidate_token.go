@@ -37,7 +37,7 @@ func (s *Server) InvalidateToken(ctx context.Context, in *common.Claims) (*ninka
 			return &ninka.TokenResponse{Success: false}, err
 		}
 
-		collection := s.mongoClient.Collection("invalid_tokens")
+		collection := s.MongoClient.Collection("invalid_tokens")
 		if _, err = collection.InsertOne(ctx, ins); err != nil {
 			return &ninka.TokenResponse{Success: false}, err
 		}
@@ -50,7 +50,7 @@ func (s *Server) isTokenInvalid(ctx context.Context, tokenID *uuid.UUID) (bool, 
 	result := &InvalidToken{}
 	filter := bson.D{{Key: "tokenid", Value: tokenID}}
 
-	collection := s.mongoClient.Collection("invalid_tokens")
+	collection := s.MongoClient.Collection("invalid_tokens")
 	if err := collection.FindOne(ctx, filter).Decode(result); err == mongo.ErrNoDocuments {
 		return false, nil
 	} else if err != nil {

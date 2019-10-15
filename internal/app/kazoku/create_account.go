@@ -31,7 +31,7 @@ func (s *Server) CreateAccount(ctx context.Context, in *kazoku.Account) (*kazoku
 		return nil, err
 	}
 
-	collection := s.mongoClient.Collection("accounts")
+	collection := s.MongoClient.Collection("accounts")
 	if _, err = collection.InsertOne(ctx, ins); err != nil {
 		return nil, err
 	}

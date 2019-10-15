@@ -15,8 +15,7 @@ import (
 func (s *Server) GetUserAccounts(ctx context.Context, in *kazoku.UserAccount) (*kazoku.UserAccounts, error) {
 	var cur *mongo.Cursor
 	var err error
-
-	filter := bson.M{}
+	var filter bson.M
 
 	if in.AccountID != nil {
 		filter["accountid"] = in.AccountID
@@ -26,15 +25,15 @@ func (s *Server) GetUserAccounts(ctx context.Context, in *kazoku.UserAccount) (*
 		return nil, fmt.Errorf("No filter parameters specified")
 	}
 
-	results := []*kazoku.UserAccount{}
-	collection := s.mongoClient.Collection("useraccounts")
+	var results []*kazoku.UserAccount
+	collection := s.MongoClient.Collection("useraccounts")
 
 	if cur, err = collection.Find(ctx, filter); err != nil {
 		return nil, err
 	}
 
 	for cur.Next(ctx) {
-		result := &kazoku.UserAccount{}
+		var result *kazoku.UserAccount
 		if err := cur.Decode(result); err == nil {
 			results = append(results, result)
 		}

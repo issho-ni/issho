@@ -3,6 +3,7 @@ package grpc
 import (
 	"net"
 
+	"github.com/issho-ni/issho/internal/pkg/mongo"
 	"github.com/issho-ni/issho/internal/pkg/service"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -24,6 +25,7 @@ type Service interface {
 type Server struct {
 	*service.ServerConfig
 	net.Listener
+	MongoClient  mongo.Client
 	grpcServer   *grpc.Server
 	healthServer *health.Server
 }
@@ -31,11 +33,13 @@ type Server struct {
 // NewServer creates a new listener and gRPC server for a gRPC service.
 func NewServer(config *service.ServerConfig, srv Service) *Server {
 	var creds credentials.TransportCredentials
+	var grpcLogrusOpts []grpc_logrus.Option
 	var err error
 	var opts []grpc.ServerOption
 	var s *Server
 
 	s.ServerConfig = config
+	s.MongoClient = mongo.NewClient(config.Name)
 
 	if s.Listener, err = net.Listen("tcp", ":"+config.Port); err != nil {
 		log.WithFields(log.Fields{
@@ -54,15 +58,7 @@ func NewServer(config *service.ServerConfig, srv Service) *Server {
 	logrusEntry := log.NewEntry(logger)
 	grpc_logrus.ReplaceGrpcLogger(logrusEntry)
 
-	grpcLogrusOpts := []grpc_logrus.Option{
-		grpc_logrus.WithDecider(func(methodFullName string, err error) bool {
-			if err == nil && methodFullName == "/grpc.health.v1.Health/Check" {
-				return false
-			}
-
-			return true
-		}),
-	}
+	grpcLogrusOpts = append(grpcLogrusOpts, grpc_logrus.WithDecider(logDecider))
 
 	opts = append(opts, grpc_middleware.WithStreamServerChain(
 		grpc_logrus.StreamServerInterceptor(logrusEntry, grpcLogrusOpts...),
@@ -91,5 +87,16 @@ func (s *Server) serve() error {
 
 // StartServer provides the callback function to start the server.
 func (s *Server) StartServer() {
+	cancel := s.MongoClient.Connect()
+	defer cancel()
+
 	s.ServerConfig.Serve(s.serve)
+}
+
+func logDecider(methodFullName string, err error) bool {
+	if err == nil && methodFullName == "/grpc.health.v1.Health/Check" {
+		return false
+	}
+
+	return true
 }

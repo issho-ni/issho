@@ -30,7 +30,7 @@ func (s *Server) CreateUser(ctx context.Context, in *ninshou.User) (*ninshou.Use
 		return nil, err
 	}
 
-	collection := s.mongoClient.Collection("users")
+	collection := s.MongoClient.Collection("users")
 	if _, err = collection.InsertOne(ctx, ins); err != nil {
 		return nil, err
 	}

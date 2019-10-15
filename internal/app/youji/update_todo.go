@@ -13,15 +13,15 @@ import (
 
 // UpdateTodo updates a todo record.
 func (s *Server) UpdateTodo(ctx context.Context, in *youji.UpdateTodoParams) (*youji.Todo, error) {
+	var currentTodo *youji.Todo
 	var update primitive.M
 
 	claims, _ := icontext.ClaimsFromContext(ctx)
 	filter := bson.D{{Key: "_id", Value: in.Id}, {Key: "userid", Value: claims.UserID}}
 
-	collection := s.mongoClient.Collection("todos")
+	collection := s.MongoClient.Collection("todos")
 	result := collection.FindOne(ctx, filter)
 
-	currentTodo := &youji.Todo{}
 	if err := result.Decode(currentTodo); err != nil {
 		return nil, err
 	}
@@ -30,10 +30,10 @@ func (s *Server) UpdateTodo(ctx context.Context, in *youji.UpdateTodoParams) (*y
 		return currentTodo, nil
 	}
 
-	opts := &options.FindOneAndUpdateOptions{}
+	var opts *options.FindOneAndUpdateOptions
 	opts.SetReturnDocument(options.After)
 
-	todo := &youji.Todo{}
+	var todo *youji.Todo
 	if err := collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(todo); err != nil {
 		return nil, err
 	}

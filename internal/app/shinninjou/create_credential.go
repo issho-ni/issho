@@ -29,7 +29,7 @@ func (s *Server) CreateCredential(ctx context.Context, in *shinninjou.Credential
 		return nil, err
 	}
 
-	collection := s.mongoClient.Collection("credentials")
+	collection := s.MongoClient.Collection("credentials")
 	if _, err = collection.InsertOne(ctx, ins); err != nil {
 		return nil, err
 	}

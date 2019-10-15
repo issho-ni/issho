@@ -16,7 +16,7 @@ func (s *Server) CreateUserAccount(ctx context.Context, in *kazoku.UserAccount) 
 		return nil, err
 	}
 
-	collection := s.mongoClient.Collection("useraccounts")
+	collection := s.MongoClient.Collection("useraccounts")
 	if _, err = collection.InsertOne(ctx, ins); err != nil {
 		return nil, err
 	}

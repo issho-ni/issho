@@ -11,10 +11,10 @@ import (
 
 // ValidateCredential validates the given credential against the stored record.
 func (s *Server) ValidateCredential(ctx context.Context, in *shinninjou.Credential) (*shinninjou.CredentialResponse, error) {
-	result := &shinninjou.Credential{}
+	var result *shinninjou.Credential
 	filter := bson.D{{Key: "userid", Value: in.UserID}, {Key: "credentialtype", Value: in.CredentialType}}
 
-	collection := s.mongoClient.Collection("credentials")
+	collection := s.MongoClient.Collection("credentials")
 	if err := collection.FindOne(ctx, filter).Decode(result); err != nil {
 		return nil, err
 	}
