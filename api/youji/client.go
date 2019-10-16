@@ -16,7 +16,9 @@ type Client struct {
 
 // NewClient returns a client to the Youji gRPC service.
 func NewClient(config *grpc.ClientConfig) *Client {
+	var client *Client
 	url := os.Getenv("YOUJI_URL")
-	c := grpc.NewClient(config, "youji", url)
-	return &Client{c, NewYoujiClient(c.ClientConn())}
+	client.Client = grpc.NewClient(config, "youji", url)
+	client.YoujiClient = NewYoujiClient(client.ClientConn())
+	return client
 }

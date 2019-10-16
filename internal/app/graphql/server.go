@@ -37,11 +37,11 @@ func NewServer(config *service.ServerConfig) service.Server {
 
 	env := grpc.NewClientConfig(config.TLSCert)
 	clients := &clientSet{
-		kazoku.NewClient(env),
-		ninka.NewClient(env),
-		ninshou.NewClient(env),
-		shinninjou.NewClient(env),
-		youji.NewClient(env),
+		KazokuClient:     kazoku.NewClient(env),
+		NinkaClient:      ninka.NewClient(env),
+		NinshouClient:    ninshou.NewClient(env),
+		ShinninjouClient: shinninjou.NewClient(env),
+		YoujiClient:      youji.NewClient(env),
 	}
 	s.clientSet = clients
 

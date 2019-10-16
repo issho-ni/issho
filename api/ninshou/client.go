@@ -16,7 +16,9 @@ type Client struct {
 
 // NewClient returns a client to the Ninshou gRPC service.
 func NewClient(config *grpc.ClientConfig) *Client {
+	var client *Client
 	url := os.Getenv("NINSHOU_URL")
-	c := grpc.NewClient(config, "ninshou", url)
-	return &Client{c, NewNinshouClient(c.ClientConn())}
+	client.Client = grpc.NewClient(config, "ninshou", url)
+	client.NinshouClient = NewNinshouClient(client.ClientConn())
+	return client
 }

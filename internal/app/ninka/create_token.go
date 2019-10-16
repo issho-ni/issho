@@ -14,32 +14,30 @@ import (
 )
 
 // CreateToken creates and signs a new JWT for an authenticated user.
-func (s *Server) CreateToken(ctx context.Context, in *ninka.TokenRequest) (*ninka.Token, error) {
-	var err error
-	var ok bool
-	var t time.Time
-	var token []byte
+func (s *Server) CreateToken(ctx context.Context, in *ninka.TokenRequest) (token *ninka.Token, err error) {
+	token = new(ninka.Token)
 
-	if t, ok = icontext.TimingFromContext(ctx); !ok {
+	t, ok := icontext.TimingFromContext(ctx)
+	if !ok {
 		t = time.Now()
 	}
 
-	notBefore := t
-	expires := t.Add(30 * 24 * time.Hour)
-
-	claims := &jwt.Claims{}
+	var claims *jwt.Claims
 	claims.ID = uuid.New().String()
-	claims.Expires = jwt.NewNumericTime(expires)
-	claims.NotBefore = jwt.NewNumericTime(notBefore)
+	claims.Expires = jwt.NewNumericTime(t.Add(30 * 24 * time.Hour))
+	claims.NotBefore = jwt.NewNumericTime(t)
 	claims.Subject = in.UserID.String()
 
-	if token, err = claims.HMACSign(jwt.HS256, s.secret); err != nil {
+	tkn, err := claims.HMACSign(jwt.HS256, s.secret)
+	if err != nil {
 		return nil, err
 	}
+
+	token.Token = string(tkn)
 
 	ctxlogrus.AddFields(ctx, log.Fields{
 		"user_id": claims.Subject,
 	})
 
-	return &ninka.Token{Token: string(token)}, nil
+	return
 }

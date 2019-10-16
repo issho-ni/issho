@@ -12,27 +12,23 @@ import (
 // CreateCredential creates an authentication credential for the current user.
 // If the credential is a password, a bcrypt hash is generated and stored.
 func (s *Server) CreateCredential(ctx context.Context, in *shinninjou.Credential) (*shinninjou.CredentialResponse, error) {
-	var err error
-	var ins []byte
-	var password []byte
-
 	switch in.CredentialType {
 	case shinninjou.CredentialType_PASSWORD:
-		if password, err = bcrypt.GenerateFromPassword(in.Credential, bcrypt.DefaultCost); err != nil {
+		password, err := bcrypt.GenerateFromPassword(in.Credential, bcrypt.DefaultCost)
+		if err != nil {
 			return nil, err
 		}
 
 		in.Credential = password
 	}
 
-	if ins, err = bson.Marshal(in); err != nil {
+	ins, err := bson.Marshal(in)
+	if err != nil {
 		return nil, err
 	}
 
 	collection := s.MongoClient.Collection("credentials")
-	if _, err = collection.InsertOne(ctx, ins); err != nil {
-		return nil, err
-	}
+	_, err = collection.InsertOne(ctx, ins)
 
-	return &shinninjou.CredentialResponse{Success: true}, nil
+	return &shinninjou.CredentialResponse{Success: err == nil}, err
 }

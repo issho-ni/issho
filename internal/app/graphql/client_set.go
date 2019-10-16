@@ -25,9 +25,8 @@ type clientSet struct {
 }
 
 // AllClients returns a slice of all configured clients.
-func (cs *clientSet) AllClients() []grpc.Client {
+func (cs *clientSet) AllClients() (clients []grpc.Client) {
 	v := reflect.Indirect(reflect.ValueOf(cs))
-	clients := make([]grpc.Client, 0)
 
 	for i := 0; i < v.NumField(); i++ {
 		if client := reflect.Indirect(reflect.ValueOf(v.Field(i).Interface())); client.IsValid() {
@@ -36,5 +35,5 @@ func (cs *clientSet) AllClients() []grpc.Client {
 		}
 	}
 
-	return clients
+	return
 }

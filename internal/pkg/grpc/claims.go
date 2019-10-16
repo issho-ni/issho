@@ -33,19 +33,17 @@ func appendClaimsToOutgoingContext(ctx context.Context) context.Context {
 }
 
 func logClaimsFromIncomingContext(ctx context.Context) context.Context {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return ctx
+	}
+
+	value := md.Get(claimsKey)
+	if len(value) != 1 {
+		return ctx
+	}
+
 	var claims common.Claims
-	var md metadata.MD
-	var ok bool
-	var value []string
-
-	if md, ok = metadata.FromIncomingContext(ctx); !ok {
-		return ctx
-	}
-
-	if value = md.Get(claimsKey); len(value) != 1 {
-		return ctx
-	}
-
 	if err := json.Unmarshal([]byte(value[0]), &claims); err != nil {
 		return ctx
 	}

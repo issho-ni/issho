@@ -10,7 +10,7 @@ import (
 )
 
 // GetUser finds a user record by user ID or email address.
-func (s *Server) GetUser(ctx context.Context, in *ninshou.User) (*ninshou.User, error) {
+func (s *Server) GetUser(ctx context.Context, in *ninshou.User) (result *ninshou.User, err error) {
 	var filter bson.M
 
 	if in.Id != nil {
@@ -21,12 +21,8 @@ func (s *Server) GetUser(ctx context.Context, in *ninshou.User) (*ninshou.User, 
 		return nil, fmt.Errorf("No filter parameters specified")
 	}
 
-	var result *ninshou.User
 	collection := s.MongoClient.Collection("users")
+	err = collection.FindOne(ctx, filter).Decode(result)
 
-	if err := collection.FindOne(ctx, filter).Decode(result); err != nil {
-		return nil, err
-	}
-
-	return result, nil
+	return
 }

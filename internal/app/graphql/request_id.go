@@ -18,10 +18,8 @@ func requestIDMiddleware(next http.Handler) http.Handler {
 }
 
 func (h *requestIDHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	var err error
-	var rid uuid.UUID
-
-	if rid, err = uuid.Parse(r.Header.Get(requestIDHeader)); err != nil {
+	rid, err := uuid.Parse(r.Header.Get(requestIDHeader))
+	if err != nil {
 		rid = uuid.New()
 		r.Header.Set(requestIDHeader, rid.String())
 	}

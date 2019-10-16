@@ -12,41 +12,33 @@ import (
 
 // CreateAccount creates a new account owned by the creating user ID.
 func (s *Server) CreateAccount(ctx context.Context, in *kazoku.Account) (*kazoku.Account, error) {
-	var err error
-	var ins []byte
-	var ok bool
-	var t time.Time
-
-	if t, ok = icontext.TimingFromContext(ctx); !ok {
-		t = time.Now()
+	if t, ok := icontext.TimingFromContext(ctx); ok {
+		*in.CreatedAt = t
+	} else {
+		*in.CreatedAt = time.Now()
 	}
 
-	id := uuid.New()
-	in.Id = &id
-	in.CreatedAt = &t
-	expires := t.Add(365 * 24 * time.Hour)
-	in.ExpiresAt = &expires
+	*in.Id = uuid.New()
+	*in.ExpiresAt = in.CreatedAt.Add(365 * 24 * time.Hour)
 
-	if ins, err = bson.Marshal(in); err != nil {
+	ins, err := bson.Marshal(in)
+	if err != nil {
 		return nil, err
 	}
 
 	collection := s.MongoClient.Collection("accounts")
-	if _, err = collection.InsertOne(ctx, ins); err != nil {
+	if _, err := collection.InsertOne(ctx, ins); err != nil {
 		return nil, err
 	}
 
 	userAccount := &kazoku.UserAccount{
-		AccountID:       &id,
+		AccountID:       in.Id,
 		UserID:          in.CreatedByUserID,
 		Role:            kazoku.UserAccount_OWNER,
 		CreatedByUserID: in.CreatedByUserID,
-		CreatedAt:       &t,
+		CreatedAt:       in.CreatedAt,
 	}
 
-	if _, err = s.CreateUserAccount(ctx, userAccount); err != nil {
-		return nil, err
-	}
-
-	return in, nil
+	_, err = s.CreateUserAccount(ctx, userAccount)
+	return in, err
 }

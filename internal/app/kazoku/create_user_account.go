@@ -9,17 +9,12 @@ import (
 
 // CreateUserAccount creates a new association between a user and an account.
 func (s *Server) CreateUserAccount(ctx context.Context, in *kazoku.UserAccount) (*kazoku.UserAccount, error) {
-	var err error
-	var ins []byte
-
-	if ins, err = bson.Marshal(in); err != nil {
+	ins, err := bson.Marshal(in)
+	if err != nil {
 		return nil, err
 	}
 
 	collection := s.MongoClient.Collection("useraccounts")
-	if _, err = collection.InsertOne(ctx, ins); err != nil {
-		return nil, err
-	}
-
-	return in, nil
+	_, err = collection.InsertOne(ctx, ins)
+	return in, err
 }

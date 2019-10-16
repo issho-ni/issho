@@ -10,7 +10,7 @@ import (
 )
 
 // GetAccount finds an account by account ID.
-func (s *Server) GetAccount(ctx context.Context, in *kazoku.Account) (*kazoku.Account, error) {
+func (s *Server) GetAccount(ctx context.Context, in *kazoku.Account) (result *kazoku.Account, err error) {
 	var filter bson.M
 
 	if in.Id != nil {
@@ -19,12 +19,7 @@ func (s *Server) GetAccount(ctx context.Context, in *kazoku.Account) (*kazoku.Ac
 		return nil, fmt.Errorf("No filter parameters specified")
 	}
 
-	var result *kazoku.Account
 	collection := s.MongoClient.Collection("accounts")
-
-	if err := collection.FindOne(ctx, filter).Decode(result); err != nil {
-		return nil, err
-	}
-
-	return result, nil
+	err = collection.FindOne(ctx, filter).Decode(result)
+	return
 }

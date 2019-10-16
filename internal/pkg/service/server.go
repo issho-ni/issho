@@ -29,24 +29,28 @@ type ServerConfig struct {
 
 // NewServerConfig creates a new set of server configuration values.
 func NewServerConfig(name string, defaultPort string) *ServerConfig {
-	var port string
-	var tlsCert string
-	var tlsKey string
+	config := &ServerConfig{Name: name}
 
-	if port = os.Getenv(strings.ToUpper(fmt.Sprintf("%s_port", name))); port == "" {
-		port = defaultPort
+	if port := os.Getenv(strings.ToUpper(fmt.Sprintf("%s_port", name))); port == "" {
+		config.Port = defaultPort
+	} else {
+		config.Port = port
 	}
 
-	if tlsCert = os.Getenv("TLS_CERT"); tlsCert == "" {
-		tlsCert = defaultTLSCert
+	if tlsCert := os.Getenv("TLS_CERT"); tlsCert == "" {
+		config.TLSCert = defaultTLSCert
+	} else {
+		config.TLSCert = tlsCert
 	}
 
-	if tlsKey = os.Getenv("TLS_KEY"); tlsKey == "" {
-		tlsKey = defaultTLSKey
+	if tlsKey := os.Getenv("TLS_KEY"); tlsKey == "" {
+		config.TLSKey = defaultTLSKey
+	} else {
+		config.TLSKey = tlsKey
 	}
 
 	setFormatter(name)
-	return &ServerConfig{name, port, tlsCert, tlsKey}
+	return config
 }
 
 // Serve starts the server.

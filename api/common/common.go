@@ -10,17 +10,10 @@ import (
 
 // ClaimsFromJWT parses and returns the necessary fields from a jwt.Claims
 // object.
-func ClaimsFromJWT(claims *jwt.Claims) (*Claims, error) {
-	tokenID, err := uuid.Parse(claims.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	userID, err := uuid.Parse(claims.Subject)
-	if err != nil {
-		return nil, err
-	}
-
-	expires := claims.Expires.Time()
-	return &Claims{ExpiresAt: &expires, TokenID: &tokenID, UserID: &userID}, nil
+func ClaimsFromJWT(claims *jwt.Claims) (c *Claims, err error) {
+	c = new(Claims)
+	*c.TokenID, err = uuid.Parse(claims.ID)
+	*c.UserID, err = uuid.Parse(claims.Subject)
+	*c.ExpiresAt = claims.Expires.Time()
+	return
 }

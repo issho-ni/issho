@@ -13,27 +13,21 @@ import (
 
 // CreateUser creates a new user record.
 func (s *Server) CreateUser(ctx context.Context, in *ninshou.User) (*ninshou.User, error) {
-	var err error
-	var ins []byte
-	var ok bool
-	var t time.Time
+	*in.Id = uuid.New()
 
-	if t, ok = icontext.TimingFromContext(ctx); !ok {
-		t = time.Now()
+	if t, ok := icontext.TimingFromContext(ctx); ok {
+		*in.CreatedAt = t
+	} else {
+		*in.CreatedAt = time.Now()
 	}
 
-	id := uuid.New()
-	in.Id = &id
-	in.CreatedAt = &t
-
-	if ins, err = bson.Marshal(in); err != nil {
+	ins, err := bson.Marshal(in)
+	if err != nil {
 		return nil, err
 	}
 
 	collection := s.MongoClient.Collection("users")
-	if _, err = collection.InsertOne(ctx, ins); err != nil {
-		return nil, err
-	}
+	_, err = collection.InsertOne(ctx, ins)
 
-	return in, nil
+	return in, err
 }

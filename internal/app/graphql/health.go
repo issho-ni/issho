@@ -30,15 +30,15 @@ func (s *readyChecker) Length() int {
 }
 
 func (s *readyChecker) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	results := make(chan *grpc.Status, len(s.healthCheckers))
-	wg := sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
+	results := make(chan *grpc.Status, s.Length())
 
 	for _, checker := range s.healthCheckers {
 		wg.Add(1)
 		go func(c func() *grpc.Status, wg *sync.WaitGroup) {
 			defer wg.Done()
 			results <- c()
-		}(checker, &wg)
+		}(checker, wg)
 	}
 
 	go func() {

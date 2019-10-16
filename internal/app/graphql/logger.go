@@ -19,7 +19,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 }
 
 func (h *loggingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	w := &loggingResponseWriter{rw, 0, 0}
+	w := &loggingResponseWriter{ResponseWriter: rw, Size: 0, StatusCode: 0}
 	h.Handler.ServeHTTP(w, r)
 
 	if r.RequestURI != "/live" && r.RequestURI != "/ready" {
@@ -55,14 +55,14 @@ type loggingResponseWriter struct {
 	StatusCode int
 }
 
-func (rw *loggingResponseWriter) Write(b []byte) (int, error) {
+func (rw *loggingResponseWriter) Write(b []byte) (size int, err error) {
 	if rw.StatusCode == 0 {
 		rw.WriteHeader(http.StatusOK)
 	}
 
-	size, err := rw.ResponseWriter.Write(b)
+	size, err = rw.ResponseWriter.Write(b)
 	rw.Size += size
-	return size, err
+	return
 }
 
 func (rw *loggingResponseWriter) WriteHeader(statusCode int) {

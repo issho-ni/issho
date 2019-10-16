@@ -29,18 +29,18 @@ type Server struct {
 
 // Claims represents a set of claims with the token ID parsed into a UUID.
 type Claims struct {
+	*jwt.Claims
 	ID     uuid.UUID
 	UserID uuid.UUID
-	*jwt.Claims
 }
 
 // NewServer returns a new gRPC server for the Ninka service.
-func NewServer(config *service.ServerConfig) service.Server {
-	var s *Server
-	s.Server = grpc.NewServer(config, s)
+func NewServer(config *service.ServerConfig) *Server {
+	var server *Server
+	server.Server = grpc.NewServer(config, server)
 
 	env := grpc.NewClientConfig(config.TLSCert)
-	s.ninshouClient = ninshou.NewClient(env)
+	server.ninshouClient = ninshou.NewClient(env)
 
 	secret := os.Getenv("NINKA_JWT_SECRET")
 	if secret == "" {
@@ -48,10 +48,10 @@ func NewServer(config *service.ServerConfig) service.Server {
 	} else if decoded, err := base64.StdEncoding.DecodeString(secret); err != nil {
 		log.WithField("err", err).Fatal("Could not decode JWT secret")
 	} else {
-		s.secret = decoded
+		server.secret = decoded
 	}
 
-	return s
+	return server
 }
 
 // RegisterServer registers the gRPC server as a Ninka service handler.

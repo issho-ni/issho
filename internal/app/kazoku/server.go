@@ -19,11 +19,10 @@ type Server struct {
 }
 
 // NewServer returns a new gRPC server for the Kazoku service.
-func NewServer(config *service.ServerConfig) service.Server {
-	var s *Server
-	s.Server = grpc.NewServer(config, s)
-
-	return s
+func NewServer(config *service.ServerConfig) *Server {
+	var server *Server
+	server.Server = grpc.NewServer(config, server)
+	return server
 }
 
 // RegisterServer registers the gRPC server as a Kazoku service handler.

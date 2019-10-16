@@ -13,7 +13,7 @@ func NewClaimsContext(ctx context.Context, claims common.Claims) context.Context
 }
 
 // ClaimsFromContext extracts JWT claims from the given context.
-func ClaimsFromContext(ctx context.Context) (common.Claims, bool) {
-	claims, ok := ctx.Value(claimsKey).(common.Claims)
-	return claims, ok
+func ClaimsFromContext(ctx context.Context) (claims common.Claims, ok bool) {
+	claims, ok = ctx.Value(claimsKey).(common.Claims)
+	return
 }

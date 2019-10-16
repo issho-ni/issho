@@ -12,7 +12,7 @@ func NewTimingContext(ctx context.Context, t time.Time) context.Context {
 }
 
 // TimingFromContext extracts the timing from the given context.
-func TimingFromContext(ctx context.Context) (time.Time, bool) {
-	t, ok := ctx.Value(timingKey).(time.Time)
-	return t, ok
+func TimingFromContext(ctx context.Context) (t time.Time, ok bool) {
+	t, ok = ctx.Value(timingKey).(time.Time)
+	return
 }

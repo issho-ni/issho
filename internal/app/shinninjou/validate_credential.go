@@ -10,21 +10,23 @@ import (
 )
 
 // ValidateCredential validates the given credential against the stored record.
-func (s *Server) ValidateCredential(ctx context.Context, in *shinninjou.Credential) (*shinninjou.CredentialResponse, error) {
-	var result *shinninjou.Credential
-	filter := bson.D{{Key: "userid", Value: in.UserID}, {Key: "credentialtype", Value: in.CredentialType}}
+func (s *Server) ValidateCredential(ctx context.Context, in *shinninjou.Credential) (response *shinninjou.CredentialResponse, err error) {
+	response = new(shinninjou.CredentialResponse)
 
+	filter := bson.D{{Key: "userid", Value: in.UserID}, {Key: "credentialtype", Value: in.CredentialType}}
 	collection := s.MongoClient.Collection("credentials")
-	if err := collection.FindOne(ctx, filter).Decode(result); err != nil {
-		return nil, err
+
+	var result *shinninjou.Credential
+	if err = collection.FindOne(ctx, filter).Decode(result); err != nil {
+		response.Success = false
+		return
 	}
 
 	switch in.CredentialType {
 	case shinninjou.CredentialType_PASSWORD:
-		if err := bcrypt.CompareHashAndPassword(result.Credential, in.Credential); err != nil {
-			return nil, err
-		}
+		err = bcrypt.CompareHashAndPassword(result.Credential, in.Credential)
 	}
 
-	return &shinninjou.CredentialResponse{Success: true}, nil
+	response.Success = err == nil
+	return
 }

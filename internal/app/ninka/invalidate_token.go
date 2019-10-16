@@ -47,7 +47,7 @@ func (s *Server) InvalidateToken(ctx context.Context, in *common.Claims) (*ninka
 }
 
 func (s *Server) isTokenInvalid(ctx context.Context, tokenID *uuid.UUID) (bool, error) {
-	result := &InvalidToken{}
+	var result *InvalidToken
 	filter := bson.D{{Key: "tokenid", Value: tokenID}}
 
 	collection := s.MongoClient.Collection("invalid_tokens")

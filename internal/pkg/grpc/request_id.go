@@ -14,10 +14,8 @@ import (
 const requestIDKey = "request_id"
 
 func appendRequestIDToOutgoingContext(ctx context.Context) context.Context {
-	var ok bool
-	var rid uuid.UUID
-
-	if rid, ok = icontext.RequestIDFromContext(ctx); ok {
+	rid, ok := icontext.RequestIDFromContext(ctx)
+	if ok {
 		rids := rid.String()
 		ctx = metadata.AppendToOutgoingContext(ctx, requestIDKey, rids)
 	}
@@ -26,21 +24,18 @@ func appendRequestIDToOutgoingContext(ctx context.Context) context.Context {
 }
 
 func logRequestIDFromIncomingContext(ctx context.Context) context.Context {
-	var err error
-	var md metadata.MD
-	var ok bool
-	var rid uuid.UUID
-	var value []string
-
-	if md, ok = metadata.FromIncomingContext(ctx); !ok {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
 		return ctx
 	}
 
-	if value = md.Get(requestIDKey); len(value) != 1 {
+	value := md.Get(requestIDKey)
+	if len(value) != 1 {
 		return ctx
 	}
 
-	if rid, err = uuid.Parse(value[0]); err != nil {
+	rid, err := uuid.Parse(value[0])
+	if err != nil {
 		return ctx
 	}
 

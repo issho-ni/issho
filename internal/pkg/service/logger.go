@@ -23,10 +23,8 @@ func (f *formatter) Format(e *log.Entry) ([]byte, error) {
 }
 
 func setFormatter(service string) {
-	var err error
-	var logLevel log.Level
-
-	if logLevel, err = log.ParseLevel(os.Getenv("LOG_LEVEL")); err != nil {
+	logLevel, err := log.ParseLevel(os.Getenv("LOG_LEVEL"))
+	if err != nil {
 		logLevel = log.DebugLevel
 	}
 

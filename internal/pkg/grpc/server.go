@@ -32,33 +32,31 @@ type Server struct {
 
 // NewServer creates a new listener and gRPC server for a gRPC service.
 func NewServer(config *service.ServerConfig, srv Service) *Server {
-	var creds credentials.TransportCredentials
-	var grpcLogrusOpts []grpc_logrus.Option
-	var err error
-	var opts []grpc.ServerOption
-	var s *Server
+	server := &Server{ServerConfig: config, MongoClient: mongo.NewClient(config.Name)}
 
-	s.ServerConfig = config
-	s.MongoClient = mongo.NewClient(config.Name)
-
-	if s.Listener, err = net.Listen("tcp", ":"+config.Port); err != nil {
+	if listener, err := net.Listen("tcp", ":"+config.Port); err != nil {
 		log.WithFields(log.Fields{
 			"err":  err,
 			"port": config.Port,
 		}).Fatal("Failed to listen on port")
+	} else {
+		server.Listener = listener
 	}
 
-	if creds, err = credentials.NewServerTLSFromFile(config.TLSCert, config.TLSKey); err != nil {
+	var opts []grpc.ServerOption
+
+	if creds, err := credentials.NewServerTLSFromFile(config.TLSCert, config.TLSKey); err != nil {
 		log.WithField("err", err).Fatal("Failed to generate server credentials")
+	} else {
+		opts = append(opts, grpc.Creds(creds))
 	}
-
-	opts = append(opts, grpc.Creds(creds))
 
 	logger := log.StandardLogger()
 	logrusEntry := log.NewEntry(logger)
 	grpc_logrus.ReplaceGrpcLogger(logrusEntry)
 
-	grpcLogrusOpts = append(grpcLogrusOpts, grpc_logrus.WithDecider(logDecider))
+	var grpcLogrusOpts []grpc_logrus.Option
+	grpcLogrusOpts = append(grpcLogrusOpts, grpc_logrus.WithDecider(skipLoggingHealthCheck))
 
 	opts = append(opts, grpc_middleware.WithStreamServerChain(
 		grpc_logrus.StreamServerInterceptor(logrusEntry, grpcLogrusOpts...),
@@ -73,12 +71,12 @@ func NewServer(config *service.ServerConfig, srv Service) *Server {
 		unaryServerContextInterceptor(logTimingFromIncomingContext),
 	))
 
-	s.grpcServer = grpc.NewServer(opts...)
-	s.healthServer = health.NewServer()
-	healthpb.RegisterHealthServer(s.grpcServer, s.healthServer)
+	server.grpcServer = grpc.NewServer(opts...)
+	server.healthServer = health.NewServer()
+	healthpb.RegisterHealthServer(server.grpcServer, server.healthServer)
 
-	srv.RegisterServer(s.grpcServer)
-	return s
+	srv.RegisterServer(server.grpcServer)
+	return server
 }
 
 func (s *Server) serve() error {
@@ -93,10 +91,6 @@ func (s *Server) StartServer() {
 	s.ServerConfig.Serve(s.serve)
 }
 
-func logDecider(methodFullName string, err error) bool {
-	if err == nil && methodFullName == "/grpc.health.v1.Health/Check" {
-		return false
-	}
-
-	return true
+func skipLoggingHealthCheck(methodFullName string, err error) bool {
+	return !(err == nil && methodFullName == "/grpc.health.v1.Health/Check")
 }

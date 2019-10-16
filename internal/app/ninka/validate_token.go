@@ -18,16 +18,13 @@ import (
 // ValidateToken checks the validity of a token's signature, claims, user ID,
 // and expiration time.
 func (s *Server) ValidateToken(ctx context.Context, in *ninka.Token) (*ninka.TokenResponse, error) {
-	var claims *common.Claims
-	var err error
-	var ok bool
-	var t time.Time
-
-	if t, ok = icontext.TimingFromContext(ctx); !ok {
+	t, ok := icontext.TimingFromContext(ctx)
+	if !ok {
 		t = time.Now()
 	}
 
-	if claims, err = s.extractClaims(in, t); err != nil {
+	claims, err := s.extractClaims(in, t)
+	if err != nil {
 		return &ninka.TokenResponse{Success: false}, err
 	}
 
@@ -49,12 +46,10 @@ func (s *Server) ValidateToken(ctx context.Context, in *ninka.Token) (*ninka.Tok
 }
 
 func (s *Server) extractClaims(token *ninka.Token, t time.Time) (*common.Claims, error) {
-	var claims *jwt.Claims
-	var err error
-
 	tt := []byte(token.Token)
 
-	if claims, err = jwt.HMACCheck(tt, s.secret); err != nil {
+	claims, err := jwt.HMACCheck(tt, s.secret)
+	if err != nil {
 		return nil, err
 	} else if ok := claims.Valid(t); !ok {
 		return nil, fmt.Errorf("JWT has expired or contains invalid claims")

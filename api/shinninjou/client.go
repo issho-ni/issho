@@ -16,7 +16,9 @@ type Client struct {
 
 // NewClient returns a client to the Shinninjou gRPC service.
 func NewClient(config *grpc.ClientConfig) *Client {
+	var client *Client
 	url := os.Getenv("SHINNINJOU_URL")
-	c := grpc.NewClient(config, "shinninjou", url)
-	return &Client{c, NewShinninjouClient(c.ClientConn())}
+	client.Client = grpc.NewClient(config, "shinninjou", url)
+	client.ShinninjouClient = NewShinninjouClient(client.ClientConn())
+	return client
 }

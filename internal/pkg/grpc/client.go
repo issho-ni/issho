@@ -19,10 +19,8 @@ type ClientConfig struct {
 
 // NewClientConfig generates a new service client environment.
 func NewClientConfig(tlsCert string) *ClientConfig {
-	var creds credentials.TransportCredentials
-	var err error
-
-	if creds, err = credentials.NewClientTLSFromFile(tlsCert, ""); err != nil {
+	creds, err := credentials.NewClientTLSFromFile(tlsCert, "")
+	if err != nil {
 		log.WithField("err", err).Fatal("Failed to generate credentials")
 	}
 
@@ -36,17 +34,25 @@ type Client interface {
 }
 
 type client struct {
-	cc *grpc.ClientConn
 	*ClientConfig
 	healthpb.HealthClient
+	cc *grpc.ClientConn
 }
 
 // NewClient establishes a client connection to a gRPC service.
 func NewClient(config *ClientConfig, name string, url string) Client {
-	var cc *grpc.ClientConn
-	var err error
-	var opts []grpc.DialOption
+	var c *client
 
+	if url == "" {
+		log.WithFields(log.Fields{
+			"grpc.service": name,
+			"span.kind":    "client",
+		}).Fatal("Service URL not specified")
+	}
+
+	c.ClientConfig = config
+
+	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(config.TransportCredentials))
 	opts = append(opts, grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
 		streamClientContextInterceptor(appendRequestIDToOutgoingContext),
@@ -59,21 +65,23 @@ func NewClient(config *ClientConfig, name string, url string) Client {
 		unaryClientContextInterceptor(appendTimingToOutgoingContext),
 	)))
 
-	if cc, err = grpc.Dial(url, opts...); err != nil {
+	if cc, err := grpc.Dial(url, opts...); err != nil {
 		log.WithFields(log.Fields{
 			"err":          err,
 			"grpc.service": name,
 			"span.kind":    "client",
 		}).Fatal("Failed to dial")
+	} else {
+		c.cc = cc
+		c.HealthClient = healthpb.NewHealthClient(cc)
 	}
-
-	healthClient := healthpb.NewHealthClient(cc)
 
 	log.WithFields(log.Fields{
 		"grpc.service": name,
 		"span.kind":    "client",
 	}).Debug("Connecting")
-	return &client{cc, config, healthClient}
+
+	return c
 }
 
 func (c *client) ClientConn() *grpc.ClientConn {
@@ -86,16 +94,18 @@ type Status struct {
 	Error  error
 }
 
+// HealthCheck performs a health check request against the gRPC service.
 func (c *client) HealthCheck() *Status {
-	var err error
-	var resp *healthpb.HealthCheckResponse
-
+	var status *Status
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	if resp, err = c.HealthClient.Check(ctx, &healthpb.HealthCheckRequest{}); err != nil {
-		return &Status{false, err}
+	if resp, err := c.HealthClient.Check(ctx, &healthpb.HealthCheckRequest{}); err != nil {
+		status.Result = false
+		status.Error = err
+	} else {
+		status.Result = resp.GetStatus() == healthpb.HealthCheckResponse_SERVING
 	}
 
-	return &Status{resp.GetStatus() == healthpb.HealthCheckResponse_SERVING, nil}
+	return status
 }

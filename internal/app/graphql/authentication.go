@@ -18,7 +18,11 @@ type authenticationHandler struct {
 
 func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
 	bearerExpression, _ := regexp.Compile(`Bearer (\S+)`)
-	return &authenticationHandler{s, next, bearerExpression}
+	return &authenticationHandler{
+		Server:           s,
+		Handler:          next,
+		bearerExpression: bearerExpression,
+	}
 }
 
 func (h *authenticationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
