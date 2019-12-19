@@ -9,11 +9,6 @@ build:
         buildArgs:
           CERT_HOST: "*.issho.svc"
           COMMAND: graphql
-    - image: youji
-      docker:
-        buildArgs:
-          CERT_HOST: "*.issho.svc"
-          COMMAND: youji
     - image: kazoku
       docker:
         buildArgs:
@@ -34,6 +29,11 @@ build:
         buildArgs:
           CERT_HOST: "*.issho.svc"
           COMMAND: shinninjou
+    - image: youji
+      docker:
+        buildArgs:
+          CERT_HOST: "*.issho.svc"
+          COMMAND: youji
   local:
     useBuildkit: true
 deploy:
@@ -41,12 +41,6 @@ deploy:
     manifests:
       - deployments/k8s/namespace.yml
       - deployments/k8s/**/*.yml
-portForward:
-  - resourceType: Service
-    resourceName: graphql
-    namespace: issho
-    port: 443
-    localPort: 8080
 profiles:
   - name: production
     deploy:

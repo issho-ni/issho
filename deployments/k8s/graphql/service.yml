@@ -12,5 +12,5 @@ spec:
     <<: *labels
   ports:
     - name: https
-      port: 443
+      port: 8080
       targetPort: https

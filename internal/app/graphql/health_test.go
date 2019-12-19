@@ -6,11 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/issho-ni/issho/api/kazoku"
+	"github.com/issho-ni/issho/internal/pkg/grpc"
+
+	"github.com/golang/mock/gomock"
 	mock_kazoku "github.com/issho-ni/issho/api/mock/kazoku"
 	mock_grpc "github.com/issho-ni/issho/internal/mock/pkg/grpc"
-	"github.com/issho-ni/issho/internal/pkg/grpc"
 )
 
 func Test_liveCheck(t *testing.T) {
