@@ -3,6 +3,7 @@ package shinninjou
 import (
 	"context"
 
+	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/api/shinninjou"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -12,6 +13,8 @@ import (
 // CreateCredential creates an authentication credential for the current user.
 // If the credential is a password, a bcrypt hash is generated and stored.
 func (s *Server) CreateCredential(ctx context.Context, in *shinninjou.Credential) (*shinninjou.CredentialResponse, error) {
+	in.Id = common.NewUUID()
+
 	switch in.CredentialType {
 	case shinninjou.CredentialType_PASSWORD:
 		password, err := bcrypt.GenerateFromPassword(in.Credential, bcrypt.DefaultCost)

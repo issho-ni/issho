@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "github.com/gogo/protobuf@v1.3.1/gogoproto/gogo.proto";
 
 package shinninjou;
 option go_package = "github.com/issho-ni/issho/api/shinninjou";
@@ -15,9 +16,10 @@ enum CredentialType {
 }
 
 message Credential {
-    common.UUID userID = 1;
-    CredentialType credentialType = 2;
-    bytes credential = 3;
+    common.UUID id = 1 [(gogoproto.moretags) = "bson:\"_id\""];
+    common.UUID userID = 2;
+    CredentialType credentialType = 3;
+    bytes credential = 4;
 }
 
 message CredentialResponse {
