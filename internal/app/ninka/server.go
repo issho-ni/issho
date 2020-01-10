@@ -4,12 +4,12 @@ import (
 	"encoding/base64"
 	"os"
 
+	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/api/ninka"
 	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/internal/pkg/grpc"
 	"github.com/issho-ni/issho/internal/pkg/mongo"
 	"github.com/issho-ni/issho/internal/pkg/service"
-	"github.com/issho-ni/issho/internal/pkg/uuid"
 
 	"github.com/pascaldekloe/jwt"
 	log "github.com/sirupsen/logrus"
@@ -30,8 +30,8 @@ type Server struct {
 // Claims represents a set of claims with the token ID parsed into a UUID.
 type Claims struct {
 	*jwt.Claims
-	ID     uuid.UUID
-	UserID uuid.UUID
+	ID     common.UUID
+	UserID common.UUID
 }
 
 // NewServer returns a new gRPC server for the Ninka service.

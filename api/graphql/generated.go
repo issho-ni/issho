@@ -14,11 +14,11 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/api/kazoku"
 	"github.com/issho-ni/issho/api/ninshou"
 	"github.com/issho-ni/issho/api/youji"
 	graphql1 "github.com/issho-ni/issho/internal/pkg/graphql"
-	"github.com/issho-ni/issho/internal/pkg/uuid"
 	"github.com/vektah/gqlparser"
 	"github.com/vektah/gqlparser/ast"
 )
@@ -778,10 +778,10 @@ func (ec *executionContext) _Account_id(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*uuid.UUID)
+	res := resTmp.(*common.UUID)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx, field.Selections, res)
+	return ec.marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋcommonᚐUUID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Account_name(ctx context.Context, field graphql.CollectedField, obj *kazoku.Account) (ret graphql.Marshaler) {
@@ -1723,10 +1723,10 @@ func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*uuid.UUID)
+	res := resTmp.(*common.UUID)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx, field.Selections, res)
+	return ec.marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋcommonᚐUUID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Todo_text(ctx context.Context, field graphql.CollectedField, obj *youji.Todo) (ret graphql.Marshaler) {
@@ -1902,10 +1902,10 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*uuid.UUID)
+	res := resTmp.(*common.UUID)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx, field.Selections, res)
+	return ec.marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋcommonᚐUUID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *ninshou.User) (ret graphql.Marshaler) {
@@ -3598,7 +3598,7 @@ func (ec *executionContext) unmarshalInputUpdateTodoParams(ctx context.Context, 
 		switch k {
 		case "id":
 			var err error
-			it.Id, err = ec.unmarshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx, v)
+			it.Id, err = ec.unmarshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋcommonᚐUUID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4307,24 +4307,24 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNID2githubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx context.Context, v interface{}) (uuid.UUID, error) {
-	var res uuid.UUID
+func (ec *executionContext) unmarshalNID2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋcommonᚐUUID(ctx context.Context, v interface{}) (common.UUID, error) {
+	var res common.UUID
 	return res, res.UnmarshalGQL(v)
 }
 
-func (ec *executionContext) marshalNID2githubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx context.Context, sel ast.SelectionSet, v uuid.UUID) graphql.Marshaler {
+func (ec *executionContext) marshalNID2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋcommonᚐUUID(ctx context.Context, sel ast.SelectionSet, v common.UUID) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx context.Context, v interface{}) (*uuid.UUID, error) {
+func (ec *executionContext) unmarshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋcommonᚐUUID(ctx context.Context, v interface{}) (*common.UUID, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalNID2githubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx, v)
+	res, err := ec.unmarshalNID2githubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋcommonᚐUUID(ctx, v)
 	return &res, err
 }
 
-func (ec *executionContext) marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋinternalᚋpkgᚋuuidᚐUUID(ctx context.Context, sel ast.SelectionSet, v *uuid.UUID) graphql.Marshaler {
+func (ec *executionContext) marshalNID2ᚖgithubᚗcomᚋisshoᚑniᚋisshoᚋapiᚋcommonᚐUUID(ctx context.Context, sel ast.SelectionSet, v *common.UUID) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

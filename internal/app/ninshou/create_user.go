@@ -4,16 +4,16 @@ import (
 	"context"
 	"time"
 
+	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/api/ninshou"
 	icontext "github.com/issho-ni/issho/internal/pkg/context"
-	"github.com/issho-ni/issho/internal/pkg/uuid"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 // CreateUser creates a new user record.
 func (s *Server) CreateUser(ctx context.Context, in *ninshou.User) (*ninshou.User, error) {
-	*in.Id = uuid.New()
+	in.Id = common.NewUUID()
 
 	if t, ok := icontext.TimingFromContext(ctx); ok {
 		*in.CreatedAt = t

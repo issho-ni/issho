@@ -3,8 +3,8 @@ package grpc
 import (
 	"context"
 
+	"github.com/issho-ni/issho/api/common"
 	icontext "github.com/issho-ni/issho/internal/pkg/context"
-	"github.com/issho-ni/issho/internal/pkg/uuid"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
 	log "github.com/sirupsen/logrus"
@@ -34,7 +34,7 @@ func logRequestIDFromIncomingContext(ctx context.Context) context.Context {
 		return ctx
 	}
 
-	rid, err := uuid.Parse(value[0])
+	rid, err := common.ParseUUID(value[0])
 	if err != nil {
 		return ctx
 	}

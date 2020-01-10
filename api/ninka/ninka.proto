@@ -1,5 +1,4 @@
 syntax = "proto3";
-import "github.com/gogo/protobuf@v1.2.1/gogoproto/gogo.proto";
 
 package ninka;
 option go_package = "github.com/issho-ni/issho/api/ninka";
@@ -13,7 +12,7 @@ service Ninka {
 }
 
 message TokenRequest {
-    bytes userID = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    common.UUID userID = 1;
 }
 
 message Token {

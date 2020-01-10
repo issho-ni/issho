@@ -21,7 +21,7 @@ models:
   UserAccount:
     model: github.com/issho-ni/issho/api/kazoku.UserAccount
   ID:
-    model: github.com/issho-ni/issho/internal/pkg/uuid.UUID
+    model: github.com/issho-ni/issho/api/common.UUID
   Password:
     model: github.com/issho-ni/issho/internal/pkg/credentials.Password
   Role:

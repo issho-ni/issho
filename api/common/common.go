@@ -3,8 +3,6 @@
 package common
 
 import (
-	"github.com/issho-ni/issho/internal/pkg/uuid"
-
 	"github.com/pascaldekloe/jwt"
 )
 
@@ -14,11 +12,11 @@ func ClaimsFromJWT(claims *jwt.Claims) (c *Claims, err error) {
 	c = new(Claims)
 	*c.ExpiresAt = claims.Expires.Time()
 
-	if *c.TokenID, err = uuid.Parse(claims.ID); err != nil {
+	if c.TokenID, err = ParseUUID(claims.ID); err != nil {
 		return nil, err
 	}
 
-	if *c.UserID, err = uuid.Parse(claims.Subject); err != nil {
+	if c.UserID, err = ParseUUID(claims.Subject); err != nil {
 		return nil, err
 	}
 

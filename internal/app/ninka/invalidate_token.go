@@ -6,7 +6,6 @@ import (
 
 	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/api/ninka"
-	"github.com/issho-ni/issho/internal/pkg/uuid"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,7 +14,7 @@ import (
 // InvalidToken stores the token IDs of manually invalidated JWTs until their
 // normal expiration time.
 type InvalidToken struct {
-	TokenID   *uuid.UUID
+	TokenID   *common.UUID
 	ExpiresAt *time.Time
 }
 
@@ -46,7 +45,7 @@ func (s *Server) InvalidateToken(ctx context.Context, in *common.Claims) (*ninka
 	return &ninka.TokenResponse{Success: true}, nil
 }
 
-func (s *Server) isTokenInvalid(ctx context.Context, tokenID *uuid.UUID) (bool, error) {
+func (s *Server) isTokenInvalid(ctx context.Context, tokenID *common.UUID) (bool, error) {
 	var result *InvalidToken
 	filter := bson.D{{Key: "tokenid", Value: tokenID}}
 

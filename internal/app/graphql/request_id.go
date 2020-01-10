@@ -3,8 +3,8 @@ package graphql
 import (
 	"net/http"
 
+	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/internal/pkg/context"
-	"github.com/issho-ni/issho/internal/pkg/uuid"
 )
 
 const requestIDHeader = "X-Request-ID"
@@ -18,9 +18,9 @@ func requestIDMiddleware(next http.Handler) http.Handler {
 }
 
 func (h *requestIDHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	rid, err := uuid.Parse(r.Header.Get(requestIDHeader))
+	rid, err := common.ParseUUID(r.Header.Get(requestIDHeader))
 	if err != nil {
-		rid = uuid.New()
+		rid = common.NewUUID()
 		r.Header.Set(requestIDHeader, rid.String())
 	}
 

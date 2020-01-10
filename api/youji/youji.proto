@@ -1,9 +1,11 @@
 syntax = "proto3";
-import "github.com/gogo/protobuf@v1.2.1/gogoproto/gogo.proto";
+import "github.com/gogo/protobuf@v1.3.1/gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
 package youji;
 option go_package = "github.com/issho-ni/issho/api/youji";
+
+import "common/common.proto";
 
 service Youji {
     rpc CreateTodo(NewTodo) returns (Todo) {}
@@ -18,8 +20,8 @@ message NewTodo {
 }
 
 message Todo {
-    bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\"_id\""];
-    bytes userID = 2 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    common.UUID id = 1 [(gogoproto.moretags) = "bson:\"_id\""];
+    common.UUID userID = 2;
     string text = 3;
     google.protobuf.Timestamp completedAt = 4 [(gogoproto.stdtime) = true];
     google.protobuf.Timestamp createdAt = 5 [(gogoproto.stdtime) = true];
@@ -32,7 +34,7 @@ message Todos {
 }
 
 message UpdateTodoParams {
-    bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\"_id\""];
+    common.UUID id = 1 [(gogoproto.moretags) = "bson:\"_id\""];
     string text = 2;
     bool done = 3;
 }

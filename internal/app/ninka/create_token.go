@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/api/ninka"
 	icontext "github.com/issho-ni/issho/internal/pkg/context"
-	"github.com/issho-ni/issho/internal/pkg/uuid"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
 	"github.com/pascaldekloe/jwt"
@@ -23,7 +23,7 @@ func (s *Server) CreateToken(ctx context.Context, in *ninka.TokenRequest) (token
 	}
 
 	var claims *jwt.Claims
-	claims.ID = uuid.New().String()
+	claims.ID = common.NewUUID().String()
 	claims.Expires = jwt.NewNumericTime(t.Add(30 * 24 * time.Hour))
 	claims.NotBefore = jwt.NewNumericTime(t)
 	claims.Subject = in.UserID.String()

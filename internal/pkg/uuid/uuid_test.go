@@ -1,7 +1,6 @@
 package uuid
 
 import (
-	"bytes"
 	"fmt"
 	"reflect"
 	"testing"
@@ -52,60 +51,6 @@ func TestNew(t *testing.T) {
 			u := New()
 			if got := u.Size(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("New().Size() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestUUID_UnmarshalGQL(t *testing.T) {
-	type fields struct {
-		UUID uuid.UUID
-	}
-	type args struct {
-		v interface{}
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		{"Valid UUID", fields{uuid.UUID(uuidBytes)}, args{uuidString}, false},
-		{"Invalid UUID", fields{}, args{""}, true},
-		{"Non-string", fields{}, args{0}, true},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			u := &UUID{
-				UUID: tt.fields.UUID,
-			}
-			if err := u.UnmarshalGQL(tt.args.v); (err != nil) != tt.wantErr {
-				t.Errorf("UUID.UnmarshalGQL() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
-func TestUUID_MarshalGQL(t *testing.T) {
-	type fields struct {
-		UUID uuid.UUID
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		wantW  string
-	}{
-		{"Valid UUID", fields{uuid.UUID(uuidBytes)}, fmt.Sprintf("\"%s\"", uuidString)},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			u := UUID{
-				UUID: tt.fields.UUID,
-			}
-			w := &bytes.Buffer{}
-			u.MarshalGQL(w)
-			if gotW := w.String(); gotW != tt.wantW {
-				t.Errorf("UUID.MarshalGQL() = %v, want %v", gotW, tt.wantW)
 			}
 		})
 	}

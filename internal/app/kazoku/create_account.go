@@ -4,9 +4,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/issho-ni/issho/api/common"
 	"github.com/issho-ni/issho/api/kazoku"
 	icontext "github.com/issho-ni/issho/internal/pkg/context"
-	"github.com/issho-ni/issho/internal/pkg/uuid"
+
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -18,7 +19,7 @@ func (s *Server) CreateAccount(ctx context.Context, in *kazoku.Account) (*kazoku
 		*in.CreatedAt = time.Now()
 	}
 
-	*in.Id = uuid.New()
+	in.Id = common.NewUUID()
 	*in.ExpiresAt = in.CreatedAt.Add(365 * 24 * time.Hour)
 
 	ins, err := bson.Marshal(in)

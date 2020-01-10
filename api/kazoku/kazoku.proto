@@ -1,9 +1,11 @@
 syntax = "proto3";
-import "github.com/gogo/protobuf@v1.2.1/gogoproto/gogo.proto";
+import "github.com/gogo/protobuf@v1.3.1/gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
 package kazoku;
 option go_package = "github.com/issho-ni/issho/api/kazoku";
+
+import "common/common.proto";
 
 service Kazoku {
     rpc CreateAccount(Account) returns (Account) {}
@@ -13,10 +15,10 @@ service Kazoku {
 }
 
 message Account {
-    bytes id = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\"_id\""];
+    common.UUID id = 1 [(gogoproto.moretags) = "bson:\"_id\""];
     string name = 2;
-    bytes createdByUserID = 3 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
-    bytes updatedByUserID = 4 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\",omitempty\""];
+    common.UUID createdByUserID = 3;
+    common.UUID updatedByUserID = 4 [(gogoproto.moretags) = "bson:\",omitempty\""];
     google.protobuf.Timestamp expiresAt = 5 [(gogoproto.stdtime) = true];
     google.protobuf.Timestamp createdAt = 6 [(gogoproto.stdtime) = true];
     google.protobuf.Timestamp updatedAt = 7 [(gogoproto.stdtime) = true, (gogoproto.moretags) = "bson:\",omitempty\""];
@@ -24,8 +26,8 @@ message Account {
 }
 
 message UserAccount {
-    bytes accountID = 1 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
-    bytes userID = 2 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
+    common.UUID accountID = 1;
+    common.UUID userID = 2;
     enum Role {
         INACTIVE = 0;
         MEMBER = 1;
@@ -33,8 +35,8 @@ message UserAccount {
         OWNER = 99;
     }
     Role role = 3;
-    bytes createdByUserID = 4 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID"];
-    bytes updatedByUserID = 5 [(gogoproto.customtype) = "github.com/issho-ni/issho/internal/pkg/uuid.UUID", (gogoproto.moretags) = "bson:\",omitempty\""];
+    common.UUID createdByUserID = 4;
+    common.UUID updatedByUserID = 5 [(gogoproto.moretags) = "bson:\",omitempty\""];
     google.protobuf.Timestamp createdAt = 6 [(gogoproto.stdtime) = true];
     google.protobuf.Timestamp updatedAt = 7 [(gogoproto.stdtime) = true, (gogoproto.moretags) = "bson:\",omitempty\""];
     google.protobuf.Timestamp deletedAt = 8 [(gogoproto.stdtime) = true, (gogoproto.moretags) = "bson:\",omitempty\""];
