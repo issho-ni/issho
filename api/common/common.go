@@ -12,8 +12,15 @@ import (
 // object.
 func ClaimsFromJWT(claims *jwt.Claims) (c *Claims, err error) {
 	c = new(Claims)
-	*c.TokenID, err = uuid.Parse(claims.ID)
-	*c.UserID, err = uuid.Parse(claims.Subject)
 	*c.ExpiresAt = claims.Expires.Time()
+
+	if *c.TokenID, err = uuid.Parse(claims.ID); err != nil {
+		return nil, err
+	}
+
+	if *c.UserID, err = uuid.Parse(claims.Subject); err != nil {
+		return nil, err
+	}
+
 	return
 }

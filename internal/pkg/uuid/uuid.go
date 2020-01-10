@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
@@ -35,7 +36,7 @@ func New() UUID {
 func (u *UUID) UnmarshalGQL(v interface{}) error {
 	str, ok := v.(string)
 	if !ok {
-		return fmt.Errorf("Value for unmarshaling was not a string: %v", v)
+		return fmt.Errorf("Value for unmarshalling was not a string: %v", v)
 	}
 
 	return u.UnmarshalJSON([]byte(str))
@@ -44,7 +45,9 @@ func (u *UUID) UnmarshalGQL(v interface{}) error {
 // MarshalGQL implements the graphql.Marshal interface.
 func (u UUID) MarshalGQL(w io.Writer) {
 	marshaled, _ := u.MarshalJSON()
-	w.Write(marshaled)
+	if _, err := w.Write(marshaled); err != nil {
+		log.Errorf("Error marshalling %v to GraphQL: %s", u, err)
+	}
 }
 
 // Size is required to implement the proto.Marshaler interface.

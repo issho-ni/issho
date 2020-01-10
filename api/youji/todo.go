@@ -6,10 +6,10 @@ import (
 
 // UpdateOperatorsFromParams generates a set of MongoDB update operators for the
 // todo given the set of update parameters.
-func (t *Todo) UpdateOperatorsFromParams(in *UpdateTodoParams) (update bson.M) {
-	var currentDate map[string]bool
-	var set map[string]interface{}
-	var unset map[string]string
+func (t *Todo) UpdateOperatorsFromParams(in *UpdateTodoParams) bson.M {
+	currentDate := make(map[string]bool)
+	set := make(map[string]interface{})
+	unset := make(map[string]string)
 
 	if in.Done && t.CompletedAt == nil {
 		currentDate["completedat"] = true
@@ -25,6 +25,8 @@ func (t *Todo) UpdateOperatorsFromParams(in *UpdateTodoParams) (update bson.M) {
 		currentDate["updatedat"] = true
 	}
 
+	update := bson.M{}
+
 	if len(currentDate) > 0 {
 		update["$currentDate"] = currentDate
 	}
@@ -35,5 +37,5 @@ func (t *Todo) UpdateOperatorsFromParams(in *UpdateTodoParams) (update bson.M) {
 		update["$unset"] = unset
 	}
 
-	return
+	return update
 }

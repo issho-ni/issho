@@ -11,7 +11,7 @@ import (
 
 // GetAccount finds an account by account ID.
 func (s *Server) GetAccount(ctx context.Context, in *kazoku.Account) (result *kazoku.Account, err error) {
-	var filter bson.M
+	filter := bson.M{}
 
 	if in.Id != nil {
 		filter["_id"] = in.Id

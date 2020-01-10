@@ -7,13 +7,16 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+	log "github.com/sirupsen/logrus"
 )
 
 // MarshalTime implements graphql.Marshaler for time.Time.
 func MarshalTime(t time.Time) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
 		ts := t.Format(time.RFC3339)
-		w.Write([]byte(strconv.Quote(ts)))
+		if _, err := w.Write([]byte(strconv.Quote(ts))); err != nil {
+			log.Errorf("Error marshalling %v to GraphQL: %s", ts, err)
+		}
 	})
 }
 

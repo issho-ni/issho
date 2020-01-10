@@ -11,7 +11,7 @@ import (
 
 // GetUser finds a user record by user ID or email address.
 func (s *Server) GetUser(ctx context.Context, in *ninshou.User) (result *ninshou.User, err error) {
-	var filter bson.M
+	filter := bson.M{}
 
 	if in.Id != nil {
 		filter["_id"] = in.Id
