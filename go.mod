@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/99designs/gqlgen v0.10.2
 	github.com/99designs/gqlgen-contrib v0.0.0-20190222015228-c654377d611c
+	github.com/DataDog/zstd v1.4.4 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/mock v1.3.1
