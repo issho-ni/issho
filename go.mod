@@ -8,7 +8,7 @@ require (
 	github.com/DataDog/zstd v1.4.4 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.3.1
-	github.com/golang/mock v1.3.1
+	github.com/golang/mock v1.4.0
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/uuid v1.1.1
