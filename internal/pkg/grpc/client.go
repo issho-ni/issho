@@ -41,7 +41,7 @@ type client struct {
 
 // NewClient establishes a client connection to a gRPC service.
 func NewClient(config *ClientConfig, name string, url string) Client {
-	var c *client
+	c := &client{}
 
 	if url == "" {
 		log.WithFields(log.Fields{

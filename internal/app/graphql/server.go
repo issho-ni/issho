@@ -27,8 +27,8 @@ type Server struct {
 
 // NewServer creates a new HTTP handler for the GraphQL service.
 func NewServer(config *service.ServerConfig) service.Server {
-	var options []handler.Option
-	var s *Server
+	s := &Server{}
+	options := make([]handler.Option, 0)
 
 	s.ServerConfig = config
 

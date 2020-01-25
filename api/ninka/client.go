@@ -16,9 +16,10 @@ type Client struct {
 
 // NewClient returns a client to the Ninka gRPC service.
 func NewClient(config *grpc.ClientConfig) *Client {
-	var client *Client
 	url := os.Getenv("NINKA_URL")
-	client.Client = grpc.NewClient(config, "ninka", url)
+	client := &Client{
+		Client: grpc.NewClient(config, "ninka", url),
+	}
 	client.NinkaClient = NewNinkaClient(client.ClientConn())
 	return client
 }

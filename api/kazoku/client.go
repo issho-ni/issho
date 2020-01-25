@@ -16,9 +16,10 @@ type Client struct {
 
 // NewClient returns a client to the Kazoku gRPC service.
 func NewClient(config *grpc.ClientConfig) *Client {
-	var client *Client
 	url := os.Getenv("KAZOKU_URL")
-	client.Client = grpc.NewClient(config, "kazoku", url)
+	client := &Client{
+		Client: grpc.NewClient(config, "kazoku", url),
+	}
 	client.KazokuClient = NewKazokuClient(client.ClientConn())
 	return client
 }
