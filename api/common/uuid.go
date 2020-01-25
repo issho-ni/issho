@@ -10,12 +10,13 @@ import (
 )
 
 // ParseUUID decodes s into a UUID or returns an error.
-func ParseUUID(s string) (id *UUID, err error) {
-	if parsed, err := uuid.Parse(s); err == nil {
-		id = &UUID{&parsed}
+func ParseUUID(s string) (*UUID, error) {
+	parsed, err := uuid.Parse(s)
+	if err != nil {
+		return nil, err
 	}
 
-	return
+	return &UUID{&parsed}, nil
 }
 
 // NewUUID generates a new UUID.
@@ -25,7 +26,7 @@ func NewUUID() *UUID {
 }
 
 // UnmarshalGQL implements the graphql.Unmarshal interface.
-func (u *UUID) UnmarshalGQL(v interface{}) error {
+func (u UUID) UnmarshalGQL(v interface{}) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("Value for unmarshalling was not a string: %v", v)
