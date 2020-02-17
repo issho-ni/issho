@@ -3,7 +3,7 @@ module github.com/issho-ni/issho
 go 1.12
 
 require (
-	github.com/99designs/gqlgen v0.10.2
+	github.com/99designs/gqlgen v0.11.0
 	github.com/99designs/gqlgen-contrib v0.0.0-20190222015228-c654377d611c
 	github.com/DataDog/zstd v1.4.4 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
